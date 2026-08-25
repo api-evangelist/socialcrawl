@@ -1,0 +1,60 @@
+name: SocialCrawl
+description: >-
+  Unified social media scraper API spanning 50 platforms and ~400 endpoints, with a single JSON response schema across
+  all. Covers social, search/research, e-commerce, and reviews data, with agent-native surfaces including llms.txt, an
+  MCP server, and published agent skills.
+url: https://raw.githubusercontent.com/api-evangelist/socialcrawl/refs/heads/main/apis.yml
+created: '2026-08-25'
+modified: '2026-08-25'
+specificationVersion: '0.21'
+tags:
+  - social-media
+  - web-scraping
+  - data-extraction
+  - social-listening
+  - market-research
+  - creator-analytics
+  - influencer-discovery
+  - e-commerce-data
+  - search
+  - ai-agents
+  - mcp
+  - developer-tools
+apis:
+  - name: SocialCrawl API
+    description: >-
+      REST/JSON API providing unified access to 50 social/search/commerce/review platforms via ~400 endpoints,
+      authenticated with an x-api-key header. Includes a public OpenAPI 3.1 contract and agent-native surfaces (llms.txt
+      variants, agents.txt, and published agent skills).
+    humanURL: https://www.socialcrawl.dev/docs
+    baseURL: https://www.socialcrawl.dev/v1
+    tags:
+      - social-media
+      - web-scraping
+      - data-extraction
+      - social-listening
+      - market-research
+      - creator-analytics
+      - influencer-discovery
+      - e-commerce-data
+      - search
+      - ai-agents
+      - mcp
+      - developer-tools
+    properties:
+      - type: OpenAPI
+        url: https://www.socialcrawl.dev/v1/openapi.json
+      - type: Documentation
+        url: https://www.socialcrawl.dev/docs
+      - type: LLMsTxt
+        url: https://www.socialcrawl.dev/llms.txt
+      - type: AgentSkill
+        url: https://www.socialcrawl.dev/docs/ai-agents
+maintainers:
+  - FN: SocialCrawl Support
+    url: mailto:support@socialcrawl.dev
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 97
+  at: '2026-08-25T10:22:50.757Z'
