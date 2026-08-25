@@ -1,0 +1,210 @@
+# SocialCrawl API
+
+> Unified social media data API. One API key, one response format, 50 platforms, 400 endpoints.
+
+Last updated: 2026-08-25
+
+## Base URL
+
+https://www.socialcrawl.dev/v1
+
+## Authentication
+
+Pass your API key in the `x-api-key` header with every request.
+
+## Instructions
+
+- Authenticate every request with the `x-api-key` header. Never put the key in the URL or query string.
+- Never invent endpoint paths. Endpoints live at `/v1/{platform}/{resource}` and are `GET` unless marked otherwise (a small set of batch and web endpoints are `POST`/`PATCH`/`DELETE`); fetch `/llms-{platform}.txt` for one platform's exact resource list with methods, or `/llms-full.txt` for all of them.
+- For cross-platform questions ("who is talking about X everywhere"), prefer `GET /v1/search/everywhere` over fanning out per platform yourself. One call searches up to 17 sources and fuses the results.
+- Paginate every list the same way: read `pagination.next_cursor` from the response, send it back verbatim as the `cursor` query parameter, and stop when `pagination.has_more` is `false`. Never build or decode a cursor yourself.
+- Cached responses cost 0 credits (`cached: true`, `X-Cache: HIT`). Only send `Cache-Control: no-cache` when you truly need a live fetch; it is billed at the normal rate.
+- Errors are machine-readable. On any `success: false`, branch on `error.type` and follow `error.doc_url` to the exact fix instead of guessing.
+- On a `429` or `503`, honor the `Retry-After` response header: wait that many seconds, then retry the same request. Credits are refunded on `502`/`503`, so retrying is safe.
+- If one platform keeps failing with `502`/`503`, call `GET /v1/status` before retrying again. It is public (no API key) and costs 0 credits, and it reports each platform's circuit state: a platform reported `degraded` or `down` will not recover by retrying sooner.
+- Additive changes are never breaking: response fields are only ever added, never removed or renamed. Parse defensively and ignore unknown fields, and your integration keeps working across versions.
+- Need the raw Markdown of any docs page for your context window? Append `.md` to the URL (e.g. `/docs/quickstart.md`, `/docs.md`, `/docs/api-reference.md`) instead of scraping the rendered HTML.
+
+## Platforms
+
+- [amazon](https://www.socialcrawl.dev/llms-amazon.txt): 5 endpoints
+- [app_store](https://www.socialcrawl.dev/llms-app_store.txt): 9 endpoints
+- [apple_music](https://www.socialcrawl.dev/llms-apple_music.txt): 4 endpoints
+- [bluesky](https://www.socialcrawl.dev/llms-bluesky.txt): 3 endpoints
+- [content_analysis](https://www.socialcrawl.dev/llms-content_analysis.txt): 10 endpoints
+- [ebay](https://www.socialcrawl.dev/llms-ebay.txt): 2 endpoints
+- [facebook](https://www.socialcrawl.dev/llms-facebook.txt): 24 endpoints
+- [github](https://www.socialcrawl.dev/llms-github.txt): 12 endpoints
+- [google](https://www.socialcrawl.dev/llms-google.txt): 10 endpoints
+- [google_finance](https://www.socialcrawl.dev/llms-google_finance.txt): 3 endpoints
+- [google_news](https://www.socialcrawl.dev/llms-google_news.txt): 1 endpoint
+- [google_play](https://www.socialcrawl.dev/llms-google_play.txt): 9 endpoints
+- [google_shopping](https://www.socialcrawl.dev/llms-google_shopping.txt): 4 endpoints
+- [google_trends](https://www.socialcrawl.dev/llms-google_trends.txt): 2 endpoints
+- [hackernews](https://www.socialcrawl.dev/llms-hackernews.txt): 4 endpoints
+- [home_depot](https://www.socialcrawl.dev/llms-home_depot.txt): 4 endpoints
+- [instagram](https://www.socialcrawl.dev/llms-instagram.txt): 36 endpoints
+- [kick](https://www.socialcrawl.dev/llms-kick.txt): 1 endpoint
+- [komi](https://www.socialcrawl.dev/llms-komi.txt): 1 endpoint
+- [kwai](https://www.socialcrawl.dev/llms-kwai.txt): 3 endpoints
+- [linkbio](https://www.socialcrawl.dev/llms-linkbio.txt): 1 endpoint
+- [linkedin](https://www.socialcrawl.dev/llms-linkedin.txt): 44 endpoints
+- [linkme](https://www.socialcrawl.dev/llms-linkme.txt): 1 endpoint
+- [linktree](https://www.socialcrawl.dev/llms-linktree.txt): 1 endpoint
+- [naver](https://www.socialcrawl.dev/llms-naver.txt): 14 endpoints
+- [perplexity](https://www.socialcrawl.dev/llms-perplexity.txt): 1 endpoint
+- [pillar](https://www.socialcrawl.dev/llms-pillar.txt): 1 endpoint
+- [pinterest](https://www.socialcrawl.dev/llms-pinterest.txt): 5 endpoints
+- [polymarket](https://www.socialcrawl.dev/llms-polymarket.txt): 1 endpoint
+- [prism](https://www.socialcrawl.dev/llms-prism.txt): 33 endpoints
+- [reddit](https://www.socialcrawl.dev/llms-reddit.txt): 8 endpoints
+- [rumble](https://www.socialcrawl.dev/llms-rumble.txt): 5 endpoints
+- [search](https://www.socialcrawl.dev/llms-search.txt): 4 endpoints
+- [snapchat](https://www.socialcrawl.dev/llms-snapchat.txt): 2 endpoints
+- [spotify](https://www.socialcrawl.dev/llms-spotify.txt): 6 endpoints
+- [target](https://www.socialcrawl.dev/llms-target.txt): 5 endpoints
+- [tavily](https://www.socialcrawl.dev/llms-tavily.txt): 4 endpoints
+- [threads](https://www.socialcrawl.dev/llms-threads.txt): 6 endpoints
+- [tiktok](https://www.socialcrawl.dev/llms-tiktok.txt): 25 endpoints
+- [tiktokshop](https://www.socialcrawl.dev/llms-tiktokshop.txt): 5 endpoints
+- [tripadvisor](https://www.socialcrawl.dev/llms-tripadvisor.txt): 2 endpoints
+- [trustpilot](https://www.socialcrawl.dev/llms-trustpilot.txt): 2 endpoints
+- [truthsocial](https://www.socialcrawl.dev/llms-truthsocial.txt): 3 endpoints
+- [twitch](https://www.socialcrawl.dev/llms-twitch.txt): 4 endpoints
+- [twitter](https://www.socialcrawl.dev/llms-twitter.txt): 8 endpoints
+- [utility](https://www.socialcrawl.dev/llms-utility.txt): 4 endpoints
+- [walmart](https://www.socialcrawl.dev/llms-walmart.txt): 5 endpoints
+- [wayfair](https://www.socialcrawl.dev/llms-wayfair.txt): 3 endpoints
+- [web](https://www.socialcrawl.dev/llms-web.txt): 22 endpoints
+- [youtube](https://www.socialcrawl.dev/llms-youtube.txt): 28 endpoints
+
+## Credits
+
+- Standard: 1 credit per request (230 endpoints)
+- Advanced: 5 credits per request (141 endpoints)
+- Premium: 10 credits per request (29 endpoints)
+
+## Caching
+
+- Successful responses are cached and shared across your account; cache hits cost 0 credits (`cached: true`, `X-Cache: HIT`).
+- Freshness windows by data type: profiles ~15m, posts ~10m, comments ~5m, search ~2m, analytics ~30m.
+- Force a live fetch with the `Cache-Control: no-cache` request header (billed at the normal rate; writes the fresh result back for the next caller). `no-store` alone does not trigger it.
+
+## Idempotency
+
+- Send an `Idempotency-Key` (UUID) request header to make a call safely retriable (24h TTL). A replay keeps the cached payload immutable except for billing metadata: `credits_used` is 0 and `idempotent_replay` is true. A known current balance is refreshed in body `credits_remaining` and the `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted.
+
+## Common Agent Tasks
+
+Map a user's natural-language request to the flagship endpoint per platform
+(all GET, `x-api-key` header; every endpoint is in llms-full.txt):
+
+- "Get Amazon shop page" → GET /v1/amazon/shop · search: GET /v1/amazon/product-search
+- "Search Apple App Store apps by keyword" → GET /v1/app_store/app-search · search: GET /v1/app_store/search-suggestions
+- "Search Apple Music" → GET /v1/apple_music/search
+- "Get a Bluesky profile" → GET /v1/bluesky/profile
+- "Search web citations of a keyword with per-mention sentiment" → GET /v1/content_analysis/search
+- "Search eBay listings" → GET /v1/ebay/search
+- "Get Facebook page profile" → GET /v1/facebook/profile · search: GET /v1/facebook/adlibrary/search/ads
+- "Get a GitHub user profile" → GET /v1/github/profile · search: GET /v1/github/search
+- "Google web search" → GET /v1/google/search · search: GET /v1/google/adlibrary/advertisers/search
+- "Get a financial instrument quote" → GET /v1/google_finance/quote · search: GET /v1/google_finance/ticker-search
+- "Search Google News" → GET /v1/google_news/search
+- "Search Google Play apps by keyword" → GET /v1/google_play/app-search · search: GET /v1/google_play/search-suggestions
+- "Search Google Shopping products" → GET /v1/google_shopping/product-search
+- "Get Google Trends interest over time" → GET /v1/google_trends/explore
+- "Search Hacker News" → GET /v1/hackernews/search
+- "Get a Home Depot product by item id or URL" → GET /v1/home_depot/product · search: GET /v1/home_depot/search
+- "Get Instagram user profile" → GET /v1/instagram/profile · search: GET /v1/instagram/search/reels
+- "Get Kick clip details" → GET /v1/kick/clip
+- "Get Komi page" → GET /v1/komi/page
+- "Get a Kwai user profile" → GET /v1/kwai/profile
+- "Get Linkbio page" → GET /v1/linkbio/page
+- "Get LinkedIn user profile" → GET /v1/linkedin/profile · search: GET /v1/linkedin/search/people
+- "Get Linkme profile" → GET /v1/linkme/page
+- "Get Linktree page" → GET /v1/linktree/page
+- "Search Naver Blog" → GET /v1/naver/blog/search · search: GET /v1/naver/news/search
+- "Web research via Perplexity Sonar" → GET /v1/perplexity/research
+- "Get Pillar page" → GET /v1/pillar/page
+- "Search Pinterest pins" → GET /v1/pinterest/search
+- "Polymarket prediction markets: multi-query research" → GET /v1/polymarket/research
+- "Universal URL dispatcher: any social/commerce URL → the right detail endpoint's unified response." → GET /v1/prism/lookup
+- "List Reddit subreddit posts" → GET /v1/reddit/subreddit · search: GET /v1/reddit/search
+- "Search Rumble videos" → GET /v1/rumble/search
+- "Universal social search across 14 platforms" → GET /v1/search/everywhere
+- "Get Snapchat user profile" → GET /v1/snapchat/profile
+- "Get a Spotify artist" → GET /v1/spotify/artist · search: GET /v1/spotify/search
+- "Get a Target product by TCIN" → GET /v1/target/product
+- "Tavily web search with optional LLM-generated answer" → GET /v1/tavily/search
+- "Get Threads user profile" → GET /v1/threads/profile · search: GET /v1/threads/search
+- "Get TikTok user profile" → GET /v1/tiktok/profile · search: GET /v1/tiktok/search
+- "Get TikTok Shop product details" → GET /v1/tiktokshop/product · search: GET /v1/tiktokshop/search
+- "Search TripAdvisor businesses & places" → GET /v1/tripadvisor/search
+- "Search Trustpilot businesses" → GET /v1/trustpilot/business-search
+- "Get Truth Social user profile" → GET /v1/truthsocial/profile
+- "Get Twitch streamer profile" → GET /v1/twitch/profile
+- "Get Twitter user profile" → GET /v1/twitter/profile · search: GET /v1/twitter/ai-search
+- "List every available endpoint" → GET /v1/utility/endpoints
+- "Get a Walmart product by id" → GET /v1/walmart/product · search: GET /v1/walmart/search
+- "Search Wayfair products" → GET /v1/wayfair/search
+- "Scrape a web page" → GET /v1/web/scrape · search: GET /v1/web/search
+- "Get YouTube channel info" → GET /v1/youtube/channel · search: GET /v1/youtube/search
+
+All responses share one JSON envelope: { success, platform, endpoint, data, credits_used, credits_remaining }.
+
+## Key Pages
+
+- [Platform catalog](https://www.socialcrawl.dev/platforms): every supported platform with live endpoint counts
+- [Pricing & free credits](https://www.socialcrawl.dev/pricing): plans, credit packs, free tier
+
+## Guides & Comparisons
+
+- [Best social media scraping APIs, compared](https://www.socialcrawl.dev/blog/best-social-media-scraping-apis-2026)
+- [What is a unified social media API](https://www.socialcrawl.dev/unified-social-media-api)
+- [MCP server & AI agent integration](https://www.socialcrawl.dev/solutions/ai-agents)
+- [SocialCrawl vs alternatives](https://www.socialcrawl.dev/vs): comparison hub
+
+## Data & Statistics
+
+Computed, dated social-media statistics. Citable numbers refreshed on a cadence:
+
+- [What are the best hashtags for TikTok? Ranked live from the trending feed, with a date](https://www.socialcrawl.dev/data/best-hashtags-for-tiktok)
+- [What are the best hashtags for Instagram? Ranked live from top Reels, with a date](https://www.socialcrawl.dev/data/best-hashtags-for-instagram)
+- [What are the best hashtags for YouTube Shorts? Ranked live from the trending Shorts feed, with a date](https://www.socialcrawl.dev/data/best-hashtags-for-youtube-shorts)
+- [What are the best hashtags for Instagram Reels? Ranked live from a real Reels sample, with a date](https://www.socialcrawl.dev/data/best-hashtags-for-instagram-reels)
+- [What are the best hashtags for Instagram growth? Ranked live from growth-focused Reels, with a date](https://www.socialcrawl.dev/data/best-hashtags-for-instagram-growth)
+- [Which TikTok hashtags drive the most views? Ranked live by average views per trending video, with a date](https://www.socialcrawl.dev/data/best-tiktok-hashtags-for-views)
+- [What is the average TikTok engagement rate? Median (likes+comments+shares)/views across public videos, with a date](https://www.socialcrawl.dev/data/average-tiktok-engagement-rate)
+- [What is the average Instagram engagement rate? Median interactions per view across public Reels, with a date](https://www.socialcrawl.dev/data/average-engagement-rate-instagram)
+- [What is the average engagement rate on social media? Cross-platform median interactions per view across public TikTok + Instagram posts, with a date](https://www.socialcrawl.dev/data/average-engagement-rate)
+- [Who is the most followed person on Instagram? Ranked live by follower count across the top public accounts, with a date](https://www.socialcrawl.dev/data/most-followed-person-on-instagram)
+- [What is the most followed account on Instagram? Ranked live by follower count across the platform's largest public accounts INCLUDING brand, club and platform accounts, so Instagram's own @instagram account is counted rather than filtered out, which is why this answer differs from the most-followed PERSON page; the biggest account other than @instagram is reported separately, with a date](https://www.socialcrawl.dev/data/most-followed-on-instagram)
+- [Who has the most followers on YouTube? Ranked live by subscriber count across the world's biggest channels, with a date](https://www.socialcrawl.dev/data/who-has-the-most-followers-on-youtube)
+- [What is the most viewed video on YouTube? Ranked live by lifetime view count across the platform's most watched videos, with a date](https://www.socialcrawl.dev/data/most-viewed-youtube-video)
+- [What is the most streamed song on Spotify? Ranked live by playcount across a basket of the platform's most-streamed tracks, with a date](https://www.socialcrawl.dev/data/most-streamed-song-on-spotify)
+- [Who is the most streamed artist on Spotify? Ranked live by MONTHLY LISTENERS (unique accounts that played the artist in the last 28 days) across a basket of the biggest global artists, because Spotify publishes no per-artist career stream total, with a date](https://www.socialcrawl.dev/data/most-streamed-artist-on-spotify)
+- [What are the top podcasts on Spotify? Ranked live by HOW MANY LISTENERS RATED each show (with the 0-5 average alongside) across a basket of the biggest shows, because Spotify publishes no play, download, subscriber or follower count for a podcast, with a date](https://www.socialcrawl.dev/data/top-podcasts)
+- [How much do YouTubers make? A net RPM band applied to the median views per video, computed live from real channel data, with a date](https://www.socialcrawl.dev/data/how-much-do-youtubers-make)
+- [How much money do YouTubers make a month? Median views per video times real upload cadence times a cited net RPM band, computed live, with a date](https://www.socialcrawl.dev/data/how-much-money-do-youtubers-make)
+- [How much do YouTubers make per view? The cited net RPM band expressed per view and per 1,000 views, anchored to the median views per video from real channel data, with a date](https://www.socialcrawl.dev/data/how-much-do-youtubers-make-per-view)
+- [How many followers do you need to get paid on TikTok? TikTok's published Creator Rewards (10,000 followers + 100,000 views/30 days) and LIVE (1,000 followers) thresholds, plus the median follower count of real earning creators, dated](https://www.socialcrawl.dev/data/how-many-followers-on-tiktok-to-get-paid)
+- [How many subscribers do you need to get paid on YouTube? YouTube's published Partner Program thresholds (1,000 subscribers + 4,000 watch hours in 12 months or 10,000,000 Shorts views in 90 days) and the expanded fan-funding tier (500 subscribers), plus the median subscriber count of real earning channels, dated](https://www.socialcrawl.dev/data/how-many-followers-on-youtube-to-get-paid)
+- [How many followers do you need to get paid on Snapchat? Snapchat's published Monetization Program criteria (50,000 followers + 15,000 hours of view time in 28 days, of which 3,000 from Spotlight) which make a creator eligible for an INVITATION rather than paying automatically, plus the median follower count of real Snap Stars, dated](https://www.socialcrawl.dev/data/how-many-followers-on-snapchat-to-get-paid)
+- [Which Naver blog keywords have the most posts? Korean lifestyle keywords ranked by the size of the published Naver blog corpus for each (content supply and ranking difficulty, not search volume), read live from Naver Search and dated](https://www.socialcrawl.dev/data/naver-blog-top-keywords)
+- [Which Naver blog keywords are least competitive? Korean side hustle and personal finance keywords ranked by how many blog posts already compete for each, so the smallest corpus is the least crowded to enter (content supply, not search demand), read live from Naver Search and dated](https://www.socialcrawl.dev/data/naver-blog-keyword-competition)
+- [Which topics are discussed most on Naver Cafe? Korean subjects ranked by how many articles members have written about each across Korea's largest community platform (cumulative discussion volume, not search volume and not a ranking of cafes), read live from Naver Search and dated](https://www.socialcrawl.dev/data/naver-cafe-most-discussed)
+
+## MCP Server
+
+Install the official MCP server for Claude Code, Cursor, and Windsurf:
+
+```
+npx -y socialcrawl-mcp
+```
+
+## Reference
+
+- [Full reference](https://www.socialcrawl.dev/llms-full.txt): complete endpoint documentation with parameters, examples, and response schemas
+- [OpenAPI spec](https://www.socialcrawl.dev/v1/openapi.json): machine-readable API specification
+- [Machine-readable catalog](https://www.socialcrawl.dev/llms.json): JSON endpoint catalog
+- [AI agent access file](https://www.socialcrawl.dev/agents.txt): crawler and agent onboarding

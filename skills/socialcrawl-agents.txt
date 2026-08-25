@@ -1,0 +1,92 @@
+# SocialCrawl: AI Agent & Web Search Agent Access File
+# Last updated: 2026-08-25
+
+## What SocialCrawl Is
+SocialCrawl is a unified API for social media data across 50 platforms
+(28 social platforms plus research, commerce, and app-store data sources).
+One API key, one response format, 400 endpoints. MCP-compatible for AI agents.
+
+## Key Capabilities for Agents
+- Fetch profiles, posts, comments, and search results from any supported platform
+- Unified JSON envelope across all platforms (same response shape everywhere)
+- Universal social search: GET /v1/search/everywhere fans out across 14 platforms (up to 17 sources) in one call
+- MCP server: npx socialcrawl-mcp (works in Claude Code, Claude Desktop, Cursor, Windsurf)
+- Skills bundle: npx skills add socialcrawl/skills (Codex, Gemini CLI, and 40+ agent runtimes)
+- 100 free credits on signup, no credit card required
+
+## Instructions
+
+- Authenticate every request with the `x-api-key` header. Never put the key in the URL or query string.
+- Never invent endpoint paths. Endpoints live at `/v1/{platform}/{resource}` and are `GET` unless marked otherwise (a small set of batch and web endpoints are `POST`/`PATCH`/`DELETE`); fetch `/llms-{platform}.txt` for one platform's exact resource list with methods, or `/llms-full.txt` for all of them.
+- For cross-platform questions ("who is talking about X everywhere"), prefer `GET /v1/search/everywhere` over fanning out per platform yourself. One call searches up to 17 sources and fuses the results.
+- Paginate every list the same way: read `pagination.next_cursor` from the response, send it back verbatim as the `cursor` query parameter, and stop when `pagination.has_more` is `false`. Never build or decode a cursor yourself.
+- Cached responses cost 0 credits (`cached: true`, `X-Cache: HIT`). Only send `Cache-Control: no-cache` when you truly need a live fetch; it is billed at the normal rate.
+- Errors are machine-readable. On any `success: false`, branch on `error.type` and follow `error.doc_url` to the exact fix instead of guessing.
+- On a `429` or `503`, honor the `Retry-After` response header: wait that many seconds, then retry the same request. Credits are refunded on `502`/`503`, so retrying is safe.
+- If one platform keeps failing with `502`/`503`, call `GET /v1/status` before retrying again. It is public (no API key) and costs 0 credits, and it reports each platform's circuit state: a platform reported `degraded` or `down` will not recover by retrying sooner.
+- Additive changes are never breaking: response fields are only ever added, never removed or renamed. Parse defensively and ignore unknown fields, and your integration keeps working across versions.
+- Need the raw Markdown of any docs page for your context window? Append `.md` to the URL (e.g. `/docs/quickstart.md`, `/docs.md`, `/docs/api-reference.md`) instead of scraping the rendered HTML.
+
+## Endpoint Categories
+Example endpoints from the live registry (full catalog: https://www.socialcrawl.dev/llms.json):
+- Profiles & channels (19 endpoints): /v1/tiktok/profile, /v1/instagram/profile, /v1/youtube/channel, /v1/twitter/profile
+- Posts & videos (37 endpoints): /v1/tiktok/collection/videos, /v1/tiktok/post, /v1/tiktok/profile/videos, /v1/tiktok/song/videos
+- Comments (12 endpoints): /v1/tiktok/post/comments, /v1/instagram/post/comments, /v1/youtube/video/comments, /v1/reddit/post/comments
+- Search (43 endpoints): /v1/tiktok/search, /v1/tiktok/search/hashtag, /v1/tiktok/search/suggestions, /v1/tiktok/search/top
+- Reviews & commerce (28 endpoints): /v1/amazon/product, /v1/amazon/product-search, /v1/amazon/reviews, /v1/amazon/sellers
+- Transcripts & analysis (11 endpoints): /v1/tiktok/post/transcript, /v1/tiktok/trending, /v1/instagram/media/transcript, /v1/youtube/video/transcript
+
+## Data & Statistics
+Computed, dated social-media statistics: citable numbers refreshed on a cadence (https://www.socialcrawl.dev/data):
+- What are the best hashtags for TikTok? Ranked live from the trending feed, with a date: https://www.socialcrawl.dev/data/best-hashtags-for-tiktok
+- What are the best hashtags for Instagram? Ranked live from top Reels, with a date: https://www.socialcrawl.dev/data/best-hashtags-for-instagram
+- What are the best hashtags for YouTube Shorts? Ranked live from the trending Shorts feed, with a date: https://www.socialcrawl.dev/data/best-hashtags-for-youtube-shorts
+- What are the best hashtags for Instagram Reels? Ranked live from a real Reels sample, with a date: https://www.socialcrawl.dev/data/best-hashtags-for-instagram-reels
+- What are the best hashtags for Instagram growth? Ranked live from growth-focused Reels, with a date: https://www.socialcrawl.dev/data/best-hashtags-for-instagram-growth
+- Which TikTok hashtags drive the most views? Ranked live by average views per trending video, with a date: https://www.socialcrawl.dev/data/best-tiktok-hashtags-for-views
+- What is the average TikTok engagement rate? Median (likes+comments+shares)/views across public videos, with a date: https://www.socialcrawl.dev/data/average-tiktok-engagement-rate
+- What is the average Instagram engagement rate? Median interactions per view across public Reels, with a date: https://www.socialcrawl.dev/data/average-engagement-rate-instagram
+- What is the average engagement rate on social media? Cross-platform median interactions per view across public TikTok + Instagram posts, with a date: https://www.socialcrawl.dev/data/average-engagement-rate
+- Who is the most followed person on Instagram? Ranked live by follower count across the top public accounts, with a date: https://www.socialcrawl.dev/data/most-followed-person-on-instagram
+- What is the most followed account on Instagram? Ranked live by follower count across the platform's largest public accounts INCLUDING brand, club and platform accounts, so Instagram's own @instagram account is counted rather than filtered out, which is why this answer differs from the most-followed PERSON page; the biggest account other than @instagram is reported separately, with a date: https://www.socialcrawl.dev/data/most-followed-on-instagram
+- Who has the most followers on YouTube? Ranked live by subscriber count across the world's biggest channels, with a date: https://www.socialcrawl.dev/data/who-has-the-most-followers-on-youtube
+- What is the most viewed video on YouTube? Ranked live by lifetime view count across the platform's most watched videos, with a date: https://www.socialcrawl.dev/data/most-viewed-youtube-video
+- What is the most streamed song on Spotify? Ranked live by playcount across a basket of the platform's most-streamed tracks, with a date: https://www.socialcrawl.dev/data/most-streamed-song-on-spotify
+- Who is the most streamed artist on Spotify? Ranked live by MONTHLY LISTENERS (unique accounts that played the artist in the last 28 days) across a basket of the biggest global artists, because Spotify publishes no per-artist career stream total, with a date: https://www.socialcrawl.dev/data/most-streamed-artist-on-spotify
+- What are the top podcasts on Spotify? Ranked live by HOW MANY LISTENERS RATED each show (with the 0-5 average alongside) across a basket of the biggest shows, because Spotify publishes no play, download, subscriber or follower count for a podcast, with a date: https://www.socialcrawl.dev/data/top-podcasts
+- How much do YouTubers make? A net RPM band applied to the median views per video, computed live from real channel data, with a date: https://www.socialcrawl.dev/data/how-much-do-youtubers-make
+- How much money do YouTubers make a month? Median views per video times real upload cadence times a cited net RPM band, computed live, with a date: https://www.socialcrawl.dev/data/how-much-money-do-youtubers-make
+- How much do YouTubers make per view? The cited net RPM band expressed per view and per 1,000 views, anchored to the median views per video from real channel data, with a date: https://www.socialcrawl.dev/data/how-much-do-youtubers-make-per-view
+- How many followers do you need to get paid on TikTok? TikTok's published Creator Rewards (10,000 followers + 100,000 views/30 days) and LIVE (1,000 followers) thresholds, plus the median follower count of real earning creators, dated: https://www.socialcrawl.dev/data/how-many-followers-on-tiktok-to-get-paid
+- How many subscribers do you need to get paid on YouTube? YouTube's published Partner Program thresholds (1,000 subscribers + 4,000 watch hours in 12 months or 10,000,000 Shorts views in 90 days) and the expanded fan-funding tier (500 subscribers), plus the median subscriber count of real earning channels, dated: https://www.socialcrawl.dev/data/how-many-followers-on-youtube-to-get-paid
+- How many followers do you need to get paid on Snapchat? Snapchat's published Monetization Program criteria (50,000 followers + 15,000 hours of view time in 28 days, of which 3,000 from Spotlight) which make a creator eligible for an INVITATION rather than paying automatically, plus the median follower count of real Snap Stars, dated: https://www.socialcrawl.dev/data/how-many-followers-on-snapchat-to-get-paid
+- Which Naver blog keywords have the most posts? Korean lifestyle keywords ranked by the size of the published Naver blog corpus for each (content supply and ranking difficulty, not search volume), read live from Naver Search and dated: https://www.socialcrawl.dev/data/naver-blog-top-keywords
+- Which Naver blog keywords are least competitive? Korean side hustle and personal finance keywords ranked by how many blog posts already compete for each, so the smallest corpus is the least crowded to enter (content supply, not search demand), read live from Naver Search and dated: https://www.socialcrawl.dev/data/naver-blog-keyword-competition
+- Which topics are discussed most on Naver Cafe? Korean subjects ranked by how many articles members have written about each across Korea's largest community platform (cumulative discussion volume, not search volume and not a ranking of cafes), read live from Naver Search and dated: https://www.socialcrawl.dev/data/naver-cafe-most-discussed
+
+## Authentication
+x-api-key header required on every request.
+Get a free API key: https://www.socialcrawl.dev/auth/register
+
+## Base URL
+https://www.socialcrawl.dev/v1
+
+## Quick Start
+curl "https://www.socialcrawl.dev/v1/tiktok/profile?handle=charlidamelio" \
+  -H "x-api-key: sc_YOUR_API_KEY"
+
+## Documentation
+- API docs: https://www.socialcrawl.dev/docs
+- AI agents guide: https://www.socialcrawl.dev/docs/ai-agents
+- Machine-readable catalog: https://www.socialcrawl.dev/llms.json
+- Concise overview: https://www.socialcrawl.dev/llms.txt
+- Full endpoint reference: https://www.socialcrawl.dev/llms-full.txt
+- OpenAPI spec: https://www.socialcrawl.dev/v1/openapi.json
+
+## Contact
+- Email: hello@socialcrawl.dev
+
+## Allowed for AI Crawlers
+All content at /, /docs, /blog, /changelog, /platforms, /pricing, /solutions, /vs, /tools, /data
+is free to index and cite. /v1/openapi.json and the /llms*.txt files are fetchable without auth.
+Do not crawl /api, /v1 data endpoints, /dashboard, /auth, /admin.

@@ -1,0 +1,124 @@
+{
+  "aod": "0.1",
+  "provider": {
+    "name": "SocialCrawl",
+    "url": "https://www.socialcrawl.dev",
+    "portalUrl": "https://www.socialcrawl.dev/docs",
+    "apisJsonUrl": "https://www.socialcrawl.dev/.well-known/apis.json"
+  },
+  "maturity": "console-only",
+  "account": {
+    "required": true,
+    "signupUrl": "https://www.socialcrawl.dev/auth/register",
+    "agentPolicy": "unspecified",
+    "prerequisites": [],
+    "plans": [
+      {
+        "name": "Free",
+        "requiredFor": "100 credits granted on signup, no card required. Every endpoint is callable on the free grant.",
+        "url": "https://www.socialcrawl.dev/pricing"
+      },
+      {
+        "name": "Starter",
+        "requiredFor": "2,500 credits for £15 (£0.0060/credit). Side projects and steady API calls.",
+        "url": "https://www.socialcrawl.dev/pricing"
+      },
+      {
+        "name": "Growth",
+        "requiredFor": "20,000 credits for £49 (£0.00245/credit). Production apps and daily pipelines.",
+        "url": "https://www.socialcrawl.dev/pricing"
+      },
+      {
+        "name": "Pro",
+        "requiredFor": "150,000 credits for £299 (£0.00199/credit). High-volume scraping at scale.",
+        "url": "https://www.socialcrawl.dev/pricing"
+      },
+      {
+        "name": "Enterprise",
+        "requiredFor": "Custom credit volume, a committed rate, dedicated support and SLAs. Quoted, not self-serve.",
+        "url": "https://www.socialcrawl.dev/contact"
+      }
+    ],
+    "termsOfService": {
+      "url": "https://www.socialcrawl.dev/legal/terms-and-conditions",
+      "acceptance": "implicit"
+    }
+  },
+  "verification": [],
+  "registration": {
+    "applicationNoun": "API key",
+    "owner": "user",
+    "mechanisms": [
+      {
+        "type": "console-only",
+        "description": "Register in the browser, then mint the key in the dashboard at Dashboard → API → Keys. The key is usable immediately and the free credit grant lands on the account at signup. Keys can be revealed, renamed, rotated and revoked from the same screen. There is no key-management API.",
+        "docsUrls": [
+          "https://www.socialcrawl.dev/docs/quickstart",
+          "https://www.socialcrawl.dev/docs/authentication"
+        ]
+      }
+    ]
+  },
+  "authentication": {
+    "methods": [
+      {
+        "id": "api-key",
+        "type": "header-env",
+        "header": "x-api-key",
+        "env": [
+          "SOCIALCRAWL_API_KEY"
+        ],
+        "bootstrap": "Create an account and mint a key in the dashboard; there is no programmatic issuance path.",
+        "notes": "Send the key in the x-api-key header on every /v1 request. Never in the URL or query string."
+      },
+      {
+        "id": "none",
+        "type": "none",
+        "bootstrap": "",
+        "notes": "GET /v1/status is public: no key, no account, 0 credits. It reports per-platform circuit health and is the supported way to check availability before retrying."
+      }
+    ]
+  },
+  "credentials": [
+    {
+      "type": "api-key",
+      "fields": {
+        "api_key": "x-api-key"
+      },
+      "oneTimeDisplay": false,
+      "rotation": "Self-serve in the dashboard (Dashboard → API → Keys): rotate issues a new secret on the same key, revoke kills it immediately."
+    }
+  ],
+  "scopes": {
+    "model": "none",
+    "notes": "Keys are not scoped. Every key on an account can call every endpoint; volume is governed by the shared credit balance, and rate limits (600 requests/minute, 50 concurrent) are enforced per KEY, so separate keys are the unit of isolation rather than separate scopes."
+  },
+  "flow": {
+    "args": [],
+    "steps": [
+      {
+        "id": "probe",
+        "description": "Confirm the API is reachable and healthy without a credential.",
+        "auth": "none",
+        "request": {
+          "method": "GET",
+          "url": "https://www.socialcrawl.dev/v1/status"
+        }
+      }
+    ],
+    "outputs": {
+      "status": "{steps.probe.status}"
+    }
+  },
+  "economics": {
+    "pricingUrl": "https://www.socialcrawl.dev/pricing",
+    "freeTier": "100 credits on signup, no card required. Credits never expire and cached responses cost 0 credits.",
+    "rateLimitsUrl": "https://www.socialcrawl.dev/docs/rate-limits",
+    "slaUrl": "https://www.socialcrawl.dev/reliability"
+  },
+  "gaps": [
+    "API keys are minted in the dashboard console only — there is no key-management API and no programmatic signup, so an agent cannot onboard itself end to end.",
+    "The terms restrict automated account or key creation intended to exploit the Service (AUP §7.2) but do not otherwise define an agent onboarding policy, so agentPolicy is reported as unspecified rather than allowed or prohibited.",
+    "Billing is one-time credit packs, not subscriptions, so there is no recurring plan entitlement for a machine to read back after purchase."
+  ]
+}

@@ -1,0 +1,195 @@
+{
+  "aid": "socialcrawl.dev:index",
+  "name": "SocialCrawl",
+  "description": "Unified social, commerce, and research data API. One API key, one response format, 50 platforms and 400 endpoints, including a universal cross-platform search that fans out across 17 sources in one call.",
+  "image": "https://www.socialcrawl.dev/opengraph-image.png",
+  "url": "https://www.socialcrawl.dev/.well-known/apis.json",
+  "created": "2026/08/25",
+  "modified": "2026/08/25",
+  "specificationVersion": "0.23",
+  "type": "Index",
+  "kind": "company",
+  "tags": [
+    "Social Media",
+    "Social Media Data",
+    "Web Scraping",
+    "Unified API",
+    "AI Agents",
+    "MCP",
+    "E-commerce Data",
+    "App Store Data",
+    "Reviews"
+  ],
+  "apis": [
+    {
+      "aid": "socialcrawl.dev:api",
+      "name": "SocialCrawl API",
+      "description": "REST API over 50 platforms (28 social, plus commerce, app-store, review, news, finance and web-scraping sources) behind a single key and a single response envelope. Every endpoint is GET-by-default at /v1/{platform}/{resource}, priced in credits, and paginated through an opaque cursor. MCP server and agent-skill bundles wrap the same surface for AI agents.",
+      "humanURL": "https://www.socialcrawl.dev/docs",
+      "baseURL": "https://www.socialcrawl.dev/v1",
+      "version": "1.0.0",
+      "tags": [
+        "Social Media Data",
+        "Unified API",
+        "Universal Search",
+        "MCP",
+        "Agent Skills"
+      ],
+      "properties": [
+        {
+          "type": "OpenAPI",
+          "name": "OpenAPI 3.1 contract (slim)",
+          "url": "https://www.socialcrawl.dev/openapi-slim.json",
+          "mediaType": "application/json"
+        },
+        {
+          "type": "OpenAPI",
+          "name": "OpenAPI 3.1 contract (full, with examples)",
+          "url": "https://www.socialcrawl.dev/openapi.json",
+          "mediaType": "application/json"
+        },
+        {
+          "type": "Documentation",
+          "url": "https://www.socialcrawl.dev/docs"
+        },
+        {
+          "type": "GettingStarted",
+          "url": "https://www.socialcrawl.dev/docs/quickstart"
+        },
+        {
+          "type": "Authentication",
+          "url": "https://www.socialcrawl.dev/docs/authentication"
+        },
+        {
+          "type": "ErrorCodes",
+          "url": "https://www.socialcrawl.dev/docs/errors"
+        },
+        {
+          "type": "RateLimits",
+          "url": "https://www.socialcrawl.dev/docs/rate-limits"
+        },
+        {
+          "type": "Pricing",
+          "url": "https://www.socialcrawl.dev/pricing"
+        },
+        {
+          "type": "Plans",
+          "url": "https://www.socialcrawl.dev/pricing"
+        },
+        {
+          "type": "StatusPage",
+          "url": "https://www.socialcrawl.dev/status"
+        },
+        {
+          "type": "ChangeLog",
+          "url": "https://www.socialcrawl.dev/changelog"
+        },
+        {
+          "type": "JSONSchema",
+          "name": "Unified response archetypes",
+          "url": "https://www.socialcrawl.dev/unified-schema"
+        },
+        {
+          "type": "MCPServer",
+          "url": "https://www.socialcrawl.dev/mcp-server"
+        },
+        {
+          "type": "AgentPrompt",
+          "name": "Agent access file",
+          "url": "https://www.socialcrawl.dev/agents.txt",
+          "mediaType": "text/plain"
+        },
+        {
+          "type": "LLMsTxt",
+          "url": "https://www.socialcrawl.dev/llms.txt",
+          "mediaType": "text/plain"
+        },
+        {
+          "type": "Onboarding",
+          "name": "API Onboarding Descriptor",
+          "url": "https://www.socialcrawl.dev/.well-known/api-onboarding",
+          "mediaType": "application/json"
+        }
+      ],
+      "rules": [
+        {
+          "type": "SpectralRules",
+          "name": "OpenAPI lint ruleset",
+          "description": "Spectral-compatible ruleset enforced in CI against the generated spec on every pull request.",
+          "url": "https://www.socialcrawl.dev/openapi-ruleset.yaml",
+          "mediaType": "application/yaml"
+        }
+      ],
+      "contact": [
+        {
+          "FN": "SocialCrawl",
+          "email": "support@socialcrawl.dev"
+        }
+      ]
+    }
+  ],
+  "common": [
+    {
+      "type": "Website",
+      "url": "https://www.socialcrawl.dev"
+    },
+    {
+      "type": "Documentation",
+      "url": "https://www.socialcrawl.dev/docs"
+    },
+    {
+      "type": "Signup",
+      "url": "https://www.socialcrawl.dev/auth/register"
+    },
+    {
+      "type": "Login",
+      "url": "https://www.socialcrawl.dev/auth/login"
+    },
+    {
+      "type": "Pricing",
+      "url": "https://www.socialcrawl.dev/pricing"
+    },
+    {
+      "type": "TermsOfService",
+      "url": "https://www.socialcrawl.dev/legal/terms-and-conditions"
+    },
+    {
+      "type": "PrivacyPolicy",
+      "url": "https://www.socialcrawl.dev/legal/privacy-policy"
+    },
+    {
+      "type": "Security",
+      "url": "https://www.socialcrawl.dev/docs/authentication"
+    },
+    {
+      "type": "StatusPage",
+      "url": "https://www.socialcrawl.dev/status"
+    },
+    {
+      "type": "ChangeLog",
+      "url": "https://www.socialcrawl.dev/changelog"
+    },
+    {
+      "type": "Support",
+      "url": "https://www.socialcrawl.dev/contact"
+    },
+    {
+      "type": "Contact",
+      "url": "https://www.socialcrawl.dev/contact"
+    },
+    {
+      "type": "Blog",
+      "url": "https://www.socialcrawl.dev/blog"
+    },
+    {
+      "type": "BlogFeed",
+      "url": "https://www.socialcrawl.dev/rss.xml"
+    }
+  ],
+  "maintainers": [
+    {
+      "FN": "SocialCrawl",
+      "email": "support@socialcrawl.dev"
+    }
+  ]
+}
