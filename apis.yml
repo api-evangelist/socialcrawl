@@ -28,21 +28,1499 @@ tags_raw:
 - data extraction
 - cross-platform search
 apis:
-- aid: socialcrawl:socialcrawl-api
-  name: SocialCrawl API
-  description: >-
-    One authenticated surface over 50 platforms — profiles, posts and engagement from the social
-    sources, listings and markets from the commerce sources, and a unified cross-platform search.
-    403 paths, 411 operations, 58 tags, normalised response schema.
+- aid: socialcrawl:socialcrawl-ai-search-api
+  name: SocialCrawl AI Search API
+  description: Ai-search endpoints
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
-  - Social Media
-  - Scraping
-  - Search
+  - ai-search
   properties:
   - type: OpenAPI
-    url: openapi/_original/socialcrawl-openapi-slim.json
+    url: openapi/socialcrawl-ai-search-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-amazon-api
+  name: SocialCrawl Amazon API
+  description: Amazon endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - amazon
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-amazon-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-app-store-api
+  name: SocialCrawl App Store API
+  description: App_store endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - app_store
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-app-store-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-apple-music-api
+  name: SocialCrawl Apple Music API
+  description: Apple_music endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - apple_music
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-apple-music-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-bluesky-api
+  name: SocialCrawl Bluesky API
+  description: Bluesky endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - bluesky
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-bluesky-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-cohorts-api
+  name: SocialCrawl Cohorts API
+  description: >-
+    Cohorts - tenant-private panels of public social identities with asynchronous keyword queries
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - cohorts
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-cohorts-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-content-analysis-api
+  name: SocialCrawl Content Analysis API
+  description: Content_analysis endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - content_analysis
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-content-analysis-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-ebay-api
+  name: SocialCrawl Ebay API
+  description: Ebay endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - ebay
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-ebay-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-facebook-ads-api
+  name: SocialCrawl Facebook Ads API
+  description: Facebook-ads endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - facebook-ads
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-facebook-ads-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-facebook-api
+  name: SocialCrawl Facebook API
+  description: Facebook endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - facebook
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-facebook-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-geo-api
+  name: SocialCrawl Geo API
+  description: Geo endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - geo
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-geo-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-github-api
+  name: SocialCrawl Github API
+  description: Github endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - github
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-github-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-google-ads-api
+  name: SocialCrawl Google Ads API
+  description: Google-ads endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - google-ads
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-google-ads-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-google-api
+  name: SocialCrawl Google API
+  description: Google endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - google
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-google-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-google-finance-api
+  name: SocialCrawl Google Finance API
+  description: Google_finance endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - google_finance
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-google-finance-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-google-news-api
+  name: SocialCrawl Google News API
+  description: Google_news endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - google_news
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-google-news-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-google-play-api
+  name: SocialCrawl Google Play API
+  description: Google_play endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - google_play
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-google-play-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-google-shopping-api
+  name: SocialCrawl Google Shopping API
+  description: Google_shopping endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - google_shopping
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-google-shopping-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-google-trends-api
+  name: SocialCrawl Google Trends API
+  description: Google_trends endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - google_trends
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-google-trends-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-hackernews-api
+  name: SocialCrawl Hackernews API
+  description: Hackernews endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - hackernews
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-hackernews-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-home-depot-api
+  name: SocialCrawl Home Depot API
+  description: Home_depot endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - home_depot
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-home-depot-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-instagram-api
+  name: SocialCrawl Instagram API
+  description: Instagram endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - instagram
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-instagram-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-kick-api
+  name: SocialCrawl Kick API
+  description: Kick endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - kick
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-kick-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-komi-api
+  name: SocialCrawl Komi API
+  description: Komi endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - komi
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-komi-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-kwai-api
+  name: SocialCrawl Kwai API
+  description: Kwai endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - kwai
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-kwai-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-linkbio-api
+  name: SocialCrawl Linkbio API
+  description: Linkbio endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - linkbio
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-linkbio-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-linkedin-ads-api
+  name: SocialCrawl Linkedin Ads API
+  description: Linkedin-ads endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - linkedin-ads
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-linkedin-ads-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-linkedin-api
+  name: SocialCrawl Linkedin API
+  description: Linkedin endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - linkedin
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-linkedin-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-linkme-api
+  name: SocialCrawl Linkme API
+  description: Linkme endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - linkme
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-linkme-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-linktree-api
+  name: SocialCrawl Linktree API
+  description: Linktree endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - linktree
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-linktree-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-meta-api
+  name: SocialCrawl Meta API
+  description: Account metadata - balance, usage, no credit deduction
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - meta
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-meta-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-naver-api
+  name: SocialCrawl Naver API
+  description: Naver endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - naver
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-naver-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-perplexity-api
+  name: SocialCrawl Perplexity API
+  description: Perplexity endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - perplexity
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-perplexity-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-pillar-api
+  name: SocialCrawl Pillar API
+  description: Pillar endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - pillar
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-pillar-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-pinterest-api
+  name: SocialCrawl Pinterest API
+  description: Pinterest endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - pinterest
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-pinterest-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-polymarket-api
+  name: SocialCrawl Polymarket API
+  description: Polymarket endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - polymarket
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-polymarket-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-prism-api
+  name: SocialCrawl Prism API
+  description: Prism endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - prism
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-prism-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-reddit-api
+  name: SocialCrawl Reddit API
+  description: Reddit endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - reddit
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-reddit-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-rumble-api
+  name: SocialCrawl Rumble API
+  description: Rumble endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - rumble
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-rumble-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-search-api
+  name: SocialCrawl Search API
+  description: Search endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - search
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-search-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-snapchat-api
+  name: SocialCrawl Snapchat API
+  description: Snapchat endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - snapchat
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-snapchat-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-spotify-api
+  name: SocialCrawl Spotify API
+  description: Spotify endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - spotify
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-spotify-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-target-api
+  name: SocialCrawl Target API
+  description: Target endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - target
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-target-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-tavily-api
+  name: SocialCrawl Tavily API
+  description: Tavily endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - tavily
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-tavily-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-threads-api
+  name: SocialCrawl Threads API
+  description: Threads endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - threads
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-threads-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-tiktok-ads-api
+  name: SocialCrawl Tiktok Ads API
+  description: Tiktok-ads endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - tiktok-ads
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-tiktok-ads-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-tiktok-api
+  name: SocialCrawl Tiktok API
+  description: Tiktok endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - tiktok
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-tiktok-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-tiktokshop-api
+  name: SocialCrawl Tiktokshop API
+  description: Tiktokshop endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - tiktokshop
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-tiktokshop-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-tripadvisor-api
+  name: SocialCrawl Tripadvisor API
+  description: Tripadvisor endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - tripadvisor
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-tripadvisor-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-trustpilot-api
+  name: SocialCrawl Trustpilot API
+  description: Trustpilot endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - trustpilot
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-trustpilot-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-truthsocial-api
+  name: SocialCrawl Truthsocial API
+  description: Truthsocial endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - truthsocial
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-truthsocial-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-twitch-api
+  name: SocialCrawl Twitch API
+  description: Twitch endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - twitch
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-twitch-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-twitter-api
+  name: SocialCrawl Twitter API
+  description: Twitter endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - twitter
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-twitter-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-utility-api
+  name: SocialCrawl Utility API
+  description: Utility endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - utility
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-utility-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-walmart-api
+  name: SocialCrawl Walmart API
+  description: Walmart endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - walmart
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-walmart-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-wayfair-api
+  name: SocialCrawl Wayfair API
+  description: Wayfair endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - wayfair
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-wayfair-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-web-api
+  name: SocialCrawl Web API
+  description: Web endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - web
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-web-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-youtube-api
+  name: SocialCrawl Youtube API
+  description: Youtube endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - youtube
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-youtube-api-openapi.yml
   - type: APIReference
     url: https://www.socialcrawl.dev/openapi.json
   - type: Documentation
