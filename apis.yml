@@ -11,6 +11,17 @@ description: >-
   credits and no card required.
 type: Index
 url: https://raw.githubusercontent.com/api-evangelist/socialcrawl/refs/heads/main/apis.yml
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 created: '2026-08-25'
 modified: '2026-08-25'
 specificationVersion: '0.23'
@@ -1538,6 +1549,9 @@ apis:
   - type: AgentPrompt
     url: skills/socialcrawl-agents.txt
 common:
+- type: CapabilityMap
+  url: capabilities/socialcrawl-capability-edges.yml
+  name: SocialCrawl Business Capability Map
 - type: APIsJSON
   url: well-known/socialcrawl-provider-apis.json
 - type: Onboarding
