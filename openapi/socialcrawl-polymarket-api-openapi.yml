@@ -1,0 +1,464 @@
+openapi: 3.2.0
+info:
+  title: SocialCrawl Polymarket API
+  version: 1.0.0
+  description: 'Unified social media data API - one API key, one consistent response format, 50 platforms, 400 endpoints. Power AI agents with clean social data.
+
+
+    Slim variant: inline examples removed and the shared error responses hoisted into components. The full annotated spec is at https://www.socialcrawl.dev/openapi.json.'
+  contact:
+    name: SocialCrawl
+    url: https://www.socialcrawl.dev
+    email: support@socialcrawl.dev
+servers:
+- url: https://www.socialcrawl.dev/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: polymarket
+  description: Polymarket endpoints
+paths:
+  /polymarket/research:
+    get:
+      summary: 'Polymarket prediction markets: multi-query research'
+      description: 'Server-side fan-out over the Gamma API: expands the topic into up to 6 search queries (core subject + individual informative words), issues all calls in parallel, dedupes events by id, filters out unrelated matches via informative-word overlap with the topic, and ranks the remainder by topic↔title similarity. Costs 5 credits because each call hits upstream multiple times. Use this when you want a curated, on-topic feed; use /v1/polymarket/search for raw single-query lookups.'
+      tags:
+      - polymarket
+      operationId: get_polymarket_research
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: advanced
+      x-credit-cost: 5
+      parameters:
+      - name: query
+        in: query
+        required: true
+        description: 'The research topic: free-text natural language (e.g. ''last 30 days bitcoin halving'', ''kanye west tour''). Framing prefixes like ''last N days'' and ''what are people saying about'' are stripped automatically before expansion.'
+        schema:
+          type: string
+      - name: limit
+        in: query
+        required: false
+        description: Max results per result type on each fan-out call (events / markets / profiles). Bounds the response size. Defaults to 10.
+        schema:
+          type: integer
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      items:
+                        type: array
+                        description: Array of search result objects
+                        items:
+                          type: object
+                          description: Search result item
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                        description: Opaque cursor for the next page. Pass it back as a query parameter on endpoints that support pagination. Present only when the upstream reports more results.
+                      total:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Total number of matching results, when the upstream provides a count. Omitted otherwise.
+                      dropped:
+                        type: integer
+                        description: Number of upstream list items dropped because they could not be repaired to the endpoint schema. Valid list responses include 0.
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                    required:
+                    - dropped
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                  pagination:
+                    type: object
+                    description: Cursor state for this page. Present on every list response.
+                    properties:
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                        description: Opaque token to send back as `cursor` for the next page, or null at end-of-list. Pass it back verbatim; never decode or trim it.
+                      has_more:
+                        type: boolean
+                        description: Explicit stop signal. Prefer this over inspecting next_cursor or comparing against total.
+                      page_size:
+                        type: integer
+                        description: Number of items in THIS page.
+                    required:
+                    - next_cursor
+                    - has_more
+                    - page_size
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+                - pagination
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+components:
+  responses:
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+      x-error-codes:
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error401:
+      description: Unauthorized - missing or invalid API key
+      x-error-codes:
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error500:
+      description: Internal server error - credits automatically refunded
+      x-error-codes:
+      - INTERNAL_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error503:
+      description: Service unavailable - circuit breaker open for this platform, credits refunded
+      x-error-codes:
+      - SERVICE_UNAVAILABLE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error400:
+      description: Invalid request - missing or malformed parameters
+      x-error-codes:
+      - INVALID_REQUEST
+      - COHORT_MEMBER_LIMIT_EXCEEDED
+      - COHORT_LIMIT_EXCEEDED
+      - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+      x-error-codes:
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+      x-error-codes:
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error409:
+      description: Conflict - a request with this Idempotency-Key is still in flight, or the cohort resource is not in a state that allows this operation
+      x-error-codes:
+      - IDEMPOTENCY_KEY_CONFLICT
+      - COHORT_IDENTITY_CONFLICT
+      - COHORT_QUERY_NOT_CANCELLABLE
+      - COHORT_QUERY_NOT_READY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error405:
+      description: Method not allowed - wrong HTTP verb for this endpoint
+      x-error-codes:
+      - METHOD_NOT_ALLOWED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+      x-error-codes:
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    ErrorEnvelope:
+      type: object
+      description: Unified error response envelope. Every 4xx/5xx response returns this shape; `error.type` is a machine-readable code from the API's error catalog.
+      properties:
+        success:
+          type: boolean
+          enum:
+          - false
+          description: Always false on an error response.
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - MISSING_API_KEY
+              - INVALID_API_KEY
+              - INSUFFICIENT_CREDITS
+              - INVALID_REQUEST
+              - ENDPOINT_NOT_FOUND
+              - RESOURCE_NOT_FOUND
+              - CONCURRENCY_LIMIT
+              - UPSTREAM_ERROR
+              - SERVICE_UNAVAILABLE
+              - INTERNAL_ERROR
+              - METHOD_NOT_ALLOWED
+              - IDEMPOTENCY_KEY_CONFLICT
+              - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+              - COHORT_MEMBER_LIMIT_EXCEEDED
+              - COHORT_LIMIT_EXCEEDED
+              - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+              - COHORT_IDENTITY_CONFLICT
+              - COHORT_QUERY_NOT_CANCELLABLE
+              - COHORT_QUERY_NOT_READY
+              - COHORT_RESULT_TOO_LARGE
+              - PAYLOAD_TOO_LARGE
+              - RATE_LIMITED
+              - KEY_BUDGET_EXCEEDED
+              description: Machine-readable error code. The per-status `x-error-codes` list on each response narrows which codes that status can carry.
+            message:
+              type: string
+              description: Human-readable explanation of the error.
+            status:
+              type: integer
+              description: HTTP status code, echoed in the body.
+            doc_url:
+              type: string
+              description: Link to the docs page for this error code.
+            details:
+              type:
+              - object
+              - 'null'
+              additionalProperties: true
+              description: Optional structured context (e.g. the comment-lookup not-found taxonomy). Omitted on ordinary errors.
+          required:
+          - type
+          - message
+          - status
+          - doc_url
+        credits_used:
+          type: integer
+          description: Net credits charged for this request. Error paths deduct-then-refund, so this is 0 in almost every case; a partial-coverage composite may keep the succeeded-leg cost.
+        credits_remaining:
+          type:
+          - integer
+          - 'null'
+          description: Credits left after this request, or null when the balance could not be read (e.g. auth failed before lookup).
+        request_id:
+          type: string
+          description: Unique request identifier - matches the X-Request-Id header. Quote it in support requests.
+      required:
+      - success
+      - error
+      - credits_used
+      - credits_remaining
+      - request_id
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key authentication. Send your key in the `x-api-key` request header on every call. Create and manage keys in the dashboard.
+x-tagGroups:
+- name: Account
+  tags:
+  - meta
+- name: Cohorts - Audience Panels
+  tags:
+  - cohorts
+- name: Universal Search
+  tags:
+  - search
+  - ai-search
+  - geo
+- name: Prism - Composite Intelligence
+  tags:
+  - prism
+- name: Social Platforms
+  tags:
+  - tiktok
+  - instagram
+  - youtube
+  - facebook
+  - facebook-ads
+  - twitter
+  - linkedin
+  - linkedin-ads
+  - reddit
+  - threads
+  - pinterest
+  - twitch
+  - truthsocial
+  - snapchat
+  - kick
+  - bluesky
+  - rumble
+  - kwai
+- name: Commerce & Reviews
+  tags:
+  - amazon
+  - tiktokshop
+  - app_store
+  - google_play
+  - google_shopping
+  - trustpilot
+  - tripadvisor
+- name: Search, News & Web
+  tags:
+  - google
+  - google-ads
+  - google_news
+  - google_finance
+  - naver
+  - perplexity
+  - tavily
+  - hackernews
+  - github
+  - content_analysis
+  - polymarket
+  - spotify
+- name: Link in Bio
+  tags:
+  - linktree
+  - komi
+  - pillar
+  - linkbio
+  - linkme
+- name: More Platforms
+  tags:
+  - apple_music
+  - ebay
+  - google_trends
+  - home_depot
+  - target
+  - tiktok-ads
+  - walmart
+  - wayfair
+  - web
+- name: Utility
+  tags:
+  - utility
+x-full-spec: https://www.socialcrawl.dev/openapi.json

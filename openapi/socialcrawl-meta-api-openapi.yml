@@ -1,0 +1,444 @@
+openapi: 3.2.0
+info:
+  title: SocialCrawl Meta API
+  version: 1.0.0
+  description: 'Unified social media data API - one API key, one consistent response format, 50 platforms, 400 endpoints. Power AI agents with clean social data.
+
+
+    Slim variant: inline examples removed and the shared error responses hoisted into components. The full annotated spec is at https://www.socialcrawl.dev/openapi.json.'
+  contact:
+    name: SocialCrawl
+    url: https://www.socialcrawl.dev
+    email: support@socialcrawl.dev
+servers:
+- url: https://www.socialcrawl.dev/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: meta
+  description: Account metadata - balance, usage, no credit deduction
+paths:
+  /credits/balance:
+    get:
+      summary: Check your credit balance
+      description: Returns the current credit balance and the number of deduction transactions in the trailing 24 hours. Metadata call - costs 0 credits and never hits upstream platforms.
+      tags:
+      - meta
+      operationId: meta_credits_balance
+      security:
+      - ApiKeyAuth: []
+      x-credit-cost: 0
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  platform:
+                    type: string
+                  endpoint:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      balance:
+                        type: integer
+                      recent_deductions:
+                        type: integer
+                    required:
+                    - balance
+                    - recent_deductions
+                  credits_used:
+                    type: integer
+                  credits_remaining:
+                    type: integer
+                  request_id:
+                    type: string
+                  cached:
+                    type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /credits/transactions:
+    get:
+      summary: List your credit transactions
+      description: Returns your credit ledger (deductions negative, refunds positive) as dispute-grade receipts, newest first. Cursor-paginated and filterable by request_id. Metadata call - costs 0 credits and never hits upstream platforms.
+      tags:
+      - meta
+      operationId: meta_credits_transactions
+      security:
+      - ApiKeyAuth: []
+      x-credit-cost: 0
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        description: Page size. Defaults to 50, capped at 100.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        required: false
+        description: Opaque pagination cursor from a previous response's next_cursor. A malformed cursor starts from the top.
+        schema:
+          type: string
+      - name: request_id
+        in: query
+        required: false
+        description: Return only the receipt(s) for a single request_id (exact match).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  platform:
+                    type: string
+                  endpoint:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            type:
+                              type: string
+                              enum:
+                              - purchase
+                              - deduction
+                              - refund
+                              - bonus
+                            amount:
+                              type: integer
+                            balance_after:
+                              type: integer
+                            description:
+                              type:
+                              - string
+                              - 'null'
+                            endpoint:
+                              type:
+                              - string
+                              - 'null'
+                            platform:
+                              type:
+                              - string
+                              - 'null'
+                            credit_tier:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - standard
+                              - advanced
+                              - premium
+                              - null
+                            request_id:
+                              type:
+                              - string
+                              - 'null'
+                            created_at:
+                              type: string
+                              format: date-time
+                          required:
+                          - id
+                          - type
+                          - amount
+                          - balance_after
+                          - created_at
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                    required:
+                    - items
+                    - next_cursor
+                  credits_used:
+                    type: integer
+                  credits_remaining:
+                    type: integer
+                  request_id:
+                    type: string
+                  cached:
+                    type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /status:
+    get:
+      summary: Platform status & circuit state
+      description: Returns the operational status of every upstream platform (derived from the circuit breaker), the current upstream-version distribution, and a timestamp. Public meta route - no API key, no credit cost, no upstream call. Use it to check a platform's health before retrying persistent 502s.
+      tags:
+      - meta
+      operationId: meta_status
+      security: []
+      x-credit-cost: 0
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - operational
+                    - degraded
+                    description: Overall API status across all platforms.
+                  platforms:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                          enum:
+                          - operational
+                          - degraded
+                          - down
+                    description: Per-platform status keyed by platform name (operational / degraded / down).
+                  upstreamVersions:
+                    type: object
+                    additionalProperties: true
+                    description: Current upstream-version distribution (RTG-02) - lets operators track drift as upstreams deprecate versions.
+                  updated_at:
+                    type: string
+                    format: date-time
+                    description: When this status snapshot was generated.
+                required:
+                - status
+                - platforms
+                - updated_at
+        '500':
+          $ref: '#/components/responses/Error500'
+components:
+  responses:
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+      x-error-codes:
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error401:
+      description: Unauthorized - missing or invalid API key
+      x-error-codes:
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error500:
+      description: Internal server error - credits automatically refunded
+      x-error-codes:
+      - INTERNAL_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error405:
+      description: Method not allowed - wrong HTTP verb for this endpoint
+      x-error-codes:
+      - METHOD_NOT_ALLOWED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    ErrorEnvelope:
+      type: object
+      description: Unified error response envelope. Every 4xx/5xx response returns this shape; `error.type` is a machine-readable code from the API's error catalog.
+      properties:
+        success:
+          type: boolean
+          enum:
+          - false
+          description: Always false on an error response.
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - MISSING_API_KEY
+              - INVALID_API_KEY
+              - INSUFFICIENT_CREDITS
+              - INVALID_REQUEST
+              - ENDPOINT_NOT_FOUND
+              - RESOURCE_NOT_FOUND
+              - CONCURRENCY_LIMIT
+              - UPSTREAM_ERROR
+              - SERVICE_UNAVAILABLE
+              - INTERNAL_ERROR
+              - METHOD_NOT_ALLOWED
+              - IDEMPOTENCY_KEY_CONFLICT
+              - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+              - COHORT_MEMBER_LIMIT_EXCEEDED
+              - COHORT_LIMIT_EXCEEDED
+              - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+              - COHORT_IDENTITY_CONFLICT
+              - COHORT_QUERY_NOT_CANCELLABLE
+              - COHORT_QUERY_NOT_READY
+              - COHORT_RESULT_TOO_LARGE
+              - PAYLOAD_TOO_LARGE
+              - RATE_LIMITED
+              - KEY_BUDGET_EXCEEDED
+              description: Machine-readable error code. The per-status `x-error-codes` list on each response narrows which codes that status can carry.
+            message:
+              type: string
+              description: Human-readable explanation of the error.
+            status:
+              type: integer
+              description: HTTP status code, echoed in the body.
+            doc_url:
+              type: string
+              description: Link to the docs page for this error code.
+            details:
+              type:
+              - object
+              - 'null'
+              additionalProperties: true
+              description: Optional structured context (e.g. the comment-lookup not-found taxonomy). Omitted on ordinary errors.
+          required:
+          - type
+          - message
+          - status
+          - doc_url
+        credits_used:
+          type: integer
+          description: Net credits charged for this request. Error paths deduct-then-refund, so this is 0 in almost every case; a partial-coverage composite may keep the succeeded-leg cost.
+        credits_remaining:
+          type:
+          - integer
+          - 'null'
+          description: Credits left after this request, or null when the balance could not be read (e.g. auth failed before lookup).
+        request_id:
+          type: string
+          description: Unique request identifier - matches the X-Request-Id header. Quote it in support requests.
+      required:
+      - success
+      - error
+      - credits_used
+      - credits_remaining
+      - request_id
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key authentication. Send your key in the `x-api-key` request header on every call. Create and manage keys in the dashboard.
+x-tagGroups:
+- name: Account
+  tags:
+  - meta
+- name: Cohorts - Audience Panels
+  tags:
+  - cohorts
+- name: Universal Search
+  tags:
+  - search
+  - ai-search
+  - geo
+- name: Prism - Composite Intelligence
+  tags:
+  - prism
+- name: Social Platforms
+  tags:
+  - tiktok
+  - instagram
+  - youtube
+  - facebook
+  - facebook-ads
+  - twitter
+  - linkedin
+  - linkedin-ads
+  - reddit
+  - threads
+  - pinterest
+  - twitch
+  - truthsocial
+  - snapchat
+  - kick
+  - bluesky
+  - rumble
+  - kwai
+- name: Commerce & Reviews
+  tags:
+  - amazon
+  - tiktokshop
+  - app_store
+  - google_play
+  - google_shopping
+  - trustpilot
+  - tripadvisor
+- name: Search, News & Web
+  tags:
+  - google
+  - google-ads
+  - google_news
+  - google_finance
+  - naver
+  - perplexity
+  - tavily
+  - hackernews
+  - github
+  - content_analysis
+  - polymarket
+  - spotify
+- name: Link in Bio
+  tags:
+  - linktree
+  - komi
+  - pillar
+  - linkbio
+  - linkme
+- name: More Platforms
+  tags:
+  - apple_music
+  - ebay
+  - google_trends
+  - home_depot
+  - target
+  - tiktok-ads
+  - walmart
+  - wayfair
+  - web
+- name: Utility
+  tags:
+  - utility
+x-full-spec: https://www.socialcrawl.dev/openapi.json

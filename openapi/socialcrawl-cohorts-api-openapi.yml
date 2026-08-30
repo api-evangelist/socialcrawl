@@ -1,0 +1,1097 @@
+openapi: 3.2.0
+info:
+  title: SocialCrawl Cohorts API
+  version: 1.0.0
+  description: 'Unified social media data API - one API key, one consistent response format, 50 platforms, 400 endpoints. Power AI agents with clean social data.
+
+
+    Slim variant: inline examples removed and the shared error responses hoisted into components. The full annotated spec is at https://www.socialcrawl.dev/openapi.json.'
+  contact:
+    name: SocialCrawl
+    url: https://www.socialcrawl.dev
+    email: support@socialcrawl.dev
+servers:
+- url: https://www.socialcrawl.dev/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- description: Cohorts - tenant-private panels of public social identities with asynchronous keyword queries
+  name: cohorts
+paths:
+  /cohort-queries/{queryId}:
+    delete:
+      description: Cancels a cohort query. Queued work never starts and running work stops at the next page boundary. Pages already fetched stay billable; the unspent reservation is refunded exactly once.
+      operationId: cohorts_cancel_query
+      parameters:
+      - description: Cohort query identifier returned by `POST /v1/cohorts/{cohortId}/queries`.
+        in: path
+        name: queryId
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Cancelled. No response body.
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - ApiKeyAuth: []
+      summary: Cancel a cohort query
+      tags:
+      - cohorts
+      x-credit-cost: 0
+    get:
+      description: Returns status, durable progress counters, and billing for a cohort query. A query can be `succeeded` with partial failures - read `progress.pages_failed` and per-member `coverage` before treating a result set as exhaustive.
+      operationId: cohorts_get_query
+      parameters:
+      - description: Cohort query identifier returned by `POST /v1/cohorts/{cohortId}/queries`.
+        in: path
+        name: queryId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  cached:
+                    type: boolean
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                  credits_used:
+                    type: integer
+                  data:
+                    properties:
+                      actual_credits:
+                        description: Credits actually charged, metered one per successful upstream page.
+                        type: integer
+                      cohort_id:
+                        type: string
+                      completed_shard_count:
+                        type: integer
+                      failed_shard_count:
+                        type: integer
+                      id:
+                        type: string
+                      max_credits:
+                        type: integer
+                      member_count:
+                        type: integer
+                      progress:
+                        properties:
+                          matches:
+                            type: integer
+                          members_completed:
+                            type: integer
+                          members_total:
+                            type: integer
+                          pages_failed:
+                            type: integer
+                          pages_succeeded:
+                            type: integer
+                          routes_completed:
+                            type: integer
+                          routes_planned:
+                            type: integer
+                          shards_completed:
+                            type: integer
+                          shards_failed:
+                            type: integer
+                          shards_total:
+                            type: integer
+                        type: object
+                      refunded_credits:
+                        description: Unspent portion of the reservation, refunded exactly once.
+                        type: integer
+                      reserved_credits:
+                        description: 'Worst-case ceiling reserved at submission: sum over members of (route page cap x credits per page). Single-page platforms (twitter, bluesky, threads, twitch) count exactly one page regardless of max_pages_per_identity.'
+                        type: integer
+                      result_count:
+                        type: integer
+                      shard_count:
+                        type: integer
+                      status:
+                        enum:
+                        - queued
+                        - running
+                        - succeeded
+                        - failed
+                        - cancelled
+                        - expired
+                        type: string
+                    type: object
+                  endpoint:
+                    type: string
+                  platform:
+                    type: string
+                  request_id:
+                    type: string
+                  success:
+                    type: boolean
+                type: object
+          description: Cohort query status
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - ApiKeyAuth: []
+      summary: Check cohort query status
+      tags:
+      - cohorts
+      x-credit-cost: 0
+  /cohort-queries/{queryId}/results:
+    get:
+      description: 'Returns cursor-paginated keyword matches plus per-member coverage. Matching is deterministic: Unicode NFKC normalization, locale-independent case folding, whitespace collapse, then whole-word matching at Unicode word boundaries (`acme` matches `#acme` but not `acmecorp`; scripts without word delimiters, such as CJK, effectively require exact token matches). Matched keywords are echoed in their normalized form. On YouTube and Twitch the matched text covers the title and the description. No stemming, fuzzy matching, or semantic expansion. The response carries the standard `pagination` block (send `pagination.next_cursor` back as `cursor`) and a `dropped` counter, and the raw `data.next_cursor` is accepted as well.'
+      operationId: cohorts_list_results
+      parameters:
+      - description: Cohort query identifier returned by `POST /v1/cohorts/{cohortId}/queries`.
+        in: path
+        name: queryId
+        required: true
+        schema:
+          type: string
+      - description: Opaque cursor from a previous `next_cursor`.
+        in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+      - description: Page size. Defaults to 100, capped at 500.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          maximum: 500
+          minimum: 1
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  cached:
+                    type: boolean
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                  credits_used:
+                    type: integer
+                  data:
+                    properties:
+                      coverage:
+                        description: One record per cohort member, whether or not it matched. `window_complete` is true only when the route reached the requested time boundary or an end-of-feed marker; a page budget, timeout, or error leaves it false.
+                        items:
+                          properties:
+                            external_id:
+                              type:
+                              - string
+                              - 'null'
+                            member_id:
+                              type: string
+                            oldest_seen:
+                              format: date-time
+                              type:
+                              - string
+                              - 'null'
+                            pages:
+                              type: integer
+                            platform:
+                              type: string
+                            query_id:
+                              type: string
+                            route_errors:
+                              items:
+                                properties:
+                                  code:
+                                    type: string
+                                  route:
+                                    type: string
+                                type: object
+                              type: array
+                            status:
+                              enum:
+                              - complete
+                              - partial
+                              - not_found
+                              - unsupported
+                              - failed
+                              type: string
+                            window_complete:
+                              type: boolean
+                          type: object
+                        type: array
+                      items:
+                        items:
+                          properties:
+                            canonical_url:
+                              type:
+                              - string
+                              - 'null'
+                            content_id:
+                              type: string
+                            external_id:
+                              description: Your own opaque identifier for this panel member.
+                              type:
+                              - string
+                              - 'null'
+                            matched_keywords:
+                              items:
+                                type: string
+                              type: array
+                            member_id:
+                              type: string
+                            platform:
+                              type: string
+                            published_at:
+                              format: date-time
+                              type: string
+                            query_id:
+                              type: string
+                            retrieved_at:
+                              format: date-time
+                              type: string
+                            route:
+                              type: string
+                            text_excerpt:
+                              type: string
+                          type: object
+                        type: array
+                      next_cursor:
+                        description: Opaque signed cursor for the next page, or null on the last page. Pages are additionally bounded so the serialized body never exceeds 1 MB.
+                        type:
+                        - string
+                        - 'null'
+                    type: object
+                  endpoint:
+                    type: string
+                  platform:
+                    type: string
+                  request_id:
+                    type: string
+                  success:
+                    type: boolean
+                type: object
+          description: Cohort query results page
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - ApiKeyAuth: []
+      summary: Read cohort query results
+      tags:
+      - cohorts
+      x-credit-cost: 0
+  /cohorts:
+    post:
+      description: Creates an empty cohort. Uploading members or submitting a query renews the expiry using the configured retention period.
+      operationId: cohorts_create
+      parameters:
+      - description: Required UUID that makes the mutation safely retriable. Replaying the same key with the same body returns the original resource with the X-Idempotent-Replay header; replaying it with a different body returns 422 IDEMPOTENCY_KEY_PAYLOAD_MISMATCH.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          format: uuid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  description: Optional label, up to 120 characters.
+                  type: string
+                retention_days:
+                  default: 30
+                  description: How long cohort membership is retained before automatic purge.
+                  maximum: 90
+                  minimum: 7
+                  type: integer
+              type: object
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                properties:
+                  cached:
+                    type: boolean
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                  credits_used:
+                    type: integer
+                  data:
+                    properties:
+                      created_at:
+                        format: date-time
+                        type: string
+                      expires_at:
+                        format: date-time
+                        type: string
+                      id:
+                        type: string
+                      member_count:
+                        type: integer
+                      name:
+                        type:
+                        - string
+                        - 'null'
+                      retention_days:
+                        type: integer
+                      updated_at:
+                        format: date-time
+                        type: string
+                    type: object
+                  endpoint:
+                    type: string
+                  platform:
+                    type: string
+                  request_id:
+                    type: string
+                  success:
+                    type: boolean
+                type: object
+          description: Cohort created
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a cohort
+      tags:
+      - cohorts
+      x-credit-cost: 0
+  /cohorts/{cohortId}:
+    delete:
+      description: Deletes the cohort and cascades its members, queries, shards, and results. Active queries are marked cancelled. Immutable credit-ledger receipts are never deleted.
+      operationId: cohorts_delete
+      parameters:
+      - description: Cohort identifier returned by `POST /v1/cohorts`.
+        in: path
+        name: cohortId
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Deleted. No response body.
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a cohort
+      tags:
+      - cohorts
+      x-credit-cost: 0
+    get:
+      description: Returns cohort metadata and counts. It never enumerates or reveals stored identities - the identities you uploaded are encrypted at rest and are not readable back through the API.
+      operationId: cohorts_get
+      parameters:
+      - description: Cohort identifier returned by `POST /v1/cohorts`.
+        in: path
+        name: cohortId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  cached:
+                    type: boolean
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                  credits_used:
+                    type: integer
+                  data:
+                    properties:
+                      created_at:
+                        format: date-time
+                        type: string
+                      expires_at:
+                        format: date-time
+                        type: string
+                      id:
+                        type: string
+                      member_count:
+                        type: integer
+                      name:
+                        type:
+                        - string
+                        - 'null'
+                      retention_days:
+                        type: integer
+                      updated_at:
+                        format: date-time
+                        type: string
+                    type: object
+                  endpoint:
+                    type: string
+                  platform:
+                    type: string
+                  request_id:
+                    type: string
+                  success:
+                    type: boolean
+                type: object
+          description: Cohort metadata
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a cohort
+      tags:
+      - cohorts
+      x-credit-cost: 0
+  /cohorts/{cohortId}/members:
+    put:
+      description: 'Upserts one chunk of 1-1,000 members; a cohort holds at most 10,000. Re-sending the same `external_id` updates its identity without growing the count. Supported platforms: bluesky, instagram, kwai, linkedin, threads, tiktok, truth-social, twitch, twitter, youtube.'
+      operationId: cohorts_upsert_members
+      parameters:
+      - description: Cohort identifier returned by `POST /v1/cohorts`.
+        in: path
+        name: cohortId
+        required: true
+        schema:
+          type: string
+      - description: Required UUID that makes the mutation safely retriable. Replaying the same key with the same body returns the original resource with the X-Idempotent-Replay header; replaying it with a different body returns 422 IDEMPOTENCY_KEY_PAYLOAD_MISMATCH.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          format: uuid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                members:
+                  items:
+                    properties:
+                      external_id:
+                        description: Your own opaque identifier, echoed back on every match and coverage record. Never sent upstream.
+                        type: string
+                      handle:
+                        description: Public handle, profile URL, or channel ID for this platform.
+                        type: string
+                      platform:
+                        enum:
+                        - bluesky
+                        - instagram
+                        - kwai
+                        - linkedin
+                        - threads
+                        - tiktok
+                        - truth-social
+                        - twitch
+                        - twitter
+                        - youtube
+                        type: string
+                    required:
+                    - handle
+                    - platform
+                    type: object
+                  maxItems: 1000
+                  minItems: 1
+                  type: array
+              required:
+              - members
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  cached:
+                    type: boolean
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                  credits_used:
+                    type: integer
+                  data:
+                    properties:
+                      inserted:
+                        type: integer
+                      member_count:
+                        type: integer
+                      unchanged:
+                        type: integer
+                      updated:
+                        type: integer
+                    type: object
+                  endpoint:
+                    type: string
+                  platform:
+                    type: string
+                  request_id:
+                    type: string
+                  success:
+                    type: boolean
+                type: object
+          description: Member upload applied
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - ApiKeyAuth: []
+      summary: Upload cohort members
+      tags:
+      - cohorts
+      x-credit-cost: 0
+  /cohorts/{cohortId}/queries:
+    post:
+      description: Submits an asynchronous keyword query over the cohort's recent authored activity. Returns 202 immediately with a poll URL. Credits are reserved at the worst-case ceiling on submission, metered one per successful upstream page, and the unspent remainder is refunded exactly once when the query reaches a terminal state.
+      operationId: cohorts_create_query
+      parameters:
+      - description: Cohort identifier returned by `POST /v1/cohorts`.
+        in: path
+        name: cohortId
+        required: true
+        schema:
+          type: string
+      - description: Required UUID that makes the mutation safely retriable. Replaying the same key with the same body returns the original resource with the X-Idempotent-Replay header; replaying it with a different body returns 422 IDEMPOTENCY_KEY_PAYLOAD_MISMATCH.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          format: uuid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                date_from:
+                  description: Start of the observation window as a full RFC3339 timestamp.
+                  format: date-time
+                  type: string
+                date_to:
+                  description: Optional end of the observation window.
+                  format: date-time
+                  type: string
+                keywords:
+                  description: 1-20 unique keywords, matched literally after Unicode normalization and case folding.
+                  items:
+                    type: string
+                  maxItems: 20
+                  minItems: 1
+                  type: array
+                max_credits:
+                  description: Your safety limit. Submission fails with 400 if the computed ceiling exceeds it; it is never permission to exceed the ceiling.
+                  type: integer
+                max_items_per_identity:
+                  maximum: 1000
+                  minimum: 1
+                  type: integer
+                max_pages_per_identity:
+                  description: Page budget per route. Exhausting it leaves `window_complete` false for that member.
+                  maximum: 20
+                  minimum: 1
+                  type: integer
+                platforms:
+                  description: Optional subset of the cohort's platforms to query. Defaults to every platform present in the cohort.
+                  items:
+                    enum:
+                    - bluesky
+                    - instagram
+                    - kwai
+                    - linkedin
+                    - threads
+                    - tiktok
+                    - truth-social
+                    - twitch
+                    - twitter
+                    - youtube
+                    type: string
+                  type: array
+              required:
+              - date_from
+              - keywords
+              - max_credits
+              - max_items_per_identity
+              - max_pages_per_identity
+              type: object
+        required: true
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                properties:
+                  cached:
+                    type: boolean
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                  credits_used:
+                    type: integer
+                  data:
+                    properties:
+                      estimated_credits:
+                        type: integer
+                      member_count:
+                        type: integer
+                      progress:
+                        properties:
+                          matches:
+                            type: integer
+                          members_completed:
+                            type: integer
+                          members_total:
+                            type: integer
+                          pages_failed:
+                            type: integer
+                          pages_succeeded:
+                            type: integer
+                          routes_completed:
+                            type: integer
+                          routes_planned:
+                            type: integer
+                          shards_completed:
+                            type: integer
+                          shards_failed:
+                            type: integer
+                          shards_total:
+                            type: integer
+                        type: object
+                      query_id:
+                        type: string
+                      replayed:
+                        description: True when this 202 replays an earlier submission via the same Idempotency-Key; the envelope also carries idempotent_replay and the X-Idempotent-Replay response header. A replay reports the query's CURRENT state, not necessarily queued.
+                        type: boolean
+                      reserved_credits:
+                        type: integer
+                      result_url:
+                        type: string
+                      shard_count:
+                        type: integer
+                      status:
+                        enum:
+                        - queued
+                        - running
+                        - succeeded
+                        - failed
+                        - cancelled
+                        - expired
+                        type: string
+                      status_url:
+                        type: string
+                    type: object
+                  endpoint:
+                    type: string
+                  platform:
+                    type: string
+                  request_id:
+                    type: string
+                  success:
+                    type: boolean
+                type: object
+          description: Query accepted
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security:
+      - ApiKeyAuth: []
+      summary: Submit a cohort keyword query
+      tags:
+      - cohorts
+components:
+  responses:
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+      x-error-codes:
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error401:
+      description: Unauthorized - missing or invalid API key
+      x-error-codes:
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error500:
+      description: Internal server error - credits automatically refunded
+      x-error-codes:
+      - INTERNAL_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error400:
+      description: Invalid request - missing or malformed parameters
+      x-error-codes:
+      - INVALID_REQUEST
+      - COHORT_MEMBER_LIMIT_EXCEEDED
+      - COHORT_LIMIT_EXCEEDED
+      - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+      x-error-codes:
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+      x-error-codes:
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error409:
+      description: Conflict - a request with this Idempotency-Key is still in flight, or the cohort resource is not in a state that allows this operation
+      x-error-codes:
+      - IDEMPOTENCY_KEY_CONFLICT
+      - COHORT_IDENTITY_CONFLICT
+      - COHORT_QUERY_NOT_CANCELLABLE
+      - COHORT_QUERY_NOT_READY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error405:
+      description: Method not allowed - wrong HTTP verb for this endpoint
+      x-error-codes:
+      - METHOD_NOT_ALLOWED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+      x-error-codes:
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    ErrorEnvelope:
+      type: object
+      description: Unified error response envelope. Every 4xx/5xx response returns this shape; `error.type` is a machine-readable code from the API's error catalog.
+      properties:
+        success:
+          type: boolean
+          enum:
+          - false
+          description: Always false on an error response.
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - MISSING_API_KEY
+              - INVALID_API_KEY
+              - INSUFFICIENT_CREDITS
+              - INVALID_REQUEST
+              - ENDPOINT_NOT_FOUND
+              - RESOURCE_NOT_FOUND
+              - CONCURRENCY_LIMIT
+              - UPSTREAM_ERROR
+              - SERVICE_UNAVAILABLE
+              - INTERNAL_ERROR
+              - METHOD_NOT_ALLOWED
+              - IDEMPOTENCY_KEY_CONFLICT
+              - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+              - COHORT_MEMBER_LIMIT_EXCEEDED
+              - COHORT_LIMIT_EXCEEDED
+              - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+              - COHORT_IDENTITY_CONFLICT
+              - COHORT_QUERY_NOT_CANCELLABLE
+              - COHORT_QUERY_NOT_READY
+              - COHORT_RESULT_TOO_LARGE
+              - PAYLOAD_TOO_LARGE
+              - RATE_LIMITED
+              - KEY_BUDGET_EXCEEDED
+              description: Machine-readable error code. The per-status `x-error-codes` list on each response narrows which codes that status can carry.
+            message:
+              type: string
+              description: Human-readable explanation of the error.
+            status:
+              type: integer
+              description: HTTP status code, echoed in the body.
+            doc_url:
+              type: string
+              description: Link to the docs page for this error code.
+            details:
+              type:
+              - object
+              - 'null'
+              additionalProperties: true
+              description: Optional structured context (e.g. the comment-lookup not-found taxonomy). Omitted on ordinary errors.
+          required:
+          - type
+          - message
+          - status
+          - doc_url
+        credits_used:
+          type: integer
+          description: Net credits charged for this request. Error paths deduct-then-refund, so this is 0 in almost every case; a partial-coverage composite may keep the succeeded-leg cost.
+        credits_remaining:
+          type:
+          - integer
+          - 'null'
+          description: Credits left after this request, or null when the balance could not be read (e.g. auth failed before lookup).
+        request_id:
+          type: string
+          description: Unique request identifier - matches the X-Request-Id header. Quote it in support requests.
+      required:
+      - success
+      - error
+      - credits_used
+      - credits_remaining
+      - request_id
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key authentication. Send your key in the `x-api-key` request header on every call. Create and manage keys in the dashboard.
+x-tagGroups:
+- name: Account
+  tags:
+  - meta
+- name: Cohorts - Audience Panels
+  tags:
+  - cohorts
+- name: Universal Search
+  tags:
+  - search
+  - ai-search
+  - geo
+- name: Prism - Composite Intelligence
+  tags:
+  - prism
+- name: Social Platforms
+  tags:
+  - tiktok
+  - instagram
+  - youtube
+  - facebook
+  - facebook-ads
+  - twitter
+  - linkedin
+  - linkedin-ads
+  - reddit
+  - threads
+  - pinterest
+  - twitch
+  - truthsocial
+  - snapchat
+  - kick
+  - bluesky
+  - rumble
+  - kwai
+- name: Commerce & Reviews
+  tags:
+  - amazon
+  - tiktokshop
+  - app_store
+  - google_play
+  - google_shopping
+  - trustpilot
+  - tripadvisor
+- name: Search, News & Web
+  tags:
+  - google
+  - google-ads
+  - google_news
+  - google_finance
+  - naver
+  - perplexity
+  - tavily
+  - hackernews
+  - github
+  - content_analysis
+  - polymarket
+  - spotify
+- name: Link in Bio
+  tags:
+  - linktree
+  - komi
+  - pillar
+  - linkbio
+  - linkme
+- name: More Platforms
+  tags:
+  - apple_music
+  - ebay
+  - google_trends
+  - home_depot
+  - target
+  - tiktok-ads
+  - walmart
+  - wayfair
+  - web
+- name: Utility
+  tags:
+  - utility
+x-full-spec: https://www.socialcrawl.dev/openapi.json

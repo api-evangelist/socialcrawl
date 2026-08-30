@@ -1,0 +1,1052 @@
+openapi: 3.2.0
+info:
+  title: SocialCrawl Search API
+  version: 1.0.0
+  description: 'Unified social media data API - one API key, one consistent response format, 50 platforms, 400 endpoints. Power AI agents with clean social data.
+
+
+    Slim variant: inline examples removed and the shared error responses hoisted into components. The full annotated spec is at https://www.socialcrawl.dev/openapi.json.'
+  contact:
+    name: SocialCrawl
+    url: https://www.socialcrawl.dev
+    email: support@socialcrawl.dev
+servers:
+- url: https://www.socialcrawl.dev/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: search
+  description: Search endpoints
+paths:
+  /search/everywhere:
+    get:
+      summary: Universal social search across 14 platforms
+      description: 'Fans out a single query across Reddit, X (ai-search), YouTube, TikTok, Instagram, Hacker News, Polymarket, GitHub, Threads, Pinterest, LinkedIn, Rumble, Perplexity, and Tavily in parallel (up to 17 sources, since TikTok, Instagram and YouTube each add a hashtag lane). Returns ranked + clustered results, enriched with **real-people comments** from each post. Reddit upvoted comments, HackerNews thread replies, YouTube/TikTok/Instagram top-liked comments, GitHub issue discussion. The top comment per result lives at `data.items[i].source_items[0].metadata.top_comments[]` (sorted by score descending, capped at 5, max 300-char excerpts). Supports streaming via `Accept: text/event-stream` (emits `comments_enriched` chunks per candidate as enrichment lands, before the terminal `done`) and sync via `Accept: application/json`. Flat 20 credits per call regardless of enrichment.'
+      tags:
+      - search
+      operationId: get_search_everywhere
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: standard
+      x-credit-cost: 20
+      parameters:
+      - name: query
+        in: query
+        required: true
+        description: Search query (1-512 chars)
+        schema:
+          type: string
+      - name: lookback_days
+        in: query
+        required: false
+        description: Days to look back (1-365+, default 30); mutually exclusive with from_date/to_date.
+        schema:
+          type: integer
+      - name: from_date
+        in: query
+        required: false
+        description: ISO YYYY-MM-DD lower bound; mutually exclusive with lookback_days.
+        schema:
+          type: string
+      - name: to_date
+        in: query
+        required: false
+        description: ISO YYYY-MM-DD upper bound; defaults to today when from_date is set alone.
+        schema:
+          type: string
+      - name: sources
+        in: query
+        required: false
+        description: 'Optional CSV allowlist of sources (mutually exclusive with exclude). Valid names: reddit, twitter-ai-search, youtube, tiktok, instagram, hackernews, polymarket, github, threads, pinterest, perplexity, tavily, linkedin, rumble, tiktok-hashtag, instagram-hashtag, youtube-hashtag. Platform shorthands expand to their full group: twitter/x → twitter-ai-search; youtube, instagram, tiktok also include their -hashtag lane. Unknown names return a 400.'
+        schema:
+          type: string
+      - name: exclude
+        in: query
+        required: false
+        description: 'Optional CSV blocklist of sources (mutually exclusive with sources). Same valid names and platform shorthands as sources: excluding youtube/instagram/tiktok also excludes the platform''s -hashtag lane. Unknown names return a 400.'
+        schema:
+          type: string
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      metrics:
+                        type: object
+                        description: Key performance metrics
+                        properties:
+                          total_views:
+                            type: integer
+                            description: Total view count
+                          total_likes:
+                            type: integer
+                            description: Total like count
+                          total_comments:
+                            type: integer
+                            description: Total comment count
+                          engagement_rate:
+                            type: number
+                            description: Computed engagement rate (0-1)
+                      period:
+                        type:
+                        - string
+                        - 'null'
+                        description: Time period for the analytics data
+                      breakdown:
+                        type:
+                        - array
+                        - 'null'
+                        description: Per-item or per-period breakdown
+                        items:
+                          type: object
+                          description: Breakdown entry
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /search/forums:
+    get:
+      summary: Fused forum search across Reddit, Hacker News, and Naver 지식iN/카페, with top comments inline on hero threads by default.
+      description: Fans your topic across Reddit, Hacker News, and Korean forums, RRF-fuses + clusters the threads, and enriches hero threads with their top comments by default (East + West). Naver threads are labeled raw (no comment endpoint). Returns a fused `items[]`, raw per-source buckets, thread clusters, and a deterministic computed block (question_share, top_communities). Flat 10cr with coverage-based partial refund.
+      tags:
+      - search
+      operationId: get_search_forums
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: standard
+      x-credit-cost: 10
+      parameters:
+      - name: query
+        in: query
+        required: true
+        description: Search query (2-256 chars), forwarded to every forum search.
+        schema:
+          type: string
+      - name: sources
+        in: query
+        required: false
+        description: Optional CSV allowlist of forum sources (reddit, hackernews, naver_kin, naver_cafe). Mutually exclusive with exclude.
+        schema:
+          type: string
+      - name: exclude
+        in: query
+        required: false
+        description: Optional CSV blocklist of forum sources. Mutually exclusive with sources.
+        schema:
+          type: string
+      - name: comments
+        in: query
+        required: false
+        description: Comment enrichment toggle (on|off, default on). 'off' returns thread-only.
+        schema:
+          type: string
+      - name: timeframe
+        in: query
+        required: false
+        description: Recency window passed to Reddit; HN filtered client-side (all|day|week|month|year, default all).
+        schema:
+          type: string
+      - name: lookback_days
+        in: query
+        required: false
+        description: Alt recency window in days (1-365); HN filtered client-side.
+        schema:
+          type: integer
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      metrics:
+                        type: object
+                        description: Key performance metrics
+                        properties:
+                          total_views:
+                            type: integer
+                            description: Total view count
+                          total_likes:
+                            type: integer
+                            description: Total like count
+                          total_comments:
+                            type: integer
+                            description: Total comment count
+                          engagement_rate:
+                            type: number
+                            description: Computed engagement rate (0-1)
+                      period:
+                        type:
+                        - string
+                        - 'null'
+                        description: Time period for the analytics data
+                      breakdown:
+                        type:
+                        - array
+                        - 'null'
+                        description: Per-item or per-period breakdown
+                        items:
+                          type: object
+                          description: Breakdown entry
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /search/creators:
+    get:
+      summary: Fused creator discovery across TikTok, Threads, and Instagram, ranked by relevance, followers, and verification.
+      description: Fans a niche query across TikTok user search, Threads user search, and Instagram profile search, then merges matching creators into one deterministically ranked list. Ranking is a published formula of query relevance, follower scale, and verification. No LLM rerank. Flat 10 credits with a coverage-based partial refund.
+      tags:
+      - search
+      operationId: get_search_creators
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: standard
+      x-credit-cost: 10
+      parameters:
+      - name: query
+        in: query
+        required: true
+        description: Niche or topic (2-256 chars), forwarded to every profile search.
+        schema:
+          type: string
+      - name: sources
+        in: query
+        required: false
+        description: Optional CSV allowlist of creator sources (tiktok, threads, instagram). Mutually exclusive with exclude.
+        schema:
+          type: string
+      - name: exclude
+        in: query
+        required: false
+        description: Optional CSV blocklist of creator sources. Mutually exclusive with sources.
+        schema:
+          type: string
+      - name: min_followers
+        in: query
+        required: false
+        description: Drop fused creators whose follower count is below this integer floor.
+        schema:
+          type: integer
+          minimum: 0
+      - name: verified_only
+        in: query
+        required: false
+        description: When true, keep only verified creators after fusion.
+        schema:
+          type: boolean
+      - name: sort
+        in: query
+        required: false
+        description: 'Which axis dominates rank: relevance (default), followers, or verification.'
+        schema:
+          type: string
+          enum:
+          - relevance
+          - followers
+          - verification
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      metrics:
+                        type: object
+                        description: Key performance metrics
+                        properties:
+                          total_views:
+                            type: integer
+                            description: Total view count
+                          total_likes:
+                            type: integer
+                            description: Total like count
+                          total_comments:
+                            type: integer
+                            description: Total comment count
+                          engagement_rate:
+                            type: number
+                            description: Computed engagement rate (0-1)
+                      period:
+                        type:
+                        - string
+                        - 'null'
+                        description: Time period for the analytics data
+                      breakdown:
+                        type:
+                        - array
+                        - 'null'
+                        description: Per-item or per-period breakdown
+                        items:
+                          type: object
+                          description: Breakdown entry
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /search/news:
+    get:
+      summary: 'Planned multi-country news search: one query, localized and fanned out across Google News editions in a single call.'
+      description: 'Plans your query into search angles, localizes each angle into the language of every requested country edition (one combined LLM call, fail-open), then fans out up to 12 parallel legs against Google News (50 supported country editions) and merges the articles into one deduplicated list. Every leg reports truthful provenance: `query_source` says whether its keyword was `translated`, confirmed `original`, or a `fallback_original` after a localization failure. Supports streaming via `Accept: text/event-stream` (the `plan_refined` chunk always carries the expanded legs with per-leg provenance before any leg settles) and sync via `Accept: application/json`. Filters: `publisher`, `from`/`to` exact date windows (these pin legs to the primary source), `time_range` recency, `depth` per-leg article depth, `max_legs` cost cap. Billing is metered: a base fee covers planning, then 1 credit per leg that returned articles; the unused ceiling is refunded automatically.'
+      tags:
+      - search
+      operationId: get_search_news
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: standard
+      x-credit-cost: 1
+      x-credit-cost-formula: 2 credits + 1 credit per country/angle leg that returns at least one article. The upfront hold is 2 + min(5 x countries, max_legs, 12) credits (maximum 14) and settles down to the actual charge; empty or failed legs bill 0.
+      parameters:
+      - name: query
+        in: query
+        required: true
+        description: News topic or question (1-500 chars). Boolean AND/OR/NOT and quoted phrases are supported; Google advanced operators (site:, intitle:, before:) are rejected.
+        schema:
+          type: string
+      - name: countries
+        in: query
+        required: false
+        description: CSV of ISO 3166-1 alpha-2 country codes to search (1-12 of the 50 supported editions, default US). Each country searches its Google News edition in its default language; duplicates collapse.
+        schema:
+          type: string
+      - name: time_range
+        in: query
+        required: false
+        description: Recency window (day | week | month | year, default day). Ignored when from/to is present.
+        schema:
+          type: string
+          enum:
+          - day
+          - week
+          - month
+          - year
+      - name: from
+        in: query
+        required: false
+        description: Lower publish-date bound, YYYY-MM-DD or Unix seconds. Pins every leg to the primary news source.
+        schema:
+          type: string
+      - name: to
+        in: query
+        required: false
+        description: Upper publish-date bound, YYYY-MM-DD or Unix seconds. Pins every leg to the primary news source.
+        schema:
+          type: string
+      - name: publisher
+        in: query
+        required: false
+        description: Bare publisher domain filter (e.g. bbc.com; no scheme or path). Pins every leg to the primary news source.
+        schema:
+          type: string
+      - name: depth
+        in: query
+        required: false
+        description: Articles requested per leg (10-100 in steps of 10, default 10).
+        schema:
+          type: integer
+          minimum: 10
+          maximum: 100
+      - name: max_legs
+        in: query
+        required: false
+        description: Hard cap on billable legs (1-12, default 12). The upfront hold shrinks with it.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 12
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      metrics:
+                        type: object
+                        description: Key performance metrics
+                        properties:
+                          total_views:
+                            type: integer
+                            description: Total view count
+                          total_likes:
+                            type: integer
+                            description: Total like count
+                          total_comments:
+                            type: integer
+                            description: Total comment count
+                          engagement_rate:
+                            type: number
+                            description: Computed engagement rate (0-1)
+                      period:
+                        type:
+                        - string
+                        - 'null'
+                        description: Time period for the analytics data
+                      breakdown:
+                        type:
+                        - array
+                        - 'null'
+                        description: Per-item or per-period breakdown
+                        items:
+                          type: object
+                          description: Breakdown entry
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+components:
+  responses:
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+      x-error-codes:
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error401:
+      description: Unauthorized - missing or invalid API key
+      x-error-codes:
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error500:
+      description: Internal server error - credits automatically refunded
+      x-error-codes:
+      - INTERNAL_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error503:
+      description: Service unavailable - circuit breaker open for this platform, credits refunded
+      x-error-codes:
+      - SERVICE_UNAVAILABLE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error400:
+      description: Invalid request - missing or malformed parameters
+      x-error-codes:
+      - INVALID_REQUEST
+      - COHORT_MEMBER_LIMIT_EXCEEDED
+      - COHORT_LIMIT_EXCEEDED
+      - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+      x-error-codes:
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+      x-error-codes:
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error409:
+      description: Conflict - a request with this Idempotency-Key is still in flight, or the cohort resource is not in a state that allows this operation
+      x-error-codes:
+      - IDEMPOTENCY_KEY_CONFLICT
+      - COHORT_IDENTITY_CONFLICT
+      - COHORT_QUERY_NOT_CANCELLABLE
+      - COHORT_QUERY_NOT_READY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error405:
+      description: Method not allowed - wrong HTTP verb for this endpoint
+      x-error-codes:
+      - METHOD_NOT_ALLOWED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+      x-error-codes:
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    ErrorEnvelope:
+      type: object
+      description: Unified error response envelope. Every 4xx/5xx response returns this shape; `error.type` is a machine-readable code from the API's error catalog.
+      properties:
+        success:
+          type: boolean
+          enum:
+          - false
+          description: Always false on an error response.
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - MISSING_API_KEY
+              - INVALID_API_KEY
+              - INSUFFICIENT_CREDITS
+              - INVALID_REQUEST
+              - ENDPOINT_NOT_FOUND
+              - RESOURCE_NOT_FOUND
+              - CONCURRENCY_LIMIT
+              - UPSTREAM_ERROR
+              - SERVICE_UNAVAILABLE
+              - INTERNAL_ERROR
+              - METHOD_NOT_ALLOWED
+              - IDEMPOTENCY_KEY_CONFLICT
+              - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+              - COHORT_MEMBER_LIMIT_EXCEEDED
+              - COHORT_LIMIT_EXCEEDED
+              - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+              - COHORT_IDENTITY_CONFLICT
+              - COHORT_QUERY_NOT_CANCELLABLE
+              - COHORT_QUERY_NOT_READY
+              - COHORT_RESULT_TOO_LARGE
+              - PAYLOAD_TOO_LARGE
+              - RATE_LIMITED
+              - KEY_BUDGET_EXCEEDED
+              description: Machine-readable error code. The per-status `x-error-codes` list on each response narrows which codes that status can carry.
+            message:
+              type: string
+              description: Human-readable explanation of the error.
+            status:
+              type: integer
+              description: HTTP status code, echoed in the body.
+            doc_url:
+              type: string
+              description: Link to the docs page for this error code.
+            details:
+              type:
+              - object
+              - 'null'
+              additionalProperties: true
+              description: Optional structured context (e.g. the comment-lookup not-found taxonomy). Omitted on ordinary errors.
+          required:
+          - type
+          - message
+          - status
+          - doc_url
+        credits_used:
+          type: integer
+          description: Net credits charged for this request. Error paths deduct-then-refund, so this is 0 in almost every case; a partial-coverage composite may keep the succeeded-leg cost.
+        credits_remaining:
+          type:
+          - integer
+          - 'null'
+          description: Credits left after this request, or null when the balance could not be read (e.g. auth failed before lookup).
+        request_id:
+          type: string
+          description: Unique request identifier - matches the X-Request-Id header. Quote it in support requests.
+      required:
+      - success
+      - error
+      - credits_used
+      - credits_remaining
+      - request_id
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key authentication. Send your key in the `x-api-key` request header on every call. Create and manage keys in the dashboard.
+x-tagGroups:
+- name: Account
+  tags:
+  - meta
+- name: Cohorts - Audience Panels
+  tags:
+  - cohorts
+- name: Universal Search
+  tags:
+  - search
+  - ai-search
+  - geo
+- name: Prism - Composite Intelligence
+  tags:
+  - prism
+- name: Social Platforms
+  tags:
+  - tiktok
+  - instagram
+  - youtube
+  - facebook
+  - facebook-ads
+  - twitter
+  - linkedin
+  - linkedin-ads
+  - reddit
+  - threads
+  - pinterest
+  - twitch
+  - truthsocial
+  - snapchat
+  - kick
+  - bluesky
+  - rumble
+  - kwai
+- name: Commerce & Reviews
+  tags:
+  - amazon
+  - tiktokshop
+  - app_store
+  - google_play
+  - google_shopping
+  - trustpilot
+  - tripadvisor
+- name: Search, News & Web
+  tags:
+  - google
+  - google-ads
+  - google_news
+  - google_finance
+  - naver
+  - perplexity
+  - tavily
+  - hackernews
+  - github
+  - content_analysis
+  - polymarket
+  - spotify
+- name: Link in Bio
+  tags:
+  - linktree
+  - komi
+  - pillar
+  - linkbio
+  - linkme
+- name: More Platforms
+  tags:
+  - apple_music
+  - ebay
+  - google_trends
+  - home_depot
+  - target
+  - tiktok-ads
+  - walmart
+  - wayfair
+  - web
+- name: Utility
+  tags:
+  - utility
+x-full-spec: https://www.socialcrawl.dev/openapi.json

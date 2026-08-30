@@ -1,0 +1,789 @@
+openapi: 3.2.0
+info:
+  title: SocialCrawl Linkme API
+  version: 1.0.0
+  description: 'Unified social media data API - one API key, one consistent response format, 50 platforms, 400 endpoints. Power AI agents with clean social data.
+
+
+    Slim variant: inline examples removed and the shared error responses hoisted into components. The full annotated spec is at https://www.socialcrawl.dev/openapi.json.'
+  contact:
+    name: SocialCrawl
+    url: https://www.socialcrawl.dev
+    email: support@socialcrawl.dev
+servers:
+- url: https://www.socialcrawl.dev/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: linkme
+  description: Linkme endpoints
+paths:
+  /linkme/page:
+    get:
+      summary: Get Linkme profile
+      description: Returns data from a Linkme page including display name, bio, avatar, and list of links with titles and URLs.
+      tags:
+      - linkme
+      operationId: get_linkme_page
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: standard
+      x-credit-cost: 1
+      parameters:
+      - name: url
+        in: query
+        required: true
+        description: Full URL of the Linkme page
+        schema:
+          type: string
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      id:
+                        type: string
+                        description: Platform-specific user ID (always a string; platform-specific prefixes like `did:`, `spotify:artist:`, `t2_` are stripped)
+                      username:
+                        type:
+                        - string
+                        - 'null'
+                        description: User handle or username
+                      display_name:
+                        type:
+                        - string
+                        - 'null'
+                        description: Display name or full name
+                      avatar_url:
+                        type:
+                        - string
+                        - 'null'
+                        description: URL to profile picture
+                      bio:
+                        type:
+                        - string
+                        - 'null'
+                        description: Profile biography or description
+                      verified:
+                        type:
+                        - boolean
+                        - 'null'
+                        description: Whether the account is verified
+                      followers:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Follower or subscriber count as an integer. Exact on Instagram and on TikTok when the source exposes an unrounded figure. YouTube above 1,000 subscribers is YouTube's published three-significant-figure figure. When the integer is a published/rounded value, `author.ext.followers_approximate` is true.
+                      following:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Number of accounts followed
+                      posts_count:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Total number of posts / videos / tracks / episodes
+                      likes_count:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Total likes received across the author's content (when surfaced)
+                      url:
+                        type:
+                        - string
+                        - 'null'
+                        description: Direct URL to the profile page
+                      location:
+                        type:
+                        - string
+                        - 'null'
+                        description: ISO region code (e.g. `US`) or freeform location string when surfaced
+                      external_url:
+                        type:
+                        - string
+                        - 'null'
+                        description: Bio link / external website URL when surfaced by the platform
+                      private:
+                        type:
+                        - boolean
+                        - 'null'
+                        description: Boolean at author.private
+                      joined_at:
+                        type:
+                        - string
+                        - 'null'
+                        description: String at author.joined_at
+                      ext:
+                        type:
+                        - object
+                        - 'null'
+                        description: 'Nested object: author.ext'
+                        properties:
+                          social_context:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.social_context
+                          account_created:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.account_created
+                          country:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.country
+                          former_usernames:
+                            type:
+                            - array
+                            - 'null'
+                            description: Array at author.ext.former_usernames
+                            items:
+                              type: string
+                              description: String at author.ext.former_usernames
+                          public_email:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.public_email
+                          public_phone:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.public_phone
+                          business_category:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.business_category
+                          hd_avatar_url:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.hd_avatar_url
+                          website:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.website
+                          cover_url:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.cover_url
+                          page_active:
+                            type:
+                            - boolean
+                            - 'null'
+                            description: Boolean at author.ext.page_active
+                          employee_count:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at author.ext.employee_count
+                          employee_count_range:
+                            type:
+                            - object
+                            - 'null'
+                            description: 'Nested object: author.ext.employee_count_range'
+                            properties:
+                              start:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Numeric at author.ext.employee_count_range.start
+                              end:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Numeric at author.ext.employee_count_range.end
+                          founded_year:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at author.ext.founded_year
+                          specialities:
+                            type:
+                            - array
+                            - 'null'
+                            description: Array at author.ext.specialities
+                            items:
+                              type: string
+                              description: String at author.ext.specialities
+                          industries:
+                            type:
+                            - array
+                            - 'null'
+                            description: Array at author.ext.industries
+                            items:
+                              type: string
+                              description: String at author.ext.industries
+                          headquarters:
+                            type:
+                            - string
+                            - 'null'
+                            description: Leaf at author.ext.headquarters
+                          locations:
+                            type:
+                            - array
+                            - 'null'
+                            description: Array at author.ext.locations
+                            items:
+                              type: string
+                              description: Leaf at author.ext.locations
+                          hashtags:
+                            type:
+                            - array
+                            - 'null'
+                            description: Array at author.ext.hashtags
+                            items:
+                              type: string
+                              description: Leaf at author.ext.hashtags
+                          funding:
+                            type:
+                            - string
+                            - 'null'
+                            description: Leaf at author.ext.funding
+                          address:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.address
+                          price_range:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.price_range
+                          rating:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.rating
+                          rating_count:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at author.ext.rating_count
+                          talking_about_count:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at author.ext.talking_about_count
+                          business_hours:
+                            type:
+                            - array
+                            - 'null'
+                            description: Array at author.ext.business_hours
+                            items:
+                              type: string
+                              description: Leaf at author.ext.business_hours
+                          links:
+                            type:
+                            - array
+                            - 'null'
+                            description: Array at author.ext.links
+                            items:
+                              type: string
+                              description: Leaf at author.ext.links
+                          ad_library_page_id:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.ad_library_page_id
+                          ad_library_status:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.ad_library_status
+                          urn:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.urn
+                          is_top_voice:
+                            type:
+                            - boolean
+                            - 'null'
+                            description: Boolean at author.ext.is_top_voice
+                          is_premium:
+                            type:
+                            - boolean
+                            - 'null'
+                            description: Boolean at author.ext.is_premium
+                          followers_approximate:
+                            type:
+                            - boolean
+                            - 'null'
+                            description: 'True when `author.followers` is a published or rounded figure rather than an unrounded census: LinkedIn people-list display buckets, TikTok `stats.followerCount` when the exact sibling is absent, and YouTube subscriber counts at or above 1,000. Null or absent on exact counts.'
+                          keywords:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.keywords
+                          topicCategories:
+                            type:
+                            - array
+                            - 'null'
+                            description: Array at author.ext.topicCategories
+                            items:
+                              type: string
+                              description: String at author.ext.topicCategories
+                          bannerExternalUrl:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.bannerExternalUrl
+                          madeForKids:
+                            type:
+                            - boolean
+                            - 'null'
+                            description: Boolean at author.ext.madeForKids
+                          hiddenSubscriberCount:
+                            type:
+                            - boolean
+                            - 'null'
+                            description: Boolean at author.ext.hiddenSubscriberCount
+                          related_playlists:
+                            type:
+                            - string
+                            - 'null'
+                            description: Leaf at author.ext.related_playlists
+                          topic_ids:
+                            type:
+                            - array
+                            - 'null'
+                            description: Array at author.ext.topic_ids
+                            items:
+                              type: string
+                              description: String at author.ext.topic_ids
+                          unsubscribed_trailer:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.unsubscribed_trailer
+                          monthly_listeners:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at author.ext.monthly_listeners
+                          total_ratings:
+                            type:
+                            - integer
+                            - 'null'
+                            description: 'Spotify podcasts only: how many listeners have rated the show. Cumulative over the show''s whole run, so it reflects longevity as well as size, and it is NOT an audience count (Spotify publishes no play, download, subscriber or follower count for a podcast)'
+                          average_rating:
+                            type:
+                            - integer
+                            - 'null'
+                            description: 'Spotify podcasts only: mean listener rating from 0 to 5. Fractional (e.g. 4.66) despite the integer type this schema emits for every numeric leaf'
+                          creator_username:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.creator_username
+                          join_policy:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.join_policy
+                          is_nsfw:
+                            type:
+                            - boolean
+                            - 'null'
+                            description: Boolean at author.ext.is_nsfw
+                          weekly_active_users:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at author.ext.weekly_active_users
+                          weekly_contributions:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at author.ext.weekly_contributions
+                          bio_link:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at author.ext.bio_link
+                          group:
+                            type:
+                            - string
+                            - 'null'
+                            description: Leaf at author.ext.group
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+components:
+  responses:
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+      x-error-codes:
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error401:
+      description: Unauthorized - missing or invalid API key
+      x-error-codes:
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error500:
+      description: Internal server error - credits automatically refunded
+      x-error-codes:
+      - INTERNAL_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error503:
+      description: Service unavailable - circuit breaker open for this platform, credits refunded
+      x-error-codes:
+      - SERVICE_UNAVAILABLE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error400:
+      description: Invalid request - missing or malformed parameters
+      x-error-codes:
+      - INVALID_REQUEST
+      - COHORT_MEMBER_LIMIT_EXCEEDED
+      - COHORT_LIMIT_EXCEEDED
+      - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+      x-error-codes:
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+      x-error-codes:
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error409:
+      description: Conflict - a request with this Idempotency-Key is still in flight, or the cohort resource is not in a state that allows this operation
+      x-error-codes:
+      - IDEMPOTENCY_KEY_CONFLICT
+      - COHORT_IDENTITY_CONFLICT
+      - COHORT_QUERY_NOT_CANCELLABLE
+      - COHORT_QUERY_NOT_READY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error405:
+      description: Method not allowed - wrong HTTP verb for this endpoint
+      x-error-codes:
+      - METHOD_NOT_ALLOWED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+      x-error-codes:
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    ErrorEnvelope:
+      type: object
+      description: Unified error response envelope. Every 4xx/5xx response returns this shape; `error.type` is a machine-readable code from the API's error catalog.
+      properties:
+        success:
+          type: boolean
+          enum:
+          - false
+          description: Always false on an error response.
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - MISSING_API_KEY
+              - INVALID_API_KEY
+              - INSUFFICIENT_CREDITS
+              - INVALID_REQUEST
+              - ENDPOINT_NOT_FOUND
+              - RESOURCE_NOT_FOUND
+              - CONCURRENCY_LIMIT
+              - UPSTREAM_ERROR
+              - SERVICE_UNAVAILABLE
+              - INTERNAL_ERROR
+              - METHOD_NOT_ALLOWED
+              - IDEMPOTENCY_KEY_CONFLICT
+              - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+              - COHORT_MEMBER_LIMIT_EXCEEDED
+              - COHORT_LIMIT_EXCEEDED
+              - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+              - COHORT_IDENTITY_CONFLICT
+              - COHORT_QUERY_NOT_CANCELLABLE
+              - COHORT_QUERY_NOT_READY
+              - COHORT_RESULT_TOO_LARGE
+              - PAYLOAD_TOO_LARGE
+              - RATE_LIMITED
+              - KEY_BUDGET_EXCEEDED
+              description: Machine-readable error code. The per-status `x-error-codes` list on each response narrows which codes that status can carry.
+            message:
+              type: string
+              description: Human-readable explanation of the error.
+            status:
+              type: integer
+              description: HTTP status code, echoed in the body.
+            doc_url:
+              type: string
+              description: Link to the docs page for this error code.
+            details:
+              type:
+              - object
+              - 'null'
+              additionalProperties: true
+              description: Optional structured context (e.g. the comment-lookup not-found taxonomy). Omitted on ordinary errors.
+          required:
+          - type
+          - message
+          - status
+          - doc_url
+        credits_used:
+          type: integer
+          description: Net credits charged for this request. Error paths deduct-then-refund, so this is 0 in almost every case; a partial-coverage composite may keep the succeeded-leg cost.
+        credits_remaining:
+          type:
+          - integer
+          - 'null'
+          description: Credits left after this request, or null when the balance could not be read (e.g. auth failed before lookup).
+        request_id:
+          type: string
+          description: Unique request identifier - matches the X-Request-Id header. Quote it in support requests.
+      required:
+      - success
+      - error
+      - credits_used
+      - credits_remaining
+      - request_id
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key authentication. Send your key in the `x-api-key` request header on every call. Create and manage keys in the dashboard.
+x-tagGroups:
+- name: Account
+  tags:
+  - meta
+- name: Cohorts - Audience Panels
+  tags:
+  - cohorts
+- name: Universal Search
+  tags:
+  - search
+  - ai-search
+  - geo
+- name: Prism - Composite Intelligence
+  tags:
+  - prism
+- name: Social Platforms
+  tags:
+  - tiktok
+  - instagram
+  - youtube
+  - facebook
+  - facebook-ads
+  - twitter
+  - linkedin
+  - linkedin-ads
+  - reddit
+  - threads
+  - pinterest
+  - twitch
+  - truthsocial
+  - snapchat
+  - kick
+  - bluesky
+  - rumble
+  - kwai
+- name: Commerce & Reviews
+  tags:
+  - amazon
+  - tiktokshop
+  - app_store
+  - google_play
+  - google_shopping
+  - trustpilot
+  - tripadvisor
+- name: Search, News & Web
+  tags:
+  - google
+  - google-ads
+  - google_news
+  - google_finance
+  - naver
+  - perplexity
+  - tavily
+  - hackernews
+  - github
+  - content_analysis
+  - polymarket
+  - spotify
+- name: Link in Bio
+  tags:
+  - linktree
+  - komi
+  - pillar
+  - linkbio
+  - linkme
+- name: More Platforms
+  tags:
+  - apple_music
+  - ebay
+  - google_trends
+  - home_depot
+  - target
+  - tiktok-ads
+  - walmart
+  - wayfair
+  - web
+- name: Utility
+  tags:
+  - utility
+x-full-spec: https://www.socialcrawl.dev/openapi.json

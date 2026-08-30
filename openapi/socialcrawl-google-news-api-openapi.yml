@@ -1,0 +1,572 @@
+openapi: 3.2.0
+info:
+  title: SocialCrawl Google News API
+  version: 1.0.0
+  description: 'Unified social media data API - one API key, one consistent response format, 50 platforms, 400 endpoints. Power AI agents with clean social data.
+
+
+    Slim variant: inline examples removed and the shared error responses hoisted into components. The full annotated spec is at https://www.socialcrawl.dev/openapi.json.'
+  contact:
+    name: SocialCrawl
+    url: https://www.socialcrawl.dev
+    email: support@socialcrawl.dev
+servers:
+- url: https://www.socialcrawl.dev/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: google_news
+  description: Google_news endpoints
+paths:
+  /google_news/search:
+    get:
+      summary: Search Google News
+      description: 'Returns a unified NewsArticleList of the top Google News results for a keyword, right now: headline, source outlet, thumbnail, article URL, and absolute UTC publish time (a text snippet may be present on some results). Ranked results land in one list (`placement` distinguishes a Top Stories block when present). The keyword supports quoted phrases and boolean operators (AND, OR, NOT). Localize with `location_name`/`location_code`/`location_coordinate` + `language_code` (non-Latin scripts supported). Filter by recency with `time_range`, by an exact date window with `from`/`to` (YYYY-MM-DD or Unix timestamp; overrides `time_range` when present), or by outlet with `publisher` (a bare domain like bbc.com). `publisher`/`from`/`to` cannot be combined with `location_coordinate` or `time_range=hour` (clear 400, never billed). There is no pagination beyond `depth`. Google News exposes at most 200 articles per query (default 10, max 100 on this surface). For the full article body, scrape the returned `url`. Served live from Google News: an ordinary synchronous request.'
+      tags:
+      - google_news
+      operationId: get_google_news_search
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: standard
+      x-credit-cost: 1
+      parameters:
+      - name: keyword
+        in: query
+        required: true
+        description: Search query (e.g. 'openai'). Supports any language; pass the matching language_code. Advanced operators (site:, intitle:, cache:, …) are not supported.
+        schema:
+          type: string
+      - name: depth
+        in: query
+        required: false
+        description: Number of articles to retrieve (default 10, multiples of 10, max 100). No pagination beyond depth.
+        schema:
+          type: integer
+      - name: location_code
+        in: query
+        required: false
+        description: Google location code (e.g. 2840 = United States). Use one of location_code / location_name / location_coordinate.
+        schema:
+          type: integer
+      - name: location_name
+        in: query
+        required: false
+        description: Google location name (e.g. 'South Korea').
+        schema:
+          type: string
+      - name: location_coordinate
+        in: query
+        required: false
+        description: GPS target as 'latitude,longitude,radius_mm' (e.g. '40.7128,-74.0060,200') for local-news radius queries.
+        schema:
+          type: string
+      - name: language_code
+        in: query
+        required: false
+        description: Google language code (e.g. 'en', 'ko'). Default 'en'.
+        schema:
+          type: string
+      - name: time_range
+        in: query
+        required: false
+        description: 'Only return articles published within this window: hour, day, week, month, or year. Ignored when from/to is present.'
+        schema:
+          type: string
+          enum:
+          - hour
+          - day
+          - week
+          - month
+          - year
+      - name: publisher
+        in: query
+        required: false
+        description: Limit results to a single outlet's domain (e.g. 'bbc.com'). Bare domain only, no scheme, no path. Not combinable with location_coordinate or time_range=hour.
+        schema:
+          type: string
+      - name: from
+        in: query
+        required: false
+        description: Start of an exact publish-date window, as YYYY-MM-DD or a Unix timestamp. Overrides time_range. Not combinable with location_coordinate or time_range=hour.
+        schema:
+          type: string
+      - name: to
+        in: query
+        required: false
+        description: End of the publish-date window (inclusive), as YYYY-MM-DD or a Unix timestamp. Defaults to now when only from is set.
+        schema:
+          type: string
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      items:
+                        type: array
+                        description: Array of canonical news article wrappers ({ article })
+                        items:
+                          type: object
+                          description: Canonical news article wrapper
+                          properties:
+                            article:
+                              type: object
+                              description: Canonical NewsArticle object (unified across news sources)
+                              properties:
+                                id:
+                                  type: string
+                                  description: Stable article ID (hash of the url)
+                                title:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Article headline
+                                url:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Direct URL to the article
+                                source:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Publishing outlet name (falls back to the domain)
+                                domain:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Host domain of the article
+                                snippet:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Article excerpt (news_search items only; null on top_stories)
+                                image_url:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Thumbnail image URL
+                                published_at:
+                                  type:
+                                  - string
+                                  - integer
+                                  - 'null'
+                                  description: Absolute UTC publish time
+                                rank:
+                                  type:
+                                  - integer
+                                  - 'null'
+                                  description: Result rank (news_search items only; null on top_stories)
+                                placement:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: 'Source list: "news_search" or "top_stories"'
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                        description: Opaque cursor for the next page. Pass it back as a query parameter on endpoints that support pagination. Present only when the upstream reports more results.
+                      total:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Total number of matching results, when the upstream provides a count. Omitted otherwise.
+                      dropped:
+                        type: integer
+                        description: Number of upstream list items dropped because they could not be repaired to the endpoint schema. Valid list responses include 0.
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                    required:
+                    - dropped
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                  pagination:
+                    type: object
+                    description: Cursor state for this page. Present on every list response.
+                    properties:
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                        description: Opaque token to send back as `cursor` for the next page, or null at end-of-list. Pass it back verbatim; never decode or trim it.
+                      has_more:
+                        type: boolean
+                        description: Explicit stop signal. Prefer this over inspecting next_cursor or comparing against total.
+                      page_size:
+                        type: integer
+                        description: Number of items in THIS page.
+                    required:
+                    - next_cursor
+                    - has_more
+                    - page_size
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+                - pagination
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+components:
+  responses:
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+      x-error-codes:
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error401:
+      description: Unauthorized - missing or invalid API key
+      x-error-codes:
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error500:
+      description: Internal server error - credits automatically refunded
+      x-error-codes:
+      - INTERNAL_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error503:
+      description: Service unavailable - circuit breaker open for this platform, credits refunded
+      x-error-codes:
+      - SERVICE_UNAVAILABLE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error400:
+      description: Invalid request - missing or malformed parameters
+      x-error-codes:
+      - INVALID_REQUEST
+      - COHORT_MEMBER_LIMIT_EXCEEDED
+      - COHORT_LIMIT_EXCEEDED
+      - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+      x-error-codes:
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+      x-error-codes:
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error409:
+      description: Conflict - a request with this Idempotency-Key is still in flight, or the cohort resource is not in a state that allows this operation
+      x-error-codes:
+      - IDEMPOTENCY_KEY_CONFLICT
+      - COHORT_IDENTITY_CONFLICT
+      - COHORT_QUERY_NOT_CANCELLABLE
+      - COHORT_QUERY_NOT_READY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error405:
+      description: Method not allowed - wrong HTTP verb for this endpoint
+      x-error-codes:
+      - METHOD_NOT_ALLOWED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+      x-error-codes:
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    ErrorEnvelope:
+      type: object
+      description: Unified error response envelope. Every 4xx/5xx response returns this shape; `error.type` is a machine-readable code from the API's error catalog.
+      properties:
+        success:
+          type: boolean
+          enum:
+          - false
+          description: Always false on an error response.
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - MISSING_API_KEY
+              - INVALID_API_KEY
+              - INSUFFICIENT_CREDITS
+              - INVALID_REQUEST
+              - ENDPOINT_NOT_FOUND
+              - RESOURCE_NOT_FOUND
+              - CONCURRENCY_LIMIT
+              - UPSTREAM_ERROR
+              - SERVICE_UNAVAILABLE
+              - INTERNAL_ERROR
+              - METHOD_NOT_ALLOWED
+              - IDEMPOTENCY_KEY_CONFLICT
+              - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+              - COHORT_MEMBER_LIMIT_EXCEEDED
+              - COHORT_LIMIT_EXCEEDED
+              - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+              - COHORT_IDENTITY_CONFLICT
+              - COHORT_QUERY_NOT_CANCELLABLE
+              - COHORT_QUERY_NOT_READY
+              - COHORT_RESULT_TOO_LARGE
+              - PAYLOAD_TOO_LARGE
+              - RATE_LIMITED
+              - KEY_BUDGET_EXCEEDED
+              description: Machine-readable error code. The per-status `x-error-codes` list on each response narrows which codes that status can carry.
+            message:
+              type: string
+              description: Human-readable explanation of the error.
+            status:
+              type: integer
+              description: HTTP status code, echoed in the body.
+            doc_url:
+              type: string
+              description: Link to the docs page for this error code.
+            details:
+              type:
+              - object
+              - 'null'
+              additionalProperties: true
+              description: Optional structured context (e.g. the comment-lookup not-found taxonomy). Omitted on ordinary errors.
+          required:
+          - type
+          - message
+          - status
+          - doc_url
+        credits_used:
+          type: integer
+          description: Net credits charged for this request. Error paths deduct-then-refund, so this is 0 in almost every case; a partial-coverage composite may keep the succeeded-leg cost.
+        credits_remaining:
+          type:
+          - integer
+          - 'null'
+          description: Credits left after this request, or null when the balance could not be read (e.g. auth failed before lookup).
+        request_id:
+          type: string
+          description: Unique request identifier - matches the X-Request-Id header. Quote it in support requests.
+      required:
+      - success
+      - error
+      - credits_used
+      - credits_remaining
+      - request_id
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key authentication. Send your key in the `x-api-key` request header on every call. Create and manage keys in the dashboard.
+x-tagGroups:
+- name: Account
+  tags:
+  - meta
+- name: Cohorts - Audience Panels
+  tags:
+  - cohorts
+- name: Universal Search
+  tags:
+  - search
+  - ai-search
+  - geo
+- name: Prism - Composite Intelligence
+  tags:
+  - prism
+- name: Social Platforms
+  tags:
+  - tiktok
+  - instagram
+  - youtube
+  - facebook
+  - facebook-ads
+  - twitter
+  - linkedin
+  - linkedin-ads
+  - reddit
+  - threads
+  - pinterest
+  - twitch
+  - truthsocial
+  - snapchat
+  - kick
+  - bluesky
+  - rumble
+  - kwai
+- name: Commerce & Reviews
+  tags:
+  - amazon
+  - tiktokshop
+  - app_store
+  - google_play
+  - google_shopping
+  - trustpilot
+  - tripadvisor
+- name: Search, News & Web
+  tags:
+  - google
+  - google-ads
+  - google_news
+  - google_finance
+  - naver
+  - perplexity
+  - tavily
+  - hackernews
+  - github
+  - content_analysis
+  - polymarket
+  - spotify
+- name: Link in Bio
+  tags:
+  - linktree
+  - komi
+  - pillar
+  - linkbio
+  - linkme
+- name: More Platforms
+  tags:
+  - apple_music
+  - ebay
+  - google_trends
+  - home_depot
+  - target
+  - tiktok-ads
+  - walmart
+  - wayfair
+  - web
+- name: Utility
+  tags:
+  - utility
+x-full-spec: https://www.socialcrawl.dev/openapi.json

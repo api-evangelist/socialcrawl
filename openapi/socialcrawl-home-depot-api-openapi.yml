@@ -1,0 +1,2321 @@
+openapi: 3.2.0
+info:
+  title: SocialCrawl Home Depot API
+  version: 1.0.0
+  description: 'Unified social media data API - one API key, one consistent response format, 50 platforms, 400 endpoints. Power AI agents with clean social data.
+
+
+    Slim variant: inline examples removed and the shared error responses hoisted into components. The full annotated spec is at https://www.socialcrawl.dev/openapi.json.'
+  contact:
+    name: SocialCrawl
+    url: https://www.socialcrawl.dev
+    email: support@socialcrawl.dev
+servers:
+- url: https://www.socialcrawl.dev/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: home_depot
+  description: Home_depot endpoints
+paths:
+  /home_depot/product:
+    get:
+      summary: Get a Home Depot product by item id or URL
+      description: 'Returns full product detail for a Home Depot item: title, brand, model number, UPC, description, highlight bullets, current and original price, star rating with its 1-5 histogram, review count, the image gallery, a grouped specification table, and stock status. It also returns per-store inventory under product.ext.store_inventory, giving the actual unit count on the shelf at each nearby store, which is the field nothing else in this API sells. Pass store_id or zipcode to localise pricing and that inventory. For the review text call GET /v1/home_depot/reviews with the same item id.'
+      tags:
+      - home_depot
+      operationId: get_home_depot_product
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: advanced
+      x-credit-cost: 5
+      x-socialcrawl-oneOf:
+      - - item_id
+        - url
+      parameters:
+      - name: item_id
+        in: query
+        required: false
+        description: 'Home Depot internet number (item id), the numeric id at the end of a homedepot.com product URL: homedepot.com/p/<name>/326680222 is item id 326680222. Pass url instead if you would rather hand over the whole product URL. (one of: item_id, url; at least one required)'
+        schema:
+          type: string
+      - name: url
+        in: query
+        required: false
+        description: 'Full Home Depot product page URL, used instead of item_id. The item id is extracted from it. (one of: item_id, url; at least one required)'
+        schema:
+          type: string
+      - name: store_id
+        in: query
+        required: false
+        description: Home Depot store number used to localise price, stock, and pickup availability, for example 121.
+        schema:
+          type: string
+      - name: zipcode
+        in: query
+        required: false
+        description: Five-digit US ZIP code used to localise delivery options and pricing, for example 30301.
+        schema:
+          type: string
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      id:
+                        type: string
+                        description: Platform product ID (Amazon ASIN / Google Shopping product id)
+                      url:
+                        type:
+                        - string
+                        - 'null'
+                        description: Direct URL to the product page
+                      title:
+                        type:
+                        - string
+                        - 'null'
+                        description: Product title
+                      description:
+                        type:
+                        - string
+                        - 'null'
+                        description: String at product.description
+                      seller:
+                        type:
+                        - string
+                        - 'null'
+                        description: String at product.seller
+                      brand:
+                        type:
+                        - string
+                        - 'null'
+                        description: Brand name (cleaned). Null when the platform exposes a seller instead.
+                      price:
+                        type: object
+                        description: Price block (current, original/list, currency)
+                        properties:
+                          current:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at product.price.current
+                          original:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at product.price.original
+                          currency:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.price.currency
+                      rating:
+                        type: object
+                        description: Aggregate rating (average + number of ratings)
+                        properties:
+                          average:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at product.rating.average
+                          count:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at product.rating.count
+                      image_urls:
+                        type:
+                        - string
+                        - array
+                        - 'null'
+                        description: Primary image URL, or an array of image URLs for products with a gallery.
+                        items:
+                          type: string
+                          description: Primary image URL, or an array of image URLs for products with a gallery.
+                      availability:
+                        type:
+                        - string
+                        - 'null'
+                        description: Stock/availability string when surfaced
+                      reviews_count:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Numeric at product.reviews_count
+                      features:
+                        type:
+                        - array
+                        - 'null'
+                        description: Array at product.features
+                        items:
+                          type: string
+                          description: String at product.features
+                      specifications:
+                        type:
+                        - array
+                        - 'null'
+                        description: Array at product.specifications
+                        items:
+                          type: object
+                          description: 'Nested object: product.specifications'
+                          properties:
+                            group:
+                              type:
+                              - string
+                              - 'null'
+                              description: String at product.specifications.group
+                            name:
+                              type:
+                              - string
+                              - 'null'
+                              description: String at product.specifications.name
+                            value:
+                              type:
+                              - string
+                              - 'null'
+                              description: String at product.specifications.value
+                      variations:
+                        type:
+                        - array
+                        - 'null'
+                        description: Array at product.variations
+                        items:
+                          type: object
+                          description: 'Nested object: product.variations'
+                          properties:
+                            id:
+                              type:
+                              - string
+                              - 'null'
+                              description: String at product.variations.id
+                            title:
+                              type:
+                              - string
+                              - 'null'
+                              description: String at product.variations.title
+                            url:
+                              type:
+                              - string
+                              - 'null'
+                              description: String at product.variations.url
+                            category:
+                              type:
+                              - string
+                              - 'null'
+                              description: String at product.variations.category
+                      ext:
+                        type:
+                        - object
+                        - 'null'
+                        description: 'Nested object: product.ext'
+                        properties:
+                          gid:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.ext.gid
+                          data_docid:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.ext.data_docid
+                          pvf:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.ext.pvf
+                          seller_id:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.ext.seller_id
+                          sold_count:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at product.ext.sold_count
+                          catalog_id:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.ext.catalog_id
+                          requested_id:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.ext.requested_id
+                          rating_distribution:
+                            type:
+                            - object
+                            - 'null'
+                            description: 'Nested object: product.ext.rating_distribution'
+                            properties:
+                              star_1:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Numeric at product.ext.rating_distribution.star_1
+                              star_2:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Numeric at product.ext.rating_distribution.star_2
+                              star_3:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Numeric at product.ext.rating_distribution.star_3
+                              star_4:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Numeric at product.ext.rating_distribution.star_4
+                              star_5:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Numeric at product.ext.rating_distribution.star_5
+                          store_inventory:
+                            type:
+                            - array
+                            - 'null'
+                            description: Array at product.ext.store_inventory
+                            items:
+                              type: object
+                              description: 'Nested object: product.ext.store_inventory'
+                              properties:
+                                store_id:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at product.ext.store_inventory.store_id
+                                store_name:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at product.ext.store_inventory.store_name
+                                state:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at product.ext.store_inventory.state
+                                in_stock:
+                                  type:
+                                  - boolean
+                                  - 'null'
+                                  description: Boolean at product.ext.store_inventory.in_stock
+                                quantity:
+                                  type:
+                                  - integer
+                                  - 'null'
+                                  description: Numeric at product.ext.store_inventory.quantity
+                          condition:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.ext.condition
+                          available_quantity:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at product.ext.available_quantity
+                          watchers:
+                            type:
+                            - integer
+                            - 'null'
+                            description: Numeric at product.ext.watchers
+                          sold_at:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.ext.sold_at
+                          sold_caption:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.ext.sold_caption
+                          buying_format:
+                            type:
+                            - string
+                            - 'null'
+                            description: String at product.ext.buying_format
+                          seller_reputation:
+                            type:
+                            - object
+                            - 'null'
+                            description: 'Nested object: product.ext.seller_reputation'
+                            properties:
+                              feedback_percentage:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Numeric at product.ext.seller_reputation.feedback_percentage
+                              feedback_count:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Numeric at product.ext.seller_reputation.feedback_count
+                              top_rated:
+                                type:
+                                - boolean
+                                - 'null'
+                                description: Boolean at product.ext.seller_reputation.top_rated
+                              items_sold:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Numeric at product.ext.seller_reputation.items_sold
+                              joined:
+                                type:
+                                - string
+                                - 'null'
+                                description: String at product.ext.seller_reputation.joined
+                              url:
+                                type:
+                                - string
+                                - 'null'
+                                description: String at product.ext.seller_reputation.url
+                              detailed_ratings:
+                                type:
+                                - object
+                                - 'null'
+                                description: 'Nested object: product.ext.seller_reputation.detailed_ratings'
+                                properties:
+                                  accurate_description:
+                                    type:
+                                    - integer
+                                    - 'null'
+                                    description: Numeric at product.ext.seller_reputation.detailed_ratings.accurate_description
+                                  reasonable_shipping_cost:
+                                    type:
+                                    - integer
+                                    - 'null'
+                                    description: Numeric at product.ext.seller_reputation.detailed_ratings.reasonable_shipping_cost
+                                  shipping_speed:
+                                    type:
+                                    - integer
+                                    - 'null'
+                                    description: Numeric at product.ext.seller_reputation.detailed_ratings.shipping_speed
+                                  communication:
+                                    type:
+                                    - integer
+                                    - 'null'
+                                    description: Numeric at product.ext.seller_reputation.detailed_ratings.communication
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /home_depot/reviews:
+    get:
+      summary: Get Home Depot product reviews
+      description: 'Returns written customer reviews for a Home Depot product, 20 per page and up to 100, each with the review text, star rating, reviewer name, submission date, verified-purchaser flag, helpful-vote count, reviewer photos, and any manufacturer reply. This is the fastest and most complete review surface in the API: pages do not overlap, the review total is stable across pages, and every one of the nine review fields is populated, so a full crawl is deterministic. Pass the returned cursor back until has_more is false.'
+      tags:
+      - home_depot
+      operationId: get_home_depot_reviews
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: advanced
+      x-credit-cost: 5
+      parameters:
+      - name: item_id
+        in: query
+        required: true
+        description: 'Home Depot internet number (item id), the numeric id at the end of a homedepot.com product URL: homedepot.com/p/<name>/326680222 is item id 326680222. Pass url instead if you would rather hand over the whole product URL.'
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        description: 'Page number, starting at 1. Prefer the universal cursor parameter. Native upstream cursor param. Send the universal `cursor` instead: the API maps it to this name for you.'
+        deprecated: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 51
+      - name: items_per_page
+        in: query
+        required: false
+        description: Reviews per page, 1 to 100. Defaults to 20.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: rating
+        in: query
+        required: false
+        description: Return only reviews with this star rating, 1 to 5.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 5
+      - name: sort_by
+        in: query
+        required: false
+        description: 'Review ordering: helpful (default), newest, oldest, photos_first, highest_rating, or lowest_rating.'
+        schema:
+          type: string
+          enum:
+          - helpful
+          - newest
+          - oldest
+          - photos_first
+          - highest_rating
+          - lowest_rating
+      - name: search_text
+        in: query
+        required: false
+        description: Return only reviews whose text contains these words, for example easy to use.
+        schema:
+          type: string
+      - name: verified_only
+        in: query
+        required: false
+        description: Set true to return only reviews written by verified purchasers.
+        schema:
+          type: boolean
+      - name: cursor
+        in: query
+        required: false
+        description: 'Universal pagination cursor. Send `pagination.next_cursor` from the previous response back verbatim: the API maps it to this endpoint''s native `page` (page style). You never construct, decode, or look up a cursor. Omit it for page 1.'
+        schema:
+          type: string
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      items:
+                        type: array
+                        description: Array of canonical review wrappers ({ review })
+                        items:
+                          type: object
+                          description: Canonical review wrapper
+                          properties:
+                            review:
+                              type: object
+                              description: Canonical Review object (shared across commerce platforms)
+                              properties:
+                                id:
+                                  type: string
+                                  description: Review ID (parsed from the review URL when not first-class)
+                                entity_id:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: ID of the reviewed entity (e.g. the Amazon ASIN)
+                                url:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at review.url
+                                title:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at review.title
+                                text:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Full review body
+                                rating:
+                                  type: object
+                                  description: Star rating (value + max)
+                                  properties:
+                                    value:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at review.rating.value
+                                    max:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at review.rating.max
+                                author:
+                                  type: object
+                                  description: 'Nested object: review.author'
+                                  properties:
+                                    name:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at review.author.name
+                                    avatar_url:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at review.author.avatar_url
+                                    url:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at review.author.url
+                                    location:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at review.author.location
+                                    reviews_count:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at review.author.reviews_count
+                                helpful_votes:
+                                  type:
+                                  - integer
+                                  - 'null'
+                                  description: Helpful-vote count (Amazon; null elsewhere)
+                                verified:
+                                  type:
+                                  - boolean
+                                  - 'null'
+                                  description: Verified-purchase flag (Amazon; null elsewhere)
+                                source:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at review.source
+                                language:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at review.language
+                                original_language:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at review.original_language
+                                translated:
+                                  type:
+                                  - boolean
+                                  - 'null'
+                                  description: Boolean at review.translated
+                                images:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  description: Array at review.images
+                                  items:
+                                    type: string
+                                    description: String at review.images
+                                responses:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  description: Array at review.responses
+                                  items:
+                                    type: object
+                                    description: 'Nested object: review.responses'
+                                    properties:
+                                      id:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at review.responses.id
+                                      author:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at review.responses.author
+                                      text:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at review.responses.text
+                                      published_at:
+                                        type:
+                                        - string
+                                        - integer
+                                        - 'null'
+                                        description: 'Union: string | integer | null'
+                                published_at:
+                                  type:
+                                  - string
+                                  - integer
+                                  - 'null'
+                                  description: 'Union: string | integer | null'
+                                ext:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  description: 'Nested object: review.ext'
+                                  properties:
+                                    appdata:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: Leaf at review.ext.appdata
+                                    tiktokshop:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: Leaf at review.ext.tiktokshop
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                        description: Opaque cursor for the next page. Pass it back as a query parameter on endpoints that support pagination. Present only when the upstream reports more results.
+                      total:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Total number of matching results, when the upstream provides a count. Omitted otherwise.
+                      dropped:
+                        type: integer
+                        description: Number of upstream list items dropped because they could not be repaired to the endpoint schema. Valid list responses include 0.
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                    required:
+                    - dropped
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                  pagination:
+                    type: object
+                    description: Cursor state for this page. Present on every list response.
+                    properties:
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                        description: Opaque token to send back as `cursor` for the next page, or null at end-of-list. Pass it back verbatim; never decode or trim it.
+                      has_more:
+                        type: boolean
+                        description: Explicit stop signal. Prefer this over inspecting next_cursor or comparing against total.
+                      page_size:
+                        type: integer
+                        description: Number of items in THIS page.
+                    required:
+                    - next_cursor
+                    - has_more
+                    - page_size
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+                - pagination
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /home_depot/search:
+    get:
+      summary: Search Home Depot products by keyword
+      description: Returns Home Depot products matching a keyword, 24 per page by default and up to 48, each with its item id, title, brand, model number, current and original price, star rating, review count, image gallery, stock status, and department. Feed a returned item id into GET /v1/home_depot/product for full detail including per-store shelf counts, or GET /v1/home_depot/reviews for the review text. Pass store_id or zipcode to localise pricing and availability. This is also the keyword-to-item-id resolver for the rest of the Home Depot API. Home Depot's own result count is an estimate that moves between pages, so no total is returned here; paginate on has_more, which is capped at the 30 pages the upstream serves.
+      tags:
+      - home_depot
+      operationId: get_home_depot_search
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: advanced
+      x-credit-cost: 5
+      parameters:
+      - name: query
+        in: query
+        required: true
+        description: Free-text product search, for example drill or cordless impact driver.
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        description: 'Page number, 1 to 30. Prefer the universal cursor parameter. Native upstream cursor param. Send the universal `cursor` instead: the API maps it to this name for you.'
+        deprecated: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 30
+      - name: items_per_page
+        in: query
+        required: false
+        description: Products per page, 1 to 48. Defaults to 24.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 48
+      - name: sort_by
+        in: query
+        required: false
+        description: 'Result ordering: best_match (default), top_sellers, top_rated, price_low_to_high, price_high_to_low, or newest.'
+        schema:
+          type: string
+          enum:
+          - best_match
+          - top_sellers
+          - top_rated
+          - price_low_to_high
+          - price_high_to_low
+          - newest
+      - name: brand
+        in: query
+        required: false
+        description: Return only products from one brand, for example DEWALT.
+        schema:
+          type: string
+      - name: min_price
+        in: query
+        required: false
+        description: Lowest price to include, in USD. Applied by Home Depot and approximate, so filter on product.price.current if you need a hard bound.
+        schema:
+          type: string
+      - name: max_price
+        in: query
+        required: false
+        description: Highest price to include, in USD. Applied by Home Depot and approximate, so filter on product.price.current if you need a hard bound.
+        schema:
+          type: string
+      - name: in_stock
+        in: query
+        required: false
+        description: Set true to return only products Home Depot can fulfil now.
+        schema:
+          type: boolean
+      - name: store_id
+        in: query
+        required: false
+        description: Home Depot store number used to localise price, stock, and pickup availability, for example 121.
+        schema:
+          type: string
+      - name: zipcode
+        in: query
+        required: false
+        description: Five-digit US ZIP code used to localise delivery options and pricing, for example 30301.
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        required: false
+        description: 'Universal pagination cursor. Send `pagination.next_cursor` from the previous response back verbatim: the API maps it to this endpoint''s native `page` (page style). You never construct, decode, or look up a cursor. Omit it for page 1.'
+        schema:
+          type: string
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      items:
+                        type: array
+                        description: Array of canonical product wrappers ({ product })
+                        items:
+                          type: object
+                          description: Canonical product wrapper
+                          properties:
+                            product:
+                              type: object
+                              description: Canonical Product object (unified across commerce platforms)
+                              properties:
+                                id:
+                                  type: string
+                                  description: Platform product ID (Amazon ASIN / Google Shopping product id)
+                                url:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Direct URL to the product page
+                                title:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Product title
+                                description:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at product.description
+                                seller:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at product.seller
+                                brand:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Brand name (cleaned). Null when the platform exposes a seller instead.
+                                price:
+                                  type: object
+                                  description: Price block (current, original/list, currency)
+                                  properties:
+                                    current:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.price.current
+                                    original:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.price.original
+                                    currency:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.price.currency
+                                rating:
+                                  type: object
+                                  description: Aggregate rating (average + number of ratings)
+                                  properties:
+                                    average:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.rating.average
+                                    count:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.rating.count
+                                image_urls:
+                                  type:
+                                  - string
+                                  - array
+                                  - 'null'
+                                  description: Primary image URL, or an array of image URLs for products with a gallery.
+                                  items:
+                                    type: string
+                                    description: Primary image URL, or an array of image URLs for products with a gallery.
+                                availability:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Stock/availability string when surfaced
+                                reviews_count:
+                                  type:
+                                  - integer
+                                  - 'null'
+                                  description: Numeric at product.reviews_count
+                                features:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  description: Array at product.features
+                                  items:
+                                    type: string
+                                    description: String at product.features
+                                specifications:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  description: Array at product.specifications
+                                  items:
+                                    type: object
+                                    description: 'Nested object: product.specifications'
+                                    properties:
+                                      group:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.specifications.group
+                                      name:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.specifications.name
+                                      value:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.specifications.value
+                                variations:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  description: Array at product.variations
+                                  items:
+                                    type: object
+                                    description: 'Nested object: product.variations'
+                                    properties:
+                                      id:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.variations.id
+                                      title:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.variations.title
+                                      url:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.variations.url
+                                      category:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.variations.category
+                                ext:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  description: 'Nested object: product.ext'
+                                  properties:
+                                    gid:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.gid
+                                    data_docid:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.data_docid
+                                    pvf:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.pvf
+                                    seller_id:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.seller_id
+                                    sold_count:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.ext.sold_count
+                                    catalog_id:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.catalog_id
+                                    requested_id:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.requested_id
+                                    rating_distribution:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      description: 'Nested object: product.ext.rating_distribution'
+                                      properties:
+                                        star_1:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.rating_distribution.star_1
+                                        star_2:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.rating_distribution.star_2
+                                        star_3:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.rating_distribution.star_3
+                                        star_4:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.rating_distribution.star_4
+                                        star_5:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.rating_distribution.star_5
+                                    store_inventory:
+                                      type:
+                                      - array
+                                      - 'null'
+                                      description: Array at product.ext.store_inventory
+                                      items:
+                                        type: object
+                                        description: 'Nested object: product.ext.store_inventory'
+                                        properties:
+                                          store_id:
+                                            type:
+                                            - string
+                                            - 'null'
+                                            description: String at product.ext.store_inventory.store_id
+                                          store_name:
+                                            type:
+                                            - string
+                                            - 'null'
+                                            description: String at product.ext.store_inventory.store_name
+                                          state:
+                                            type:
+                                            - string
+                                            - 'null'
+                                            description: String at product.ext.store_inventory.state
+                                          in_stock:
+                                            type:
+                                            - boolean
+                                            - 'null'
+                                            description: Boolean at product.ext.store_inventory.in_stock
+                                          quantity:
+                                            type:
+                                            - integer
+                                            - 'null'
+                                            description: Numeric at product.ext.store_inventory.quantity
+                                    condition:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.condition
+                                    available_quantity:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.ext.available_quantity
+                                    watchers:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.ext.watchers
+                                    sold_at:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.sold_at
+                                    sold_caption:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.sold_caption
+                                    buying_format:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.buying_format
+                                    seller_reputation:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      description: 'Nested object: product.ext.seller_reputation'
+                                      properties:
+                                        feedback_percentage:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.seller_reputation.feedback_percentage
+                                        feedback_count:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.seller_reputation.feedback_count
+                                        top_rated:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: Boolean at product.ext.seller_reputation.top_rated
+                                        items_sold:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.seller_reputation.items_sold
+                                        joined:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: String at product.ext.seller_reputation.joined
+                                        url:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: String at product.ext.seller_reputation.url
+                                        detailed_ratings:
+                                          type:
+                                          - object
+                                          - 'null'
+                                          description: 'Nested object: product.ext.seller_reputation.detailed_ratings'
+                                          properties:
+                                            accurate_description:
+                                              type:
+                                              - integer
+                                              - 'null'
+                                              description: Numeric at product.ext.seller_reputation.detailed_ratings.accurate_description
+                                            reasonable_shipping_cost:
+                                              type:
+                                              - integer
+                                              - 'null'
+                                              description: Numeric at product.ext.seller_reputation.detailed_ratings.reasonable_shipping_cost
+                                            shipping_speed:
+                                              type:
+                                              - integer
+                                              - 'null'
+                                              description: Numeric at product.ext.seller_reputation.detailed_ratings.shipping_speed
+                                            communication:
+                                              type:
+                                              - integer
+                                              - 'null'
+                                              description: Numeric at product.ext.seller_reputation.detailed_ratings.communication
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                        description: Opaque cursor for the next page. Pass it back as a query parameter on endpoints that support pagination. Present only when the upstream reports more results.
+                      total:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Total number of matching results, when the upstream provides a count. Omitted otherwise.
+                      dropped:
+                        type: integer
+                        description: Number of upstream list items dropped because they could not be repaired to the endpoint schema. Valid list responses include 0.
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                    required:
+                    - dropped
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                  pagination:
+                    type: object
+                    description: Cursor state for this page. Present on every list response.
+                    properties:
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                        description: Opaque token to send back as `cursor` for the next page, or null at end-of-list. Pass it back verbatim; never decode or trim it.
+                      has_more:
+                        type: boolean
+                        description: Explicit stop signal. Prefer this over inspecting next_cursor or comparing against total.
+                      page_size:
+                        type: integer
+                        description: Number of items in THIS page.
+                    required:
+                    - next_cursor
+                    - has_more
+                    - page_size
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+                - pagination
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /home_depot/category:
+    get:
+      summary: Browse Home Depot products in a category
+      description: 'Returns products listed in a Home Depot category, 24 per page by default and up to 48, with the same row shape as GET /v1/home_depot/search: item id, title, brand, model number, price, rating, review count, images, and stock status. Category ids are the 5yc1v… navigation segment of a homedepot.com category URL, and also come back in the breadcrumbs and filters of a search response. Two upstream caveats measured on the live source: category rows return a null product.url even though search rows populate it, so resolve the item id through GET /v1/home_depot/product when you need a link; and a small category serves the same rows again instead of an empty page once you pass its last page, so paginate on has_more rather than on an empty result.'
+      tags:
+      - home_depot
+      operationId: get_home_depot_category
+      security:
+      - ApiKeyAuth: []
+      x-credit-tier: advanced
+      x-credit-cost: 5
+      parameters:
+      - name: category_id
+        in: query
+        required: true
+        description: Home Depot category id, the 5yc1v… segment of a homedepot.com category URL, for example 5yc1vZc2bp. Also returned in the breadcrumbs and filters of GET /v1/home_depot/search.
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        description: 'Page number, 1 to 30. Prefer the universal cursor parameter. Native upstream cursor param. Send the universal `cursor` instead: the API maps it to this name for you.'
+        deprecated: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 30
+      - name: items_per_page
+        in: query
+        required: false
+        description: Products per page, 1 to 48. Defaults to 24.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 48
+      - name: sort_by
+        in: query
+        required: false
+        description: 'Result ordering: best_match (default), top_sellers, top_rated, price_low_to_high, price_high_to_low, or newest.'
+        schema:
+          type: string
+          enum:
+          - best_match
+          - top_sellers
+          - top_rated
+          - price_low_to_high
+          - price_high_to_low
+          - newest
+      - name: brand
+        in: query
+        required: false
+        description: Return only products from one brand, for example DEWALT.
+        schema:
+          type: string
+      - name: min_price
+        in: query
+        required: false
+        description: Lowest price to include, in USD. Applied by Home Depot and approximate, so filter on product.price.current if you need a hard bound.
+        schema:
+          type: string
+      - name: max_price
+        in: query
+        required: false
+        description: Highest price to include, in USD. Applied by Home Depot and approximate, so filter on product.price.current if you need a hard bound.
+        schema:
+          type: string
+      - name: in_stock
+        in: query
+        required: false
+        description: Set true to return only products Home Depot can fulfil now.
+        schema:
+          type: boolean
+      - name: store_id
+        in: query
+        required: false
+        description: Home Depot store number used to localise price, stock, and pickup availability, for example 121.
+        schema:
+          type: string
+      - name: zipcode
+        in: query
+        required: false
+        description: Five-digit US ZIP code used to localise delivery options and pricing, for example 30301.
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        required: false
+        description: 'Universal pagination cursor. Send `pagination.next_cursor` from the previous response back verbatim: the API maps it to this endpoint''s native `page` (page style). You never construct, decode, or look up a cursor. Omit it for page 1.'
+        schema:
+          type: string
+      - name: Cache-Control
+        in: header
+        required: false
+        description: Send `no-cache` to bypass the response cache and force a live fetch. Billed at the normal endpoint cost; the fresh result is written back to cache for the next caller. Only the `no-cache` directive triggers this. See the Response Schema guide for details.
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: 'Optional UUID that makes the request safely retriable. A replay keeps the cached payload immutable except for billing metadata: `credits_used` becomes 0, `idempotent_replay` becomes true, and `credits_remaining` is refreshed to the current balance. A known current balance appears in both the body and `X-Credits-Remaining` header; no balance row resolves to 0. On a transient lookup failure, body `credits_remaining` is null and `X-Credits-Remaining` is omitted. Scoped per account with a 24-hour TTL.'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Credits-Used:
+              description: Net credits charged for this response. Idempotency replays report 0.
+              schema:
+                type: integer
+                minimum: 0
+            X-Credits-Remaining:
+              description: Current balance when known. On an idempotency replay, this header is omitted when the balance lookup fails; body `credits_remaining` is null instead.
+              schema:
+                type: integer
+                minimum: 0
+            X-Idempotent-Replay:
+              description: Present with value `true` only when this response replays a settled idempotency record.
+              schema:
+                type: string
+                enum:
+                - 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request succeeded
+                  platform:
+                    type: string
+                    description: Platform name
+                  endpoint:
+                    type: string
+                    description: API endpoint path
+                  data:
+                    type: object
+                    description: Platform-specific response data
+                    properties:
+                      items:
+                        type: array
+                        description: Array of canonical product wrappers ({ product })
+                        items:
+                          type: object
+                          description: Canonical product wrapper
+                          properties:
+                            product:
+                              type: object
+                              description: Canonical Product object (unified across commerce platforms)
+                              properties:
+                                id:
+                                  type: string
+                                  description: Platform product ID (Amazon ASIN / Google Shopping product id)
+                                url:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Direct URL to the product page
+                                title:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Product title
+                                description:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at product.description
+                                seller:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: String at product.seller
+                                brand:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Brand name (cleaned). Null when the platform exposes a seller instead.
+                                price:
+                                  type: object
+                                  description: Price block (current, original/list, currency)
+                                  properties:
+                                    current:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.price.current
+                                    original:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.price.original
+                                    currency:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.price.currency
+                                rating:
+                                  type: object
+                                  description: Aggregate rating (average + number of ratings)
+                                  properties:
+                                    average:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.rating.average
+                                    count:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.rating.count
+                                image_urls:
+                                  type:
+                                  - string
+                                  - array
+                                  - 'null'
+                                  description: Primary image URL, or an array of image URLs for products with a gallery.
+                                  items:
+                                    type: string
+                                    description: Primary image URL, or an array of image URLs for products with a gallery.
+                                availability:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Stock/availability string when surfaced
+                                reviews_count:
+                                  type:
+                                  - integer
+                                  - 'null'
+                                  description: Numeric at product.reviews_count
+                                features:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  description: Array at product.features
+                                  items:
+                                    type: string
+                                    description: String at product.features
+                                specifications:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  description: Array at product.specifications
+                                  items:
+                                    type: object
+                                    description: 'Nested object: product.specifications'
+                                    properties:
+                                      group:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.specifications.group
+                                      name:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.specifications.name
+                                      value:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.specifications.value
+                                variations:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  description: Array at product.variations
+                                  items:
+                                    type: object
+                                    description: 'Nested object: product.variations'
+                                    properties:
+                                      id:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.variations.id
+                                      title:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.variations.title
+                                      url:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.variations.url
+                                      category:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: String at product.variations.category
+                                ext:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  description: 'Nested object: product.ext'
+                                  properties:
+                                    gid:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.gid
+                                    data_docid:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.data_docid
+                                    pvf:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.pvf
+                                    seller_id:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.seller_id
+                                    sold_count:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.ext.sold_count
+                                    catalog_id:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.catalog_id
+                                    requested_id:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.requested_id
+                                    rating_distribution:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      description: 'Nested object: product.ext.rating_distribution'
+                                      properties:
+                                        star_1:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.rating_distribution.star_1
+                                        star_2:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.rating_distribution.star_2
+                                        star_3:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.rating_distribution.star_3
+                                        star_4:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.rating_distribution.star_4
+                                        star_5:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.rating_distribution.star_5
+                                    store_inventory:
+                                      type:
+                                      - array
+                                      - 'null'
+                                      description: Array at product.ext.store_inventory
+                                      items:
+                                        type: object
+                                        description: 'Nested object: product.ext.store_inventory'
+                                        properties:
+                                          store_id:
+                                            type:
+                                            - string
+                                            - 'null'
+                                            description: String at product.ext.store_inventory.store_id
+                                          store_name:
+                                            type:
+                                            - string
+                                            - 'null'
+                                            description: String at product.ext.store_inventory.store_name
+                                          state:
+                                            type:
+                                            - string
+                                            - 'null'
+                                            description: String at product.ext.store_inventory.state
+                                          in_stock:
+                                            type:
+                                            - boolean
+                                            - 'null'
+                                            description: Boolean at product.ext.store_inventory.in_stock
+                                          quantity:
+                                            type:
+                                            - integer
+                                            - 'null'
+                                            description: Numeric at product.ext.store_inventory.quantity
+                                    condition:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.condition
+                                    available_quantity:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.ext.available_quantity
+                                    watchers:
+                                      type:
+                                      - integer
+                                      - 'null'
+                                      description: Numeric at product.ext.watchers
+                                    sold_at:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.sold_at
+                                    sold_caption:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.sold_caption
+                                    buying_format:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: String at product.ext.buying_format
+                                    seller_reputation:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      description: 'Nested object: product.ext.seller_reputation'
+                                      properties:
+                                        feedback_percentage:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.seller_reputation.feedback_percentage
+                                        feedback_count:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.seller_reputation.feedback_count
+                                        top_rated:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: Boolean at product.ext.seller_reputation.top_rated
+                                        items_sold:
+                                          type:
+                                          - integer
+                                          - 'null'
+                                          description: Numeric at product.ext.seller_reputation.items_sold
+                                        joined:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: String at product.ext.seller_reputation.joined
+                                        url:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: String at product.ext.seller_reputation.url
+                                        detailed_ratings:
+                                          type:
+                                          - object
+                                          - 'null'
+                                          description: 'Nested object: product.ext.seller_reputation.detailed_ratings'
+                                          properties:
+                                            accurate_description:
+                                              type:
+                                              - integer
+                                              - 'null'
+                                              description: Numeric at product.ext.seller_reputation.detailed_ratings.accurate_description
+                                            reasonable_shipping_cost:
+                                              type:
+                                              - integer
+                                              - 'null'
+                                              description: Numeric at product.ext.seller_reputation.detailed_ratings.reasonable_shipping_cost
+                                            shipping_speed:
+                                              type:
+                                              - integer
+                                              - 'null'
+                                              description: Numeric at product.ext.seller_reputation.detailed_ratings.shipping_speed
+                                            communication:
+                                              type:
+                                              - integer
+                                              - 'null'
+                                              description: Numeric at product.ext.seller_reputation.detailed_ratings.communication
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                        description: Opaque cursor for the next page. Pass it back as a query parameter on endpoints that support pagination. Present only when the upstream reports more results.
+                      total:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Total number of matching results, when the upstream provides a count. Omitted otherwise.
+                      dropped:
+                        type: integer
+                        description: Number of upstream list items dropped because they could not be repaired to the endpoint schema. Valid list responses include 0.
+                      _warnings:
+                        type: array
+                        description: 'Non-fatal notices about this response (field-map drift, clamped computed values). Advisory only: its presence never means the request failed. Omitted entirely when there is nothing to report, so treat absent as ''no warnings''.'
+                        items:
+                          type: string
+                          description: One advisory notice.
+                    required:
+                    - dropped
+                  credits_used:
+                    type: integer
+                    description: Number of credits consumed
+                  credits_remaining:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Current account balance. Null only when an idempotency replay succeeds but its transient balance lookup fails.
+                  request_id:
+                    type: string
+                    description: Unique request identifier for support
+                  cached:
+                    type: boolean
+                    description: Whether the response was served from cache
+                  idempotent_replay:
+                    type: boolean
+                    description: True only when this response is an idempotency replay
+                  pagination:
+                    type: object
+                    description: Cursor state for this page. Present on every list response.
+                    properties:
+                      next_cursor:
+                        type:
+                        - string
+                        - 'null'
+                        description: Opaque token to send back as `cursor` for the next page, or null at end-of-list. Pass it back verbatim; never decode or trim it.
+                      has_more:
+                        type: boolean
+                        description: Explicit stop signal. Prefer this over inspecting next_cursor or comparing against total.
+                      page_size:
+                        type: integer
+                        description: Number of items in THIS page.
+                    required:
+                    - next_cursor
+                    - has_more
+                    - page_size
+                required:
+                - success
+                - platform
+                - endpoint
+                - data
+                - credits_used
+                - credits_remaining
+                - request_id
+                - cached
+                - pagination
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '402':
+          $ref: '#/components/responses/Error402'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '405':
+          $ref: '#/components/responses/Error405'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '502':
+          $ref: '#/components/responses/Error502'
+        '503':
+          $ref: '#/components/responses/Error503'
+components:
+  responses:
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+      x-error-codes:
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error401:
+      description: Unauthorized - missing or invalid API key
+      x-error-codes:
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error500:
+      description: Internal server error - credits automatically refunded
+      x-error-codes:
+      - INTERNAL_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error503:
+      description: Service unavailable - circuit breaker open for this platform, credits refunded
+      x-error-codes:
+      - SERVICE_UNAVAILABLE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error400:
+      description: Invalid request - missing or malformed parameters
+      x-error-codes:
+      - INVALID_REQUEST
+      - COHORT_MEMBER_LIMIT_EXCEEDED
+      - COHORT_LIMIT_EXCEEDED
+      - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+      x-error-codes:
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+      x-error-codes:
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error409:
+      description: Conflict - a request with this Idempotency-Key is still in flight, or the cohort resource is not in a state that allows this operation
+      x-error-codes:
+      - IDEMPOTENCY_KEY_CONFLICT
+      - COHORT_IDENTITY_CONFLICT
+      - COHORT_QUERY_NOT_CANCELLABLE
+      - COHORT_QUERY_NOT_READY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error405:
+      description: Method not allowed - wrong HTTP verb for this endpoint
+      x-error-codes:
+      - METHOD_NOT_ALLOWED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+      x-error-codes:
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    ErrorEnvelope:
+      type: object
+      description: Unified error response envelope. Every 4xx/5xx response returns this shape; `error.type` is a machine-readable code from the API's error catalog.
+      properties:
+        success:
+          type: boolean
+          enum:
+          - false
+          description: Always false on an error response.
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - MISSING_API_KEY
+              - INVALID_API_KEY
+              - INSUFFICIENT_CREDITS
+              - INVALID_REQUEST
+              - ENDPOINT_NOT_FOUND
+              - RESOURCE_NOT_FOUND
+              - CONCURRENCY_LIMIT
+              - UPSTREAM_ERROR
+              - SERVICE_UNAVAILABLE
+              - INTERNAL_ERROR
+              - METHOD_NOT_ALLOWED
+              - IDEMPOTENCY_KEY_CONFLICT
+              - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+              - COHORT_MEMBER_LIMIT_EXCEEDED
+              - COHORT_LIMIT_EXCEEDED
+              - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+              - COHORT_IDENTITY_CONFLICT
+              - COHORT_QUERY_NOT_CANCELLABLE
+              - COHORT_QUERY_NOT_READY
+              - COHORT_RESULT_TOO_LARGE
+              - PAYLOAD_TOO_LARGE
+              - RATE_LIMITED
+              - KEY_BUDGET_EXCEEDED
+              description: Machine-readable error code. The per-status `x-error-codes` list on each response narrows which codes that status can carry.
+            message:
+              type: string
+              description: Human-readable explanation of the error.
+            status:
+              type: integer
+              description: HTTP status code, echoed in the body.
+            doc_url:
+              type: string
+              description: Link to the docs page for this error code.
+            details:
+              type:
+              - object
+              - 'null'
+              additionalProperties: true
+              description: Optional structured context (e.g. the comment-lookup not-found taxonomy). Omitted on ordinary errors.
+          required:
+          - type
+          - message
+          - status
+          - doc_url
+        credits_used:
+          type: integer
+          description: Net credits charged for this request. Error paths deduct-then-refund, so this is 0 in almost every case; a partial-coverage composite may keep the succeeded-leg cost.
+        credits_remaining:
+          type:
+          - integer
+          - 'null'
+          description: Credits left after this request, or null when the balance could not be read (e.g. auth failed before lookup).
+        request_id:
+          type: string
+          description: Unique request identifier - matches the X-Request-Id header. Quote it in support requests.
+      required:
+      - success
+      - error
+      - credits_used
+      - credits_remaining
+      - request_id
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key authentication. Send your key in the `x-api-key` request header on every call. Create and manage keys in the dashboard.
+x-tagGroups:
+- name: Account
+  tags:
+  - meta
+- name: Cohorts - Audience Panels
+  tags:
+  - cohorts
+- name: Universal Search
+  tags:
+  - search
+  - ai-search
+  - geo
+- name: Prism - Composite Intelligence
+  tags:
+  - prism
+- name: Social Platforms
+  tags:
+  - tiktok
+  - instagram
+  - youtube
+  - facebook
+  - facebook-ads
+  - twitter
+  - linkedin
+  - linkedin-ads
+  - reddit
+  - threads
+  - pinterest
+  - twitch
+  - truthsocial
+  - snapchat
+  - kick
+  - bluesky
+  - rumble
+  - kwai
+- name: Commerce & Reviews
+  tags:
+  - amazon
+  - tiktokshop
+  - app_store
+  - google_play
+  - google_shopping
+  - trustpilot
+  - tripadvisor
+- name: Search, News & Web
+  tags:
+  - google
+  - google-ads
+  - google_news
+  - google_finance
+  - naver
+  - perplexity
+  - tavily
+  - hackernews
+  - github
+  - content_analysis
+  - polymarket
+  - spotify
+- name: Link in Bio
+  tags:
+  - linktree
+  - komi
+  - pillar
+  - linkbio
+  - linkme
+- name: More Platforms
+  tags:
+  - apple_music
+  - ebay
+  - google_trends
+  - home_depot
+  - target
+  - tiktok-ads
+  - walmart
+  - wayfair
+  - web
+- name: Utility
+  tags:
+  - utility
+x-full-spec: https://www.socialcrawl.dev/openapi.json
