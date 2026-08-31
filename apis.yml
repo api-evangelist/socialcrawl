@@ -26,13 +26,10 @@ created: '2026-08-25'
 modified: '2026-08-25'
 specificationVersion: '0.23'
 tags:
-- Social Media
-- Scraping
-- Data
-- Search
-- Commerce
-- Research
-- Agents
+- social media scraping
+- unified api
+- data extraction
+- cross-platform search
 tags_raw:
 - social media scraping
 - unified api
@@ -45,6 +42,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - AI Search
+  tags_raw:
   - ai-search
   properties:
   - type: OpenAPI
@@ -71,6 +70,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Amazon
+  tags_raw:
   - amazon
   properties:
   - type: OpenAPI
@@ -97,6 +98,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - App Store
+  tags_raw:
   - app_store
   properties:
   - type: OpenAPI
@@ -123,6 +126,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Apple Music
+  tags_raw:
   - apple_music
   properties:
   - type: OpenAPI
@@ -149,6 +154,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Bluesky
+  tags_raw:
   - bluesky
   properties:
   - type: OpenAPI
@@ -176,6 +183,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Cohorts
+  tags_raw:
   - cohorts
   properties:
   - type: OpenAPI
@@ -202,6 +211,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Content Analysis
+  tags_raw:
   - content_analysis
   properties:
   - type: OpenAPI
@@ -228,6 +239,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - eBay
+  tags_raw:
   - ebay
   properties:
   - type: OpenAPI
@@ -254,6 +267,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Facebook Ads
+  tags_raw:
   - facebook-ads
   properties:
   - type: OpenAPI
@@ -280,6 +295,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Facebook
+  tags_raw:
   - facebook
   properties:
   - type: OpenAPI
@@ -306,6 +323,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Geo
+  tags_raw:
   - geo
   properties:
   - type: OpenAPI
@@ -332,6 +351,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - GitHub
+  tags_raw:
   - github
   properties:
   - type: OpenAPI
@@ -358,6 +379,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Google Ads
+  tags_raw:
   - google-ads
   properties:
   - type: OpenAPI
@@ -384,6 +407,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Google
+  tags_raw:
   - google
   properties:
   - type: OpenAPI
@@ -409,7 +434,8 @@ apis:
   description: Google_finance endpoints
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
-  tags:
+  tags: []
+  tags_raw:
   - google_finance
   properties:
   - type: OpenAPI
@@ -436,6 +462,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Google News
+  tags_raw:
   - google_news
   properties:
   - type: OpenAPI
@@ -462,6 +490,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Google Play
+  tags_raw:
   - google_play
   properties:
   - type: OpenAPI
@@ -488,6 +518,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Google Shopping
+  tags_raw:
   - google_shopping
   properties:
   - type: OpenAPI
@@ -514,6 +546,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Google Trends
+  tags_raw:
   - google_trends
   properties:
   - type: OpenAPI
@@ -540,6 +574,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - hacker news
+  tags_raw:
   - hackernews
   properties:
   - type: OpenAPI
@@ -565,7 +601,8 @@ apis:
   description: Home_depot endpoints
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
-  tags:
+  tags: []
+  tags_raw:
   - home_depot
   properties:
   - type: OpenAPI
@@ -592,6 +629,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Instagram
+  tags_raw:
   - instagram
   properties:
   - type: OpenAPI
@@ -722,6 +761,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - LinkedIn Ads
+  tags_raw:
   - linkedin-ads
   properties:
   - type: OpenAPI
@@ -748,6 +789,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - LinkedIn
+  tags_raw:
   - linkedin
   properties:
   - type: OpenAPI
@@ -826,6 +869,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Meta
+  tags_raw:
   - meta
   properties:
   - type: OpenAPI
@@ -878,6 +923,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Perplexity
+  tags_raw:
   - perplexity
   properties:
   - type: OpenAPI
@@ -930,6 +977,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Pinterest
+  tags_raw:
   - pinterest
   properties:
   - type: OpenAPI
@@ -956,6 +1005,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Polymarket
+  tags_raw:
   - polymarket
   properties:
   - type: OpenAPI
@@ -982,6 +1033,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Prism
+  tags_raw:
   - prism
   properties:
   - type: OpenAPI
@@ -1008,6 +1061,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Reddit
+  tags_raw:
   - reddit
   properties:
   - type: OpenAPI
@@ -1060,6 +1115,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Search
+  tags_raw:
   - search
   properties:
   - type: OpenAPI
@@ -1112,6 +1169,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Spotify
+  tags_raw:
   - spotify
   properties:
   - type: OpenAPI
@@ -1138,6 +1197,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Target
+  tags_raw:
   - target
   properties:
   - type: OpenAPI
@@ -1190,6 +1251,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Threads
+  tags_raw:
   - threads
   properties:
   - type: OpenAPI
@@ -1242,6 +1305,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - TikTok
+  tags_raw:
   - tiktok
   properties:
   - type: OpenAPI
@@ -1268,6 +1333,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - TikTok Shop
+  tags_raw:
   - tiktokshop
   properties:
   - type: OpenAPI
@@ -1320,6 +1387,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Trustpilot
+  tags_raw:
   - trustpilot
   properties:
   - type: OpenAPI
@@ -1372,6 +1441,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Twitch
+  tags_raw:
   - twitch
   properties:
   - type: OpenAPI
@@ -1398,6 +1469,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Twitter
+  tags_raw:
   - twitter
   properties:
   - type: OpenAPI
@@ -1424,6 +1497,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Utility
+  tags_raw:
   - utility
   properties:
   - type: OpenAPI
@@ -1450,6 +1525,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Walmart
+  tags_raw:
   - walmart
   properties:
   - type: OpenAPI
@@ -1502,6 +1579,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Web
+  tags_raw:
   - web
   properties:
   - type: OpenAPI
@@ -1528,6 +1607,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - YouTube
+  tags_raw:
   - youtube
   properties:
   - type: OpenAPI

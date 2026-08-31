@@ -1,0 +1,21 @@
+{
+  "repo": "socialcrawl",
+  "feeds": [
+    {
+      "source": "https://www.socialcrawl.dev/contact",
+      "feed_url": "https://www.socialcrawl.dev/rss.xml",
+      "title": "",
+      "saved": 1,
+      "method": "discovered"
+    },
+    {
+      "source": "https://www.socialcrawl.dev/blog",
+      "feed_url": "https://www.socialcrawl.dev/rss.xml",
+      "title": "",
+      "saved": 0,
+      "method": "discovered"
+    }
+  ],
+  "post_count": 1,
+  "fetched": "2026-08-30T22:33:40Z"
+}
