@@ -27,8 +27,8 @@ modified: '2026-08-25'
 specificationVersion: '0.23'
 tags:
 - social media scraping
-- unified api
-- data extraction
+- Unified-API
+- Data Extraction
 - cross-platform search
 tags_raw:
 - social media scraping
@@ -1469,7 +1469,7 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
-  - Twitter
+  - twitter
   tags_raw:
   - twitter
   properties:
