@@ -1,0 +1,39 @@
+generated: '2026-09-11'
+method: probed
+source: https://www.socialcrawl.dev/docs/skills-and-mcp
+status: published
+server:
+  name: socialcrawl
+  transport: http
+  url: https://mcp.socialcrawl.dev/mcp
+deployment:
+  mode: remote
+  endpoint: https://mcp.socialcrawl.dev/mcp
+  verified: probed
+  probe: live
+  checked: '2026-09-11'
+  source: docs-check 2026-09-11 (endpoint found in the provider's own documentation, then probed)
+tools_count: 10
+tools:
+- name: socialcrawl_list_platforms
+  description: ''
+- name: socialcrawl_list_endpoints
+  description: ''
+- name: socialcrawl_request
+  description: ''
+- name: socialcrawl_check_balance
+  description: ''
+- name: socialcrawl_monitors
+  description: ''
+- name: socialcrawl_web
+  description: ''
+- name: socialcrawl_cohorts
+  description: ''
+- name: socialcrawl_pricing
+  description: ''
+- name: socialcrawl_discover
+  description: ''
+- name: socialcrawl_get_docs
+  description: ''
+tools_source: live tools/list via initialize handshake, 2026-09-11 (signals/audit_mcp_authorship.py --probe)
+authorship: provider
