@@ -568,34 +568,6 @@ apis:
     url: well-known/socialcrawl-api-onboarding.json
   - type: AgentPrompt
     url: skills/socialcrawl-agents.txt
-- aid: socialcrawl:socialcrawl-hackernews-api
-  name: SocialCrawl Hackernews API
-  description: Hackernews endpoints
-  humanURL: https://www.socialcrawl.dev/docs
-  baseURL: https://www.socialcrawl.dev/v1
-  tags:
-  - hacker news
-  tags_raw:
-  - hackernews
-  properties:
-  - type: OpenAPI
-    url: openapi/socialcrawl-hackernews-api-openapi.yml
-  - type: APIReference
-    url: https://www.socialcrawl.dev/openapi.json
-  - type: Documentation
-    url: https://www.socialcrawl.dev/docs
-  - type: GettingStarted
-    url: https://www.socialcrawl.dev/docs/quickstart
-  - type: Authentication
-    url: https://www.socialcrawl.dev/docs/authentication
-  - type: ErrorCodes
-    url: https://www.socialcrawl.dev/docs/errors
-  - type: RateLimits
-    url: https://www.socialcrawl.dev/docs/rate-limits
-  - type: Onboarding
-    url: well-known/socialcrawl-api-onboarding.json
-  - type: AgentPrompt
-    url: skills/socialcrawl-agents.txt
 - aid: socialcrawl:socialcrawl-home-depot-api
   name: SocialCrawl Home Depot API
   description: Home_depot endpoints
@@ -767,34 +739,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/socialcrawl-linkedin-ads-api-openapi.yml
-  - type: APIReference
-    url: https://www.socialcrawl.dev/openapi.json
-  - type: Documentation
-    url: https://www.socialcrawl.dev/docs
-  - type: GettingStarted
-    url: https://www.socialcrawl.dev/docs/quickstart
-  - type: Authentication
-    url: https://www.socialcrawl.dev/docs/authentication
-  - type: ErrorCodes
-    url: https://www.socialcrawl.dev/docs/errors
-  - type: RateLimits
-    url: https://www.socialcrawl.dev/docs/rate-limits
-  - type: Onboarding
-    url: well-known/socialcrawl-api-onboarding.json
-  - type: AgentPrompt
-    url: skills/socialcrawl-agents.txt
-- aid: socialcrawl:socialcrawl-linkedin-api
-  name: SocialCrawl Linkedin API
-  description: Linkedin endpoints
-  humanURL: https://www.socialcrawl.dev/docs
-  baseURL: https://www.socialcrawl.dev/v1
-  tags:
-  - LinkedIn
-  tags_raw:
-  - linkedin
-  properties:
-  - type: OpenAPI
-    url: openapi/socialcrawl-linkedin-api-openapi.yml
   - type: APIReference
     url: https://www.socialcrawl.dev/openapi.json
   - type: Documentation
@@ -1327,34 +1271,6 @@ apis:
     url: well-known/socialcrawl-api-onboarding.json
   - type: AgentPrompt
     url: skills/socialcrawl-agents.txt
-- aid: socialcrawl:socialcrawl-tiktokshop-api
-  name: SocialCrawl Tiktokshop API
-  description: Tiktokshop endpoints
-  humanURL: https://www.socialcrawl.dev/docs
-  baseURL: https://www.socialcrawl.dev/v1
-  tags:
-  - TikTok Shop
-  tags_raw:
-  - tiktokshop
-  properties:
-  - type: OpenAPI
-    url: openapi/socialcrawl-tiktokshop-api-openapi.yml
-  - type: APIReference
-    url: https://www.socialcrawl.dev/openapi.json
-  - type: Documentation
-    url: https://www.socialcrawl.dev/docs
-  - type: GettingStarted
-    url: https://www.socialcrawl.dev/docs/quickstart
-  - type: Authentication
-    url: https://www.socialcrawl.dev/docs/authentication
-  - type: ErrorCodes
-    url: https://www.socialcrawl.dev/docs/errors
-  - type: RateLimits
-    url: https://www.socialcrawl.dev/docs/rate-limits
-  - type: Onboarding
-    url: well-known/socialcrawl-api-onboarding.json
-  - type: AgentPrompt
-    url: skills/socialcrawl-agents.txt
 - aid: socialcrawl:socialcrawl-tripadvisor-api
   name: SocialCrawl Tripadvisor API
   description: Tripadvisor endpoints
@@ -1613,6 +1529,84 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/socialcrawl-youtube-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-hacker-news-api
+  name: SocialCrawl Hacker News API
+  description: Hackernews endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - Hacker News
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-hacker-news-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-linked-in-api
+  name: SocialCrawl Linked In API
+  description: Linkedin endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - Linked In
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-linked-in-api-openapi.yml
+  - type: APIReference
+    url: https://www.socialcrawl.dev/openapi.json
+  - type: Documentation
+    url: https://www.socialcrawl.dev/docs
+  - type: GettingStarted
+    url: https://www.socialcrawl.dev/docs/quickstart
+  - type: Authentication
+    url: https://www.socialcrawl.dev/docs/authentication
+  - type: ErrorCodes
+    url: https://www.socialcrawl.dev/docs/errors
+  - type: RateLimits
+    url: https://www.socialcrawl.dev/docs/rate-limits
+  - type: Onboarding
+    url: well-known/socialcrawl-api-onboarding.json
+  - type: AgentPrompt
+    url: skills/socialcrawl-agents.txt
+- aid: socialcrawl:socialcrawl-tiktok-shop-api
+  name: SocialCrawl tiktok shop API
+  description: Tiktokshop endpoints
+  humanURL: https://www.socialcrawl.dev/docs
+  baseURL: https://www.socialcrawl.dev/v1
+  tags:
+  - tiktok shop
+  properties:
+  - type: OpenAPI
+    url: openapi/socialcrawl-tiktok-shop-api-openapi.yml
   - type: APIReference
     url: https://www.socialcrawl.dev/openapi.json
   - type: Documentation
