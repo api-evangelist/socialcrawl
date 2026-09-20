@@ -1,0 +1,88 @@
+slug: socialcrawl
+provider: SocialCrawl
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Media, Entertainment & Telecom Content
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 7
+edges:
+- tag: content_analysis
+  spec_file: socialcrawl-content-analysis-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.85
+  evidence: Search web citations of a keyword with per-mention sentiment; Sentiment breakdown for a keyword;
+    Keyword mention volume + sentiment over time
+  reason: Keyword mention volume, sentiment breakdown and category trends across web sources is brand/market
+    listening — competitive and customer insight research, i.e. Market Intelligence Management, not media
+    content compliance or production.
+- tag: facebook
+  spec_file: socialcrawl-facebook-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.7
+  evidence: Get Facebook page profile; List Facebook page posts; Search Facebook Ad Library
+  reason: Read-only retrieval of public social profiles, posts, comments and ad-library data — external
+    social listening and competitive intelligence. Mapped to Market Intelligence Management; not the enterprise's
+    own social publishing.
+- tag: facebook-ads
+  spec_file: socialcrawl-facebook-ads-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.7
+  evidence: Search Facebook Ad Library; List Facebook Ad Library company ads; Get a Facebook Ad Library
+    video ad transcript
+  reason: Reading competitors' ad creatives from the public Ad Library is competitive advertising intelligence,
+    i.e. market intelligence — not the vendor or buyer running its own ad sales or campaigns.
+- tag: google-ads
+  spec_file: socialcrawl-google-ads-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.7
+  evidence: GET /google/adlibrary/advertisers/search  Search Google Ad Library advertisers; GET /google/company/ads  List
+    Google ads by company
+  reason: Read-only competitor ad-library lookup by advertiser/company is competitive advertising intelligence;
+    no campaign creation or spend management, so this is not Digital Marketing Management.
+  recovered_from: vertical-education-edges.json
+- tag: google_trends
+  spec_file: socialcrawl-google-trends-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.7
+  evidence: '''Get Google Trends interest over time''; ''Get related + rising Google Trends queries'''
+  reason: Search-interest and rising-query data is classic market research / demand signal input. Operations
+    are purely retrieval of trend measurements, matching Market Intelligence Management.
+- tag: tiktok
+  spec_file: socialcrawl-tiktok-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.7
+  evidence: '"Get TikTok trending feed"; "Get TikTok user audience demographics"; "Search TikTok by hashtag"'
+  reason: Trending feeds, hashtag search and audience demographics are classic social-listening and audience-research
+    operations supporting market research, competitive intelligence and customer insight. No publishing
+    or ad-buying operations, so this is intelligence rather than campaign execution.
+  recovered_from: sweep-20260829T005356Z-edges.json
+- tag: tiktok-ads
+  spec_file: socialcrawl-tiktok-ads-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.7
+  evidence: '"Search the TikTok Ad Library"; "Get a TikTok Ad Library ad"'
+  reason: Ad-library search exposes competitors' running creatives — this is competitive advertising intelligence,
+    which sits under Market Intelligence Management. It is explicitly read-only library lookup, not campaign
+    creation or media buying, so digital marketing execution would be the wrong read.
+  recovered_from: sweep-20260829T005356Z-edges.json
