@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: app_store
+- name: App Store
   description: App_store endpoints
 paths:
   /app_store/app-search:
@@ -24,7 +24,7 @@ paths:
       summary: Search Apple App Store apps by keyword
       description: 'Returns a unified AppList of Apple App Store apps matching a keyword: title, icon, rating, price/is_free, and store URL on every item, on the same canonical `App` shape used across every app marketplace (`app.store` = "app_store"). Detail-only fields (description, screenshots, developer) are null on search items; fetch /v1/app_store/app-info for the full record. Sourced from DataForSEO''s task-based App Data API (first calls ~7-15s, then cached).'
       tags:
-      - app_store
+      - App Store
       operationId: get_app_store_app_search
       security:
       - ApiKeyAuth: []
@@ -493,7 +493,7 @@ paths:
       summary: Get Apple App Store search suggestions
       description: 'Returns Apple''s App Store search autocomplete (''search hints'') for a keyword stem: the same suggestions the store''s search box surfaces, ranked by Apple''s own priority. The day Apple starts autocompleting a phrase, real demand exists; poll a stem daily and diff to catch rising app keywords early. Each item is `{ term, priority }` where `priority` is the 1-based upstream rank (Apple exposes no numeric score). Returns a list under `items`.'
       tags:
-      - app_store
+      - App Store
       operationId: get_app_store_search_suggestions
       security:
       - ApiKeyAuth: []
@@ -664,7 +664,7 @@ paths:
       summary: Get full Apple App Store app details
       description: 'Returns the full canonical `App` record for one Apple App Store app keyed by its numeric `app_id`: title, description, developer, rating, price, version, minimum iOS version, size, screenshots, supported languages, age advisories, similar apps, and update date. The `app.store` field is always "app_store"; Google-only leaves (installs, genres, developer email/address) are null, and `released_at` is null (Apple deprecates it). Get the `app_id` from /v1/app_store/app-search. Sourced from DataForSEO''s task-based App Data API.'
       tags:
-      - app_store
+      - App Store
       operationId: get_app_store_app_info
       security:
       - ApiKeyAuth: []
@@ -1081,7 +1081,7 @@ paths:
       summary: Get Apple App Store reviews for an app
       description: 'Returns a unified ReviewList of Apple App Store user reviews for an app, keyed by its numeric `app_id` (on every review''s `entity_id`). Each review carries the star rating, full text, review title, reviewer name, and publish date: on the SAME canonical `Review` shape used by Amazon, Google Shopping, and Trustpilot. Apple reviews have no avatar, helpful-vote count, or developer responses (those are null). `depth` returns reviews in batches of 50 (max 600). Sourced from DataForSEO''s task-based App Data API.'
       tags:
-      - app_store
+      - App Store
       operationId: get_app_store_app_reviews
       security:
       - ApiKeyAuth: []
@@ -1440,7 +1440,7 @@ paths:
       summary: Get an Apple App Store chart
       description: Returns a unified AppList for an Apple App Store chart (top free, top paid, top grossing for iPhone or iPad, new apps), optionally scoped to a category. Each item is the same canonical `App` shape as app-search. Use it to track ranking movements or build a category leaderboard. Sourced from DataForSEO's task-based App Data API.
       tags:
-      - app_store
+      - App Store
       operationId: get_app_store_app_list
       security:
       - ApiKeyAuth: []
@@ -1986,7 +1986,7 @@ paths:
       summary: Search the Apple App Store listings database (paginated)
       description: 'Searches DataForSEO''s real-time, filterable Apple App Store listings database by app title (and/or description) and returns a unified AppList. Unlike the store-chart endpoints this one is the ONE true paginator: page with `limit` (≤50) + `offset` (then `offset_token` for deeper) and read the platform-wide `total`. Premium-tier because the upstream bills per returned item. Sourced from DataForSEO''s synchronous live App Data database.'
       tags:
-      - app_store
+      - App Store
       operationId: get_app_store_app_listings_search
       security:
       - ApiKeyAuth: []
@@ -2486,7 +2486,7 @@ paths:
       summary: List Apple App Store app categories
       description: 'Returns the list of Apple App Store app categories used by the `app_category` filter on /v1/app_store/app-list. Static reference data: heavily cached.'
       tags:
-      - app_store
+      - App Store
       operationId: get_app_store_categories
       security:
       - ApiKeyAuth: []
@@ -2633,7 +2633,7 @@ paths:
       summary: List supported Apple App Store storefront locations
       description: 'Returns the locations (name + numeric location code) supported by the Apple App Store App Data endpoints. Use a code or name as the `country` param. Static reference data: heavily cached.'
       tags:
-      - app_store
+      - App Store
       operationId: get_app_store_locations
       security:
       - ApiKeyAuth: []
@@ -2780,7 +2780,7 @@ paths:
       summary: List supported Apple App Store languages
       description: 'Returns the languages (name + code) supported by the Apple App Store App Data endpoints. Use a code as the `language` param. Static reference data: heavily cached.'
       tags:
-      - app_store
+      - App Store
       operationId: get_app_store_languages
       security:
       - ApiKeyAuth: []
@@ -2924,29 +2924,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -2967,14 +2958,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -2986,20 +2969,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -3023,10 +3005,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

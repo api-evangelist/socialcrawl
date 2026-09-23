@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: reddit
+- name: Reddit
   description: Reddit endpoints
 paths:
   /reddit/subreddit:
@@ -24,7 +24,7 @@ paths:
       summary: List Reddit subreddit posts
       description: Returns a list of top posts from a subreddit. Each post includes the title, score, upvote ratio, comment count, author, flair, permalink, and creation timestamp.
       tags:
-      - reddit
+      - Reddit
       operationId: get_reddit_subreddit
       security:
       - ApiKeyAuth: []
@@ -708,7 +708,7 @@ paths:
       summary: Get Reddit subreddit details
       description: 'Returns detailed information about a subreddit including subscriber count, active user count, description, creation date, rules, and subreddit icon URL. Note: the subreddit name is case-sensitive here: pass the subreddit''s canonical casing (e.g. `AskReddit`, not `askreddit`). An incorrect casing returns a refunded 404.'
       tags:
-      - reddit
+      - Reddit
       operationId: get_reddit_subreddit_details
       security:
       - ApiKeyAuth: []
@@ -1213,7 +1213,7 @@ paths:
       summary: Search Reddit posts
       description: Searches Reddit for posts matching a keyword query. Returns a list of matching posts with titles, scores, comment counts, subreddit names, and permalinks.
       tags:
-      - reddit
+      - Reddit
       operationId: get_reddit_search
       security:
       - ApiKeyAuth: []
@@ -1896,7 +1896,7 @@ paths:
       summary: Get a Reddit post
       description: Returns a single Reddit post from its URL, including the post BODY (selftext). `content.text` is the title and body joined, matching how posts read on `/v1/reddit/subreddit`; `ext.title` and `ext.selftext` carry the two halves separately. Also returns score, upvote ratio, comment count, flair, author, thumbnail, and creation timestamp. `ext.selftext` is null on link posts, which have no body. For the post's comments use `/v1/reddit/post/comments`.
       tags:
-      - reddit
+      - Reddit
       operationId: get_reddit_post
       security:
       - ApiKeyAuth: []
@@ -2467,7 +2467,7 @@ paths:
       summary: List Reddit post comments
       description: 'Returns the full threaded comment tree for a Reddit post. Nested replies are auto-expanded by following upstream pagination, so a single call returns the deep tree (not just top-level comments). Each comment includes the author, body, score, direct-reply count, awards, creation timestamp, and a recursive `replies[]` array. Very large threads are bounded: any branch left unexpanded exposes an `ext.replies_cursor`, and `data.truncated` is true when more remains.'
       tags:
-      - reddit
+      - Reddit
       operationId: get_reddit_post_comments
       security:
       - ApiKeyAuth: []
@@ -2833,7 +2833,7 @@ paths:
       summary: Search within a subreddit
       description: Searches for posts within a specific subreddit. Returns matching posts with titles, scores, comment counts, and permalinks.
       tags:
-      - reddit
+      - Reddit
       operationId: get_reddit_subreddit_search
       security:
       - ApiKeyAuth: []
@@ -3511,7 +3511,7 @@ paths:
       summary: Get a Reddit video post transcript
       description: 'Returns the transcript for a Reddit video post or direct `v.redd.it` URL when Reddit exposes a VTT caption file. Includes raw WebVTT in `raw_vtt` plus a parsed plain-text transcript. When Reddit doesn''t expose captions, `transcript` is `null` and `transcriptNotAvailable` is `true`: credits are only deducted when a transcript is returned.'
       tags:
-      - reddit
+      - Reddit
       operationId: get_reddit_post_transcript
       security:
       - ApiKeyAuth: []
@@ -3655,10 +3655,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /reddit/omni-search:
     get:
-      summary: 'Reddit VoC sweep: one keyword → threads across all of Reddit with subreddit attribution and top comments inline.'
+      summary: 'Reddit VoC sweep: one keyword → threads across all of Reddit with subreddit…'
       description: 'Runs reddit/search, expands the top N threads'' comments in parallel (capped 15/thread), and rolls up which subreddits are talking: volume + a per-community tone label. Returns sync JSON or a typed SSE stream that emits each thread as its comments land. Metered at 1 credit per search page + 1 credit per successfully-expanded thread (minimum 5); a failed thread isn''t billed and the unused thread ceiling is refunded. `subreddit=` scopes the sweep to one community. The `next_cursor` resumes the search. Honest note: Reddit search is the slowest social search on the API (10-12s) and relevance is loose: a VoC sweep, not precision ranking.'
       tags:
-      - reddit
+      - Reddit
       operationId: get_reddit_omni_search
       security:
       - ApiKeyAuth: []
@@ -3855,29 +3855,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -3898,14 +3889,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -3917,20 +3900,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -3954,10 +3936,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

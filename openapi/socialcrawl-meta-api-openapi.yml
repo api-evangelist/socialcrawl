@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: meta
+- name: Meta
   description: Account metadata - balance, usage, no credit deduction
 paths:
   /credits/balance:
@@ -24,7 +24,7 @@ paths:
       summary: Check your credit balance
       description: Returns the current credit balance and the number of deduction transactions in the trailing 24 hours. Metadata call - costs 0 credits and never hits upstream platforms.
       tags:
-      - meta
+      - Meta
       operationId: meta_credits_balance
       security:
       - ApiKeyAuth: []
@@ -75,7 +75,7 @@ paths:
       summary: List your credit transactions
       description: Returns your credit ledger (deductions negative, refunds positive) as dispute-grade receipts, newest first. Cursor-paginated and filterable by request_id. Metadata call - costs 0 credits and never hits upstream platforms.
       tags:
-      - meta
+      - Meta
       operationId: meta_credits_transactions
       security:
       - ApiKeyAuth: []
@@ -198,7 +198,7 @@ paths:
       summary: Platform status & circuit state
       description: Returns the operational status of every upstream platform (derived from the circuit breaker), the current upstream-version distribution, and a timestamp. Public meta route - no API key, no credit cost, no upstream call. Use it to check a platform's health before retrying persistent 502s.
       tags:
-      - meta
+      - Meta
       operationId: meta_status
       security: []
       x-credit-cost: 0
@@ -245,6 +245,14 @@ paths:
           $ref: '#/components/responses/Error500'
 components:
   responses:
+    Error500:
+      description: Internal server error - credits automatically refunded
+      x-error-codes:
+      - INTERNAL_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
     Error429:
       description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
@@ -259,14 +267,6 @@ components:
       x-error-codes:
       - MISSING_API_KEY
       - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error500:
-      description: Internal server error - credits automatically refunded
-      x-error-codes:
-      - INTERNAL_ERROR
       content:
         application/json:
           schema:

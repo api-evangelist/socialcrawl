@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: utility
+- name: Utility
   description: Utility endpoints
 paths:
   /utility/endpoints:
@@ -24,7 +24,7 @@ paths:
       summary: List every available endpoint
       description: 'Machine-readable catalog of every active SocialCrawl endpoint: path, method, platform, credit cost, required and optional parameters, response archetype, and a link to the per-endpoint usage guide. Generated from the endpoint registry at request time, so it never drifts from what is callable. Free to call.'
       tags:
-      - utility
+      - Utility
       operationId: get_utility_endpoints
       security:
       - ApiKeyAuth: []
@@ -195,7 +195,7 @@ paths:
       summary: How to use any endpoint
       description: 'Complete usage guide for a single endpoint: every parameter with type, description and example, the exact credit cost, cache behaviour, pagination recipe, a copy-paste example request, an example response, the response schema URL, and related endpoints. Identify the endpoint by id (tiktok/profile) or url (/v1/tiktok/profile). Free to call.'
       tags:
-      - utility
+      - Utility
       operationId: get_utility_endpoint
       security:
       - ApiKeyAuth: []
@@ -369,7 +369,7 @@ paths:
       summary: Get started in one call
       description: 'Everything needed for a first successful API call in one response: authentication, base URL, the response envelope, the credit billing model, the error taxonomy, rate limits, pagination rules, and a copy-paste first request. Pass platform to tailor the first-call example. Free to call.'
       tags:
-      - utility
+      - Utility
       operationId: get_utility_quickstart
       security:
       - ApiKeyAuth: []
@@ -523,7 +523,7 @@ paths:
       summary: AI-agent context payload
       description: 'The SocialCrawl context corpus for AI agents, served through the API: the same content as llms.txt for the whole API or a single platform, as markdown or structured JSON. An agent with an API key can bootstrap itself with one call instead of scraping documentation pages. Free to call.'
       tags:
-      - utility
+      - Utility
       operationId: get_utility_llms
       security:
       - ApiKeyAuth: []
@@ -683,29 +683,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -726,14 +717,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -745,20 +728,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -782,10 +764,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

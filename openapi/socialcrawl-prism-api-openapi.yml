@@ -16,15 +16,15 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: prism
+- name: Prism
   description: Prism endpoints
 paths:
   /prism/lookup:
     get:
-      summary: 'Universal URL dispatcher: any social/commerce URL → the right detail endpoint''s unified response.'
+      summary: 'Universal URL dispatcher: any social/commerce URL → the right detail endpoint''s…'
       description: Sniffs the platform + endpoint from a URL and returns that endpoint's unified data, with no surcharge. You pay the resolved endpoint's own cost. The join key the whole API runs on is `url`. Supports TikTok, Instagram, YouTube, X/Twitter, Facebook, LinkedIn, Bluesky, Pinterest, Reddit, Threads, Rumble, Truth Social, GitHub, Amazon, and Spotify links. The `resolved` block names the platform, endpoint, and archetype of the response so agents know the shape that follows; `legs[]` reports the dispatched call's status, cost, and latency.
       tags:
-      - prism
+      - Prism
       operationId: get_prism_lookup
       security:
       - ApiKeyAuth: []
@@ -180,10 +180,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/comments:
     get:
-      summary: Every comment on a post, replies nested, server-paginated to completion.
+      summary: Every comment on a post, replies nested, server-paginated to completion
       description: 'Give it any TikTok, YouTube, Facebook, Reddit, Hacker News, or Instagram post URL and it harvests every top-level comment (paginated to the end) with replies nested where the platform supports it (TikTok, YouTube, Facebook). Reddit and Hacker News return their whole nested thread; Instagram is top-level only. Pass `sort=top` to get the most-liked comments first (ranked by `engagement.likes`): ideal for pulling the top comments on a high-volume post; pair it with `limit` to cap how many you get back (e.g. `sort=top&max=500&limit=200` scans ~500 and returns the top 200). YouTube sorts upstream so its top set is exact; other platforms are sorted across the scanned set. Metered at 1 credit per internal page call (minimum 2): `sort`/`limit` never change the price, which always follows pages scanned (`max`). Instagram is the exception: an Instagram post URL is a flat 5 credits per call whatever `max` and `replies` you pass, because that source returns the comment set in one mobile-upstream call rather than by page. Returns sync JSON, or a typed SSE stream when you send `Accept: text/event-stream`: a `page` chunk lands as each page settles. The `next_cursor` is one opaque token that resumes every leg; `legs[]` reports each page''s status, cost, and latency.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_comments
       security:
       - ApiKeyAuth: []
@@ -367,10 +367,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /tiktok/profile/full:
     get:
-      summary: TikTok profile, recent posts, and computed analytics in one call.
+      summary: TikTok profile, recent posts, and computed analytics in one call
       description: 'Fans out to the TikTok profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits.'
       tags:
-      - prism
+      - Prism
       operationId: get_tiktok_profile_full
       security:
       - ApiKeyAuth: []
@@ -544,10 +544,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /instagram/profile/full:
     get:
-      summary: Instagram profile, recent posts, and computed analytics in one call.
+      summary: Instagram profile, recent posts, and computed analytics in one call
       description: 'Fans out to the Instagram profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits.'
       tags:
-      - prism
+      - Prism
       operationId: get_instagram_profile_full
       security:
       - ApiKeyAuth: []
@@ -715,10 +715,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /youtube/profile/full:
     get:
-      summary: YouTube profile, recent posts, and computed analytics in one call.
+      summary: YouTube profile, recent posts, and computed analytics in one call
       description: 'Fans out to the YouTube profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits.'
       tags:
-      - prism
+      - Prism
       operationId: get_youtube_profile_full
       security:
       - ApiKeyAuth: []
@@ -898,10 +898,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /twitter/profile/full:
     get:
-      summary: X (Twitter) profile, recent posts, and computed analytics in one call.
+      summary: X (Twitter) profile, recent posts, and computed analytics in one call
       description: 'Fans out to the X (Twitter) profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits.'
       tags:
-      - prism
+      - Prism
       operationId: get_twitter_profile_full
       security:
       - ApiKeyAuth: []
@@ -1069,10 +1069,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /facebook/profile/full:
     get:
-      summary: Facebook profile, recent posts, and computed analytics in one call.
+      summary: Facebook profile, recent posts, and computed analytics in one call
       description: 'Fans out to the Facebook profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits. For Facebook, `author.following` and `author.posts_count` remain null because the profile upstream does not provide those totals.'
       tags:
-      - prism
+      - Prism
       operationId: get_facebook_profile_full
       security:
       - ApiKeyAuth: []
@@ -1240,10 +1240,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /linkedin/profile/full:
     get:
-      summary: LinkedIn company profile, recent posts, and computed analytics in one call.
+      summary: LinkedIn company profile, recent posts, and computed analytics in one call
       description: 'Fans out to the LinkedIn company profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits.'
       tags:
-      - prism
+      - Prism
       operationId: get_linkedin_profile_full
       security:
       - ApiKeyAuth: []
@@ -1411,10 +1411,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /instagram/profile/reels/full:
     get:
-      summary: Instagram reels with views, likes, comments, and per-reel share counts where available, in one call.
+      summary: Instagram reels with views, likes, comments, and per-reel share counts where…
       description: 'Returns a creator''s recent reels with views, likes, comments, and the per-reel share count merged in wherever the upstream exposes it: in a single call. The standard /v1/instagram/profile/reels endpoint returns views/likes/comments but leaves engagement.shares null (its upstream has no per-post reshare count); this composite fans out to a second mobile source that carries the share number and merges it back onto each item by post id. Share coverage is best-effort and varies by account: the mobile source only exposes reshare_count for the items it returns, so some (sometimes most) items keep engagement.shares null. That null means "upstream doesn''t expose it", not "zero". Read shares_coverage (the fraction of returned items that got a real share number) before relying on shares; legs[] shows each leg''s status. Billing: the standard leg is critical (its failure refunds the full call); the shares leg is best-effort: if it fails OUTRIGHT the items still return with shares null and 4 of the 5 credits are refunded (you pay the standard 1-credit list price). A successful shares leg with low coverage is still the flat 5 credits, since the second source was queried regardless of how many items it happened to cover. Paginate with next_cursor.'
       tags:
-      - prism
+      - Prism
       operationId: get_instagram_profile_reels_full
       security:
       - ApiKeyAuth: []
@@ -1585,10 +1585,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /instagram/profile/posts/full:
     get:
-      summary: Instagram posts with views, likes, comments, and per-post share counts where available, in one call.
+      summary: Instagram posts with views, likes, comments, and per-post share counts where…
       description: 'Returns a creator''s recent posts with views, likes, comments, and the per-post share count merged in wherever the upstream exposes it: in a single call. The standard /v1/instagram/profile/posts endpoint returns views/likes/comments but leaves engagement.shares null (its upstream has no per-post reshare count); this composite fans out to a second mobile source that carries the share number and merges it back onto each item by post id. Share coverage is best-effort and varies by account: the mobile source only exposes reshare_count for the items it returns, so some (sometimes most) items keep engagement.shares null. That null means "upstream doesn''t expose it", not "zero". Read shares_coverage (the fraction of returned items that got a real share number) before relying on shares; legs[] shows each leg''s status. Billing: the standard leg is critical (its failure refunds the full call); the shares leg is best-effort: if it fails OUTRIGHT the items still return with shares null and 4 of the 5 credits are refunded (you pay the standard 1-credit list price). A successful shares leg with low coverage is still the flat 5 credits, since the second source was queried regardless of how many items it happened to cover. Paginate with next_cursor.'
       tags:
-      - prism
+      - Prism
       operationId: get_instagram_profile_posts_full
       security:
       - ApiKeyAuth: []
@@ -1759,10 +1759,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /facebook/profile/reels/full:
     get:
-      summary: Facebook profile reels with exact views, likes, comments, and shares merged in, in one call.
+      summary: Facebook profile reels with exact views, likes, comments, and shares merged in…
       description: 'Returns a Facebook page or profile''s reels with EXACT per-reel engagement merged in: one call instead of the reels-list → post-stats chain. The plain `/v1/facebook/profile/reels` list only carries a rounded public view count ("12K" parsed back to 12000) and no likes, comments, or shares, because Facebook exposes those on the individual reel permalink only. This endpoint fetches the list, then queries each reel''s permalink server-side and overwrites the item''s `engagement` with the exact figures: `views` (the rounded list value is replaced), `likes`, `comments`, and `shares`. `saves` stays null (Facebook exposes no public save count), and `comments` can be null on a zero-comment reel (a quirk of the permalink upstream). Per-item `ext.engagement_source` is `"post_detail"` when the exact figures landed and null when that reel''s lookup failed (the item then keeps the honest list values); read `engagement_coverage` before grading, and `_warnings: ["engagement_partial"]` flags a partial page. Billing: a flat 5 credits per page of 10 reels (1 credit for the list + 4 for the per-reel enrichment, roughly half the cost of running the chain yourself); if enrichment yields zero coverage the 4-credit premium is refunded automatically. Paginate with `next_cursor`, or pass `limit` (1-50) to have the endpoint walk pages server-side until it has collected that many reels, billed per page consumed.'
       tags:
-      - prism
+      - Prism
       operationId: get_facebook_profile_reels_full
       security:
       - ApiKeyAuth: []
@@ -1924,10 +1924,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /reddit/omni-search:
     get:
-      summary: 'Reddit VoC sweep: one keyword → threads across all of Reddit with subreddit attribution and top comments inline.'
+      summary: 'Reddit VoC sweep: one keyword → threads across all of Reddit with subreddit…'
       description: 'Runs reddit/search, expands the top N threads'' comments in parallel (capped 15/thread), and rolls up which subreddits are talking: volume + a per-community tone label. Returns sync JSON or a typed SSE stream that emits each thread as its comments land. Metered at 1 credit per search page + 1 credit per successfully-expanded thread (minimum 5); a failed thread isn''t billed and the unused thread ceiling is refunded. `subreddit=` scopes the sweep to one community. The `next_cursor` resumes the search. Honest note: Reddit search is the slowest social search on the API (10-12s) and relevance is loose: a VoC sweep, not precision ranking.'
       tags:
-      - prism
+      - Prism
       operationId: get_reddit_omni_search
       security:
       - ApiKeyAuth: []
@@ -2124,10 +2124,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/brand-mentions:
     get:
-      summary: Brand mention volume time-series, sentiment split, top sources, and recent mentions for one keyword.
+      summary: Brand mention volume time-series, sentiment split, top sources, and recent…
       description: Fans out to content_analysis summary, phrase-trends, and search in parallel, then folds them into one envelope with a computed volume/sentiment trajectory (OLS slope + a noise-aware direction) and an optional LLM digest (`include=digest`). Sentiment is NLP-derived (content_analysis), and mention freshness lags the live web by days. The `computed` block carries stable keys + a `methodology_version` so a monitor can diff runs. `legs[]` reports each leg's status, cost, and latency; if one of the three data legs fails the call still returns a degraded result, and a strict-majority failure refunds half.
       tags:
-      - prism
+      - Prism
       operationId: get_prism_brand_mentions
       security:
       - ApiKeyAuth: []
@@ -2317,10 +2317,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/demand-signals:
     get:
-      summary: 'Consumer-demand nowcast: app-review velocity, web mention slope, Reddit velocity, and commerce review levels, fused into a published demand index.'
+      summary: 'Consumer-demand nowcast: app-review velocity, web mention slope, Reddit…'
       description: 'Reads up to four consumer-demand axes in parallel: app-review velocity (the freshest public channel), web mention slope (content_analysis phrase-trends, a real stateless time-series), Reddit sort=new velocity, and Amazon review-count level, and fuses them into published demand-index inputs (never an opaque score; every weight, anchor, and observation window is disclosed). v1 is an honest one-shot level+slope: three of the four axes are point-in-time rates/levels whose true week-over-week deltas need a monitor (the methodology block names them). Supply google_play_id/app_store_id for the app-review axis. legs[] reports each leg status, cost, and latency; a strict-majority leg failure refunds half. Flat 30 credits.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_demand_signals
       security:
       - ApiKeyAuth: []
@@ -2518,10 +2518,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/campaign:
     get:
-      summary: 'Campaign tracker: pre/during/post volume lift, cross-platform engagement, and ranked top amplifiers for a hashtag or phrase.'
+      summary: 'Campaign tracker: pre/during/post volume lift, cross-platform engagement, and…'
       description: 'Fans out to content_analysis phrase-trends (pre/during/post windows), search/everywhere (consuming items_by_source for real per-platform engagement, not the capped fused items), and tiktok/youtube search for amplifier discovery, then folds them into a lift report (volume lift %, sustained-floor check, ranked amplifiers). YouTube amplifiers are undated in fusion: pass include=amplifier_dates to date the top ones via direct youtube/video calls. Supply hashtag OR phrase plus window_start; window_end defaults to today. legs[] reports each leg; losing the CA timeline or the everywhere engagement spine refunds half. Flat 35 credits.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_campaign
       security:
       - ApiKeyAuth: []
@@ -2710,10 +2710,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/ai-visibility:
     get:
-      summary: 'AI Share-of-Voice / GEO monitoring: prompt set x reruns to per-brand appearance-% per AI engine plus a cited-domain ranking.'
+      summary: 'AI Share-of-Voice / GEO monitoring: prompt set x reruns to per-brand…'
       description: Probes your brand (and competitors) across grounded-answer AI engines (Perplexity Sonar + Grok) over a prompt set with N reruns, then reports the share of runs your brand appeared in per engine (appearance-%, never volatile rank) plus a ranking of the domains those engines cite. Add include=web_baseline to see which AI-cited domains you do not yet rank on. Metered 2 credits per probe (one prompt x run x engine); use preset=quick|standard|deep for a flat budget. v1 detects mentions deterministically via recognition tokens. Supply brand plus prompts (or a topic). The self-serve entry tier of Profound/Otterly/Peec.
       tags:
-      - prism
+      - Prism
       operationId: get_prism_ai_visibility
       security:
       - ApiKeyAuth: []
@@ -2918,10 +2918,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/crisis-postmortem:
     get:
-      summary: 'Crisis post-mortem: a who-said-what-first timeline across web, Reddit, Hacker News, and social, with an origin, peak, propagation sequence, and a grounded narrative.'
+      summary: 'Crisis post-mortem: a who-said-what-first timeline across web, Reddit, Hacker…'
       description: 'Reconstructs a crisis window: content_analysis phrase-trends (volume curve) + anger-ordered search + reddit (sort=new) + hackernews (client-side date-filtered so stale relevance-ranked posts cannot corrupt the chronology) + search/everywhere (items_by_source cross-platform spread), merged into one chronologically-sorted event timeline with the first credible origin, the peak day, and the platform-by-platform propagation order. Pass include= (empty) to drop the LLM narrative and get the raw timeline. Origin is chosen only from natively-dated events (a lagged crawl time cannot establish who-said-it-first). Supply brand plus window_start; window_end defaults to today. Flat 35 credits; losing more than half the timeline sources refunds half.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_crisis_postmortem
       security:
       - ApiKeyAuth: []
@@ -3095,10 +3095,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/crisis-radar:
     get:
-      summary: 'Stateless crisis breach check: a z-score on daily mention volume and negative share, with on-breach confirmation and a severity grade.'
+      summary: 'Stateless crisis breach check: a z-score on daily mention volume and negative…'
       description: Stage 1 computes a 7-day-rolling z-score on content_analysis daily phrase-trends (the breach gate, always 15 credits) and returns a calm|watch|alert|crisis status. On a breach with confirm=true, Stage 2 fans out to sentiment + search/everywhere (items_by_source real counts) + reddit (sort=new) + twitter/ai-search (citations, not the chatty answer) + a triage anger-ordered search, then grades severity (+30 credits, charged only when a breach actually fires). A calm result or confirm=false costs only the 15cr baseline. The recurring alarm is delivered by wrapping this recipe in a monitor.
       tags:
-      - prism
+      - Prism
       operationId: get_prism_crisis_radar
       security:
       - ApiKeyAuth: []
@@ -3272,10 +3272,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/devtool-pulse:
     get:
-      summary: 'Developer-brand health: a devtool''s repo dossier + Hacker News reaction + Reddit chatter + dev-blog echo, in one call.'
+      summary: 'Developer-brand health: a devtool''s repo dossier + Hacker News reaction +…'
       description: 'Fans out a GitHub repo/dossier, a Hacker News search+comment pull, a Reddit search+comment pull, and the dev-blog web echo (content_analysis), then folds them into a developer-brand health snapshot: release recency, open-issue load, the top feature request and top complaint, HN and Reddit attention, the web echo with its top domains, a deterministic pulse=strong|steady|cooling|quiet label, and a soft NLP sentiment label. No leg is individually critical: absence is signal; a strict-majority leg failure refunds half. Supply `repo=` (owner/repo or a github URL) to anchor the dossier; without it the server best-effort resolves one from the HN/web legs. `legs[]` reports each leg''s status, cost, and latency.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_devtool_pulse
       security:
       - ApiKeyAuth: []
@@ -3455,10 +3455,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/leads:
     get:
-      summary: Ranked feed of public conversations where people seek alternatives to or are switching from a competitor.
+      summary: Ranked feed of public conversations where people seek alternatives to or are…
       description: 'Runs three exact-intent phrases (''alternative to X'', ''X vs'', ''switching from X'') through content_analysis search in parallel, plus a Reddit (sort=new) and a Hacker News leg, then dedupes and intent-ranks them into one feed with a per-lead phrase_matched + intent_score and a counts_by_phrase breakdown. Conversation-level intent only: page-level matching, no author PII harvesting (web leads carry no handle by design). Coverage spine is the three CA legs: <0.5 succeed → 50% refund; all five legs fail → full refund. Deterministic (no LLM); registers cleanly for a recurring-lead-feed monitor.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_leads
       security:
       - ApiKeyAuth: []
@@ -3632,10 +3632,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/earned-media:
     get:
-      summary: 'A brand''s earned-media footprint: news + tech-press + fresh-web clips, deduped and ranked, with an outlet-coverage rollup.'
+      summary: 'A brand''s earned-media footprint: news + tech-press + fresh-web clips, deduped…'
       description: Fans out content_analysis news search, a Hacker News leg, and a Tavily fresh-news leg in parallel, then dedupes and ranks them into one earned-media clip feed with computed top outlets, freshness labeling (content_analysis fetch_time lags the live web), and (when a `competitor` is supplied) a coverage gap. The content_analysis news leg is the coverage spine (losing it → 50% refund); Hacker News and Tavily are enrichment. `include=digest` adds an LLM narrative summary leg.
       tags:
-      - prism
+      - Prism
       operationId: get_prism_earned_media
       security:
       - ApiKeyAuth: []
@@ -3815,10 +3815,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/truthsocial-pulse:
     get:
-      summary: 'A Truth Social handle''s pulse: profile, recent posts, per-post detail drill, and the news echo, in one call.'
+      summary: 'A Truth Social handle''s pulse: profile, recent posts, per-post detail drill…'
       description: Fetches a Truth Social profile + recent posts, drills the top posts for full detail (the F13 post-detail path), and runs a content_analysis news echo for the handle, folded into a deterministic activity/sentiment pulse with stable keys + a methodology_version. The profile leg is critical (404 → full refund); posts/drill/news degrade. No Truth Social search exists upstream. This is handle-scoped.
       tags:
-      - prism
+      - Prism
       operationId: get_prism_truthsocial_pulse
       security:
       - ApiKeyAuth: []
@@ -3998,10 +3998,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/launch-echo:
     get:
-      summary: 'How a launch landed: the Hacker News reaction (top threads + comments), the dev-blog echo, and an optional repo dossier.'
+      summary: 'How a launch landed: the Hacker News reaction (top threads + comments), the…'
       description: Runs a Hacker News search, digs the top threads' comments, and pulls the dev-blog web echo (content_analysis), with an optional GitHub repo/dossier (explicit `repo=` or auto-resolved from the HN/web hits), folded into a launch-reception snapshot with computed attention + echo + a methodology_version. Comment legs are the coverage spine (<0.5 → 50% refund); a dead HN search → full refund.
       tags:
-      - prism
+      - Prism
       operationId: get_prism_launch_echo
       security:
       - ApiKeyAuth: []
@@ -4181,10 +4181,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/audience-overlap:
     get:
-      summary: How much two TikTok creators' commenter audiences overlap. Jaccard, shared-fan count, and a confidence label.
+      summary: How much two TikTok creators' commenter audiences overlap.
       description: 'Samples each creator''s recent videos and their commenters, then computes a deterministic audience-overlap: shared commenters, Jaccard index, a/b-only counts, and an honesty `confidence` label (commenters over-index super-fans: a lower bound, never full-audience truth). TikTok-only in v1 (YouTube/Instagram are a fast-follow); a non-tiktok `platform` is rejected. If either creator can''t be fetched the overlap is undefined → full refund.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_audience_overlap
       security:
       - ApiKeyAuth: []
@@ -4358,10 +4358,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/reputation:
     get:
-      summary: A brand's cross-source reputation. Trustpilot + app stores + Google Business + web sentiment, blended into one weighted score with themed pros/cons.
+      summary: A brand's cross-source reputation.
       description: Resolves and pulls reviews from Trustpilot, the Google Play + App Store listings, Google Business (and TripAdvisor when `place` is set), plus a content_analysis web-sentiment + rating-distribution read, then blends them into a renormalized weighted composite_score (company vs product axes) with per-source ratings (listed aggregate preferred over sample mean) and an LLM-themed pros/cons pass (counts + verbatim quotes recomputed in code). Coverage spine = the resolved sources (<0.5 → 50% refund; none → full refund); the theme pass degrades to empty without refund. Trustpilot review depth is clamped to 20.
       tags:
-      - prism
+      - Prism
       operationId: get_prism_reputation
       security:
       - ApiKeyAuth: []
@@ -4563,10 +4563,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/employer-brand:
     get:
-      summary: 'A company''s employer brand: what people say about working there across Reddit, the web, YouTube, Naver, and the company''s own LinkedIn voice.'
+      summary: 'A company''s employer brand: what people say about working there across Reddit…'
       description: Fans out a LinkedIn company + posts read (LinkedIn comments are excluded, no upstream endpoint), Reddit search + comment dig, content_analysis news + sentiment, a YouTube search, and Naver blog/cafe, then computes per-surface sentiment plus a posting-tone-vs-reality gap (the company's own LinkedIn voice vs the external chatter). Coverage spine = the requested surfaces (<0.5 → 50% refund; none → full refund); the LLM theme pass degrades without refund. Supply `linkedin_url` to include the LinkedIn axis (omitted silently otherwise).
       tags:
-      - prism
+      - Prism
       operationId: get_prism_employer_brand
       security:
       - ApiKeyAuth: []
@@ -4752,10 +4752,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/audience-questions:
     get:
-      summary: 'The real questions a topic''s audience asks: harvested from Reddit + YouTube threads and clustered by intent (who/what/why/how/vs).'
+      summary: 'The real questions a topic''s audience asks: harvested from Reddit + YouTube…'
       description: 'Searches Reddit and YouTube (and optionally the universal web search) for a topic, extracts question-shaped titles and comments, and LLM-clusters them into labeled intent groups with verbatim quotes and per-question source counts (the model only labels/groups: counts and quotes are recomputed in code). The clustering degrades to one ungrouped cluster on LLM failure (no refund). Coverage spine = the per-source search legs (<0.5 → 50% refund; all dead → full refund). Great for content/SEO briefs and FAQ generation.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_audience_questions
       security:
       - ApiKeyAuth: []
@@ -4935,10 +4935,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/product-reviews:
     get:
-      summary: A product's reviews across Amazon + Google Shopping + Trustpilot, folded into a cross-marketplace rating + themed pros/cons report.
+      summary: A product's reviews across Amazon + Google Shopping + Trustpilot, folded into a…
       description: 'Resolves a product on Amazon (ASIN) + Google Shopping (gid) + Trustpilot and pulls each source''s reviews, folded into a per-source rating summary (listed aggregate preferred over sample mean), a retailer matrix, and an LLM topic pass with per-topic rating impact (the model only assigns review ids: averages are recomputed in code). Anchor with `asin`/`gid` for precision (the gid is `product.ext.gid`, NOT the catalogid) or `query` to auto-resolve. Coverage spine = the resolved sources (<0.5 → 50% refund; none → full refund). Commerce legs take 20-60s.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_product_reviews
       security:
       - ApiKeyAuth: []
@@ -5134,10 +5134,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/apps-lookup:
     get:
-      summary: 'One app across Google Play + the App Store: resolved, title-matched, and compared into a cross-store rating + listing report.'
+      summary: 'One app across Google Play + the App Store: resolved, title-matched, and…'
       description: 'Resolves an app on both stores (by `title`, or directly via `google_play_id`/`app_store_id`), applies a title + developer match guard so two same-named-but-different apps aren''t conflated, and folds the two listings into a cross-store comparison: per-store rating + install + price, the rating gap, and a match confidence. A clean no-match across stores is a valid (fully-charged) result; if neither store resolves the title → 404 + refund; both stores dead → full refund.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_apps_lookup
       security:
       - ApiKeyAuth: []
@@ -5333,10 +5333,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/org-radar:
     get:
-      summary: 'A GitHub org''s footprint: its top repos each expanded into a full dossier (releases, issue load, top request/complaint), rolled up.'
+      summary: 'A GitHub org''s footprint: its top repos each expanded into a full dossier…'
       description: 'Lists a GitHub org''s repositories, picks the top N by stars (forks/archived filtered), and runs the repo/dossier composite on each in parallel, folded into an org-level rollup. Metered: 1cr to resolve the org + 5cr per repo dossiered; the unused per-repo credits are refunded down to the dossiers that actually succeeded. The org repo-list leg is critical (unknown org → 404 + full refund).'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_org_radar
       security:
       - ApiKeyAuth: []
@@ -5508,10 +5508,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/creator-vet:
     get:
-      summary: 'Vet a creator before partnering: engagement quality, commenter authenticity, posting cadence, and controversy signals, optionally across platforms.'
+      summary: 'Vet a creator before partnering: engagement quality, commenter authenticity…'
       description: 'Pulls a creator''s profile + recent posts + a commenter sample (TikTok / YouTube / Instagram) plus a news + Reddit + Hacker News controversy read, and computes deterministic authenticity signals: engagement rate, a low-quality-commenter share, posting cadence, and controversy inputs. `include=cross_platform` adds the universal cross-platform presence leg (+25cr, refunded if it fails). The core profile leg is critical (creator not found → full refund).'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_creator_vet
       security:
       - ApiKeyAuth: []
@@ -5679,10 +5679,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/korea-gap:
     get:
-      summary: 'What the world is talking about that Korea isn''t (and vice versa): the global vs Korean (Naver) conversation gap for a brand/topic.'
+      summary: 'What the world is talking about that Korea isn''t (and vice versa): the global…'
       description: 'Fans the Korean Naver corpora (news/blog/cafe/kin/shop/web) against the global conversation (the universal /search/everywhere leg) and computes a directional presence gap: which surface over-indexes the topic, a per-channel Korean map, and a translated quote sample (KR→EN, soft LLM). Metered 40cr full; `include` without `social` drops the everywhere leg for the 15cr web-only variant. Korean volume is a directional per-surface presence index (item-count-bounded), not absolute counts.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_korea_gap
       security:
       - ApiKeyAuth: []
@@ -5856,10 +5856,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/share-of-voice:
     get:
-      summary: Engagement-weighted Share of Voice across 2-5 brands, with web+social split, emotion overlay, and ESOV.
+      summary: Engagement-weighted Share of Voice across 2-5 brands, with web+social split…
       description: 'Per brand, fans out to content_analysis summary/phrase-trends/sentiment plus /search/everywhere (consuming the real per-platform items_by_source counts, not the capped fused list), then computes a published-formula SOV (web + social, equal-weighted by default), optional true-share-of-category (numeric `category_code`), and ESOV (`market_shares`, Binet/Field: a planning signal, not a growth guarantee). Metered at 40cr/brand (20 web-only); a brand whose social search half-failed is automatically cheaper, with the reason legible in `legs[]` + per-brand `coverage`.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_share_of_voice
       security:
       - ApiKeyAuth: []
@@ -6051,10 +6051,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/review-integrity:
     get:
-      summary: Cross-source review integrity verdict (statistical, deterministic).
+      summary: Cross-source review integrity verdict (statistical, deterministic)
       description: 'Computes a documented, reproducible integrity grade for a product or brand by comparing ratings across Amazon, Google Shopping, Trustpilot, and the open web: cross-source rating divergence (Welch t-test), web-distribution bimodality (Sarle''s coefficient), unsolicited-forum tone contrast, and spam-domain clustering. No AI/LLM: every number is a published formula (`methodology_version`). Returns the grade, per-signal evidence, per-source ratings, the divergence pair, and the raw sampled reviews. Reviewer-history tests are flagged `unavailable` (no upstream reviewer-profile source). Anchor on `asin`/`gid` for precision or `query` to auto-resolve. Commerce data takes 20-60s.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_review_integrity
       security:
       - ApiKeyAuth: []
@@ -6232,10 +6232,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/answers:
     get:
-      summary: 'Multi-engine AI consensus: one question → Perplexity + Grok + Tavily answers verbatim, merged citations, and an agreement matrix.'
+      summary: 'Multi-engine AI consensus: one question → Perplexity + Grok + Tavily answers…'
       description: 'Fans your question to multiple AI engines in parallel and keeps each answer verbatim, merges + dedupes their citations by normalized URL (with a `cited_by` list), and computes where they agree and disagree: a pairwise `agreement_matrix` + `disputed_claims` (the one labeled LLM step: degrades to null on failure) plus a deterministic `citation_overlap` (Jaccard, hand-verifiable). The second-opinion API for agents: one question, one bounded-cost call. Streams each engine''s answer as it settles (SSE). `include=polymarket` adds probabilistic-market grounding. 15cr flat; a strict-majority engine failure refunds half (the raw answers are always the floor value).'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_answers
       security:
       - ApiKeyAuth: []
@@ -6397,10 +6397,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/video-intel:
     get:
-      summary: One video URL → detail + stats + transcript + top comments + commenter sample, across YouTube/TikTok/Rumble/Instagram.
+      summary: One video URL → detail + stats + transcript + top comments + commenter sample…
       description: Fans out the video detail, comments, an optional transcript (10cr, never charged when the video has none), and ≤3 commenter profiles, folding them into one unified payload. Every leg joins on the same video `url`. Sync by default; streams Server-Sent Events when `include=transcript` (the transcript leg can take 20s+). `legs[]` reports each fired leg's status, cost, and latency; `coverage` + `partial_failure` flag any degraded leg. Commenter profiles ship for TikTok + Instagram in v1.
       tags:
-      - prism
+      - Prism
       operationId: get_prism_video_intel
       security:
       - ApiKeyAuth: []
@@ -6562,10 +6562,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/voice:
     get:
-      summary: One person's public posts across X, Threads, Bluesky, and Truth Social, time-merged.
+      summary: One person's public posts across X, Threads, Bluesky, and Truth Social…
       description: 'Fetches a handle''s recent posts from four microblogs in parallel, time-merges them into one chronological feed, and computes platform presence, a cross-post rate, and a per-platform tone label (a soft `gpt-5.4-nano` heuristic that degrades to absent on failure). Microblogs the handle isn''t on return empty arrays with `platform_presence:false`: the absence map is the product. Flat 5cr; all-miss → full refund. The `legs[]` block reports each leg''s status, cost, and latency. v1 is list-level (no per-post detail drill).'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_voice
       security:
       - ApiKeyAuth: []
@@ -6733,10 +6733,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /naver/brief:
     get:
-      summary: One query across the Korean internet (5 Naver corpora) + optional digest.
+      summary: One query across the Korean internet (5 Naver corpora) + optional digest
       description: 'Fans a single query across Naver News, Blog, Café (community), 지식iN (Q&A), and the Korean web index in parallel, returning each corpus''s raw items with the original Korean preserved, plus a volume-by-corpus map and top recent blogs. Add `include=digest` for an English translated synthesis with pull-quotes. The Korea-market brief no western data vendor can produce: all five corpora are native Naver. Paginate each corpus via the opaque `cursor`. Flat 10cr; coverage-based partial refund when a majority of corpora fail. Note `computed.shop_price_range` is retained as a permanent `null` for response-shape stability: Naver retired its Shopping search corpus on 2026-07-31 and offers no replacement.'
       tags:
-      - prism
+      - Prism
       operationId: get_naver_brief
       security:
       - ApiKeyAuth: []
@@ -6930,10 +6930,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/app-reviews:
     get:
-      summary: 'Cross-store app review intelligence (Google Play + App Store): translated, clustered, sentiment-scored.'
+      summary: 'Cross-store app review intelligence (Google Play + App Store): translated…'
       description: 'One call returns a topic-clustered, sentiment-classified review report across Google Play and the App Store: per-store rating summary (listed aggregate), topic clusters, a pooled daily sentiment timeline, extracted feature requests, and developer-response rate, plus every raw review on the shared canonical Review shape. Resolve by store app_id (com.spotify.music / 324684580) or by `query` to auto-resolve the top app on each requested store. Sync by default; streams Server-Sent Events when the client sends `Accept: text/event-stream` (the DFS review legs + clustering run ~30s). Single-store calls are 10 credits; both stores 15.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_app_reviews
       security:
       - ApiKeyAuth: []
@@ -7125,10 +7125,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/creator-card:
     get:
-      summary: One handle, unified author cards across TikTok, Instagram, YouTube, X (and more).
+      summary: One handle, unified author cards across TikTok, Instagram, YouTube, X (and more)
       description: Looks up a single handle across multiple platforms in parallel and returns one unified author card per platform (followers, verified flag, bio, ids) with null for the platforms the handle isn't found on, plus combined follower totals and an any-verified flag. The default set is TikTok, Instagram, YouTube, and Twitter; Threads, Bluesky, and Truth Social can be added via `platforms`. A handle existing on only some platforms is a successful, complete answer (the nulls are the product); only an all-platform miss refunds. Flat 5 credits for up to 4 platforms, +1 credit per extra platform. `legs[]` reports each platform leg's status, cost, and latency.
       tags:
-      - prism
+      - Prism
       operationId: get_prism_creator_card
       security:
       - ApiKeyAuth: []
@@ -7290,7 +7290,7 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/handle-audit:
     get:
-      summary: Should you pull this handle? One call scores a handle across platforms, ranks the best ones, and projects the data volume + credit cost to pull it.
+      summary: Should you pull this handle?
       description: 'Decide whether to pull a handle before paying for a full collection. Score model 2.0.0 returns nullable top-level and per-platform scores, explicit evidence and component coverage, surface estimates, and `legs[]` diagnostics. Unknown numeric values are `null`, not zero. Output is deterministic only for the same (`score_version`, `evidence_fingerprint`) and returned evidence; a later live collection may produce different evidence and a different score. Stale-if-error evidence is eligible for at most 24 hours, and future-dated evidence more than 300 seconds ahead is rejected. 5 credits for any selection of up to 4 supported platforms; +1 credit per selected platform beyond 4. Every successful HTTP 200 receives the full request-shaped charge with no partial refund. A non-200 execution failure receives a full refund when every requested platform is a definitive miss or cannot return usable profile evidence. Scores are advisory estimates from public evidence, not calibrated probabilities.
 
 
@@ -7326,7 +7326,7 @@ paths:
 
         Process-local monotonic last-known-good ordering prevents older writers within one process; global atomic CAS remains future work.'
       tags:
-      - prism
+      - Prism
       operationId: get_prism_handle_audit
       security:
       - ApiKeyAuth: []
@@ -10512,10 +10512,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /prism/post-stats:
     post:
-      summary: Up to 100 mixed-platform post URLs → current engagement per URL, failed URLs refunded.
+      summary: Up to 100 mixed-platform post URLs → current engagement per URL, failed URLs…
       description: 'Bulk stats refresh for verification loops (clipper payouts). POST a JSON body with a `urls` array (1-100 mixed-platform post links); returns one row per URL: platform, status (ok / not_found / error / unsupported), the unified engagement block (views/likes/comments/shares/saves), and a server `fetched_at` timestamp: in input order. Per-URL isolation: one dead link never fails the batch. Metered per successful URL at that URL''s platform rate: 1 credit on most platforms, 5 credits for Instagram and LinkedIn post stats (their richer stats endpoints); dead, errored, and unsupported URLs are refunded, so you pay exactly for the counts you got. Never cached (every call reads the live count). Optionally streams Server-Sent Events when the client sends `Accept: text/event-stream`.'
       tags:
-      - prism
+      - Prism
       operationId: post_prism_post_stats
       security:
       - ApiKeyAuth: []
@@ -10675,10 +10675,10 @@ paths:
               - urls
   /prism/comment-lookup:
     post:
-      summary: 'Re-check up to 25 known comments in one call: per-item results, failed items refunded.'
+      summary: 'Re-check up to 25 known comments in one call: per-item results, failed items…'
       description: 'Batch version of the single-comment lookup, built for recurring brand-comment tracking. Pass up to 25 items, each either `{ comment_url }` or `{ platform, post_url, comment_id }` (plus optional `parent_comment_id`, `position_hint`, `deep_scan`). Every item resolves independently (one bad item never fails the batch) and returns a `status` of `found`, `not_found`, `error`, or `deferred`. Billing is per item (TikTok 2 credits, Instagram 5 credits; deep_scan raises it); only `found` items are charged, everything else is refunded, and the whole batch holds at most 100 credits. Store each returned `lookup.position_hint` and pass it back on the next run so a daily refresh of your tracked comments costs ~1-2 credits per item. Returns sync JSON, or a typed SSE stream (`Accept: text/event-stream`) that emits each item as it settles. Items not started within the 45-second budget come back `deferred` (refunded): just re-request them.'
       tags:
-      - prism
+      - Prism
       operationId: post_prism_comment_lookup
       security:
       - ApiKeyAuth: []
@@ -10834,10 +10834,10 @@ paths:
               - items
   /prism/profiles:
     post:
-      summary: Up to 50 (platform, handle) pairs → one canonical Author per row, failed handles refunded.
+      summary: Up to 50 (platform, handle) pairs → one canonical Author per row, failed…
       description: 'Batch profile lookup for handle vetting. POST a JSON body with an `items` array of 1-50 `{ platform, handle, custom_id? }` objects (handle accepts an @handle, a bare handle, or a pasted profile URL); returns one row per item: the canonical Author object (same shape as the single GET profile endpoint), a `status` of ok / not_found / unsupported / error / deferred, the caller''s `custom_id` echoed, and the credits that row cost: in input order. Per-item isolation: one dead or private handle never fails the batch. Billing is per item at each platform''s own credit tier (most platforms 1 credit; LinkedIn 5); only successful rows are charged, everything else is refunded. Supported platforms: instagram, tiktok, youtube, twitter, threads, twitch, snapchat, truthsocial, bluesky, kwai, linkedin, facebook. Never cached. Optionally streams Server-Sent Events when the client sends `Accept: text/event-stream`.'
       tags:
-      - prism
+      - Prism
       operationId: post_prism_profiles
       security:
       - ApiKeyAuth: []
@@ -10993,29 +10993,20 @@ paths:
               - items
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -11036,14 +11027,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -11055,20 +11038,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -11092,10 +11074,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

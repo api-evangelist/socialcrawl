@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: amazon
+- name: Amazon
   description: Amazon endpoints
 paths:
   /amazon/shop:
@@ -24,7 +24,7 @@ paths:
       summary: Get Amazon shop page
       description: Returns product listings from an Amazon shop or storefront page including product names, prices, ratings, and images.
       tags:
-      - amazon
+      - Amazon
       operationId: get_amazon_shop
       security:
       - ApiKeyAuth: []
@@ -595,7 +595,7 @@ paths:
       summary: Search Amazon products by keyword
       description: 'Returns organic Amazon search results for a keyword: title, price, list price, rating, image, and ASIN per product. Results reflect the chosen marketplace (default United States). Sponsored placements and related searches are excluded in v1. Paginate with the universal cursor parameter; pass depth instead if you need a single large page.'
       tags:
-      - amazon
+      - Amazon
       operationId: get_amazon_product_search
       security:
       - ApiKeyAuth: []
@@ -1145,7 +1145,7 @@ paths:
       summary: Get an Amazon product by ASIN
       description: 'Returns full product detail for an Amazon ASIN: title, brand, description, price, rating, image gallery, specifications, and variant ASINs. Powered by DataForSEO. For this product''s customer reviews, call GET /v1/amazon/reviews with the same ASIN (shared upstream call).'
       tags:
-      - amazon
+      - Amazon
       operationId: get_amazon_product
       security:
       - ApiKeyAuth: []
@@ -1628,7 +1628,7 @@ paths:
       summary: Get Amazon product reviews
       description: Returns the customer reviews shown on an Amazon product page (by ASIN), typically around 8 per product (5-13 range). Each review carries the full text, star rating, reviewer, verified-purchase flag, helpful-vote count, and any review images. Works on the US marketplace, which is the default; no workaround parameter is needed. A product with no on-page reviews returns a refunded empty list.
       tags:
-      - amazon
+      - Amazon
       operationId: get_amazon_reviews
       security:
       - ApiKeyAuth: []
@@ -1974,7 +1974,7 @@ paths:
       summary: Get Amazon sellers and offers for a product
       description: 'Returns every seller offering a given Amazon ASIN: seller name, price, rating, and condition (new / used / refurbished), including the buy-box winner. Powered by DataForSEO.'
       tags:
-      - amazon
+      - Amazon
       operationId: get_amazon_sellers
       security:
       - ApiKeyAuth: []
@@ -2239,29 +2239,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -2282,14 +2273,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -2301,20 +2284,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -2338,10 +2320,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

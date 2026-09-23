@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: google_finance
+- name: google finance
   description: Google_finance endpoints
 paths:
   /google_finance/quote:
@@ -24,7 +24,7 @@ paths:
       summary: Get a financial instrument quote
       description: 'Returns ONE rich, unified Quote for a financial instrument keyed by its `keyword` (`TICKER:EXCHANGE` for stocks/ETFs/indices, e.g. ''GOOGL:NASDAQ'' / ''VOO:NYSEARCA'' / ''.INX:INDEXSP'', or a forex/crypto pair, e.g. ''EUR-USD'' / ''BTC-USD''). A single call bundles the live price + intraday graph, fundamentals (market cap, P/E, dividend yield, 52-week range, volumes), the company profile (CEO, founded, HQ, employees), quarterly + annual financials (equities), and peer instruments: all on ONE canonical shape across stocks, ETFs, indices, crypto, and forex, distinguished by `quote.type`. Forex/crypto pairs populate `quote.pair` (base/quote symbols) and have a null `ticker`. Get the exact `keyword` from /v1/google_finance/ticker-search. Sourced live from DataForSEO''s Google Finance SERP (~5-10s).'
       tags:
-      - google_finance
+      - google finance
       operationId: get_google_finance_quote
       security:
       - ApiKeyAuth: []
@@ -611,7 +611,7 @@ paths:
       summary: Search financial instruments by name
       description: 'Searches Google Finance for financial instruments matching a name and returns a unified QuoteList: each row carries the `id` (e.g. ''AAPL:NASDAQ'', ''.INX:INDEXSP'', ''EUR-USD'') to feed into /v1/google_finance/quote, plus the ticker, display name, exchange, live price, and `type` discriminator. Spans stocks, ETFs, indices, and forex/crypto pairs (asset pairs populate `quote.pair`, with a null `ticker`). Filter by instrument class with `category`. Sourced live from DataForSEO''s Google Finance SERP (~2-3s).'
       tags:
-      - google_finance
+      - google finance
       operationId: get_google_finance_ticker_search
       security:
       - ApiKeyAuth: []
@@ -1257,7 +1257,7 @@ paths:
       summary: Get a markets overview (indices + movers)
       description: 'Returns a unified QuoteList snapshot of the global markets overview: the major regional indices (US / Europe / Asia, tagged in `quote.ext.section`) plus the day''s most-active, gainers, and losers movers. Each row is the same canonical Quote shape used everywhere: re-feed any `id` into /v1/google_finance/quote for the full detail. A standing overview (no input required); the regional grouping is baked into the single response. Sourced live from DataForSEO''s Google Finance SERP (~4-8s).'
       tags:
-      - google_finance
+      - google finance
       operationId: get_google_finance_markets
       security:
       - ApiKeyAuth: []
@@ -1881,29 +1881,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -1924,14 +1915,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -1943,20 +1926,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -1980,10 +1962,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: instagram
+- name: Instagram
   description: Instagram endpoints
 paths:
   /instagram/profile:
@@ -24,7 +24,7 @@ paths:
       summary: Get Instagram user profile
       description: Returns public profile information for an Instagram user including the exact integer follower count, following count, post count, bio, profile picture URL, and verification status. Age-restricted (18+) profiles are supported.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_profile
       security:
       - ApiKeyAuth: []
@@ -526,7 +526,7 @@ paths:
       summary: List Instagram user posts
       description: 'Returns a list of recent posts from an Instagram user''s profile. Each post includes like count, comment count, caption, media URL, media type, and timestamp. Collaborative posts (Instagram''s native "Collab" feature) are fully resolved: `post.ext.coauthors` lists every co-author account as `{ id, username, full_name, is_verified, profile_pic_url }`. Read it whenever you list a profile: a collab post has a single producer and appears in every co-author''s grid, so `post.author` is whichever account created the post and is not always the handle you queried. The complete set of accounts on a post is `post.author.username` plus every `username` in `post.ext.coauthors`, and an empty array means Instagram reports the post as not a collab. Note: engagement.shares is null on this endpoint (the upstream carries no per-post share count); to additionally merge in per-post share counts where a second source exposes them (coverage varies by account), use /v1/instagram/profile/posts/full.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_profile_posts
       security:
       - ApiKeyAuth: []
@@ -1186,7 +1186,7 @@ paths:
       summary: Get Instagram post details
       description: 'Returns detailed information about a specific Instagram post including view count on videos and reels, like count, comment count, caption, media URLs, media type, author info, and tagged users. The view count is served resiliently: Instagram removed per-post play counts from its public web pages in August 2026, so when the primary source omits the count on a video the API automatically fills engagement.views (and ext.ig_play_count) from a second source within the same request. One call, one credit, no extra endpoint needed. Co-author data is the one thing this endpoint cannot give you: the public web page behind it reports an empty co-author list on every post, including genuine collaborative ones, so `post.ext.coauthors` is deliberately omitted here rather than returned as a misleading empty array. For the co-author list of a single post use /v1/instagram/post/stats, and for a whole feed use /v1/instagram/profile/posts or /v1/instagram/profile/reels.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_post
       security:
       - ApiKeyAuth: []
@@ -1775,7 +1775,7 @@ paths:
       summary: List Instagram post comments
       description: 'Returns a list of comments on an Instagram post, ranked by the platform''s own popularity order by default (`sort=top`) so the most-liked comments come first, or newest-first with `sort=recent`. Each comment includes the author, comment text, real like count, reply count, and creation timestamp. Page through with `cursor`. Note: comment.author.display_name is usually null, because the Instagram surface that serves this endpoint withholds commenter display names. Join on comment.author.username.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_post_comments
       security:
       - ApiKeyAuth: []
@@ -2150,7 +2150,7 @@ paths:
       summary: Look up one Instagram comment by URL or id
       description: 'Resolves a single Instagram comment to a live comment object (current like count, reply count, author, timestamp) without you paginating the comment section. Pass `comment_url` (an `https://www.instagram.com/p/{shortcode}/c/{commentId}/` permalink: reply permalinks `.../c/{parent}/r/{reply}/` are best-effort) OR `post_url` + `comment_id`. Instead of a comment id you can search the comment section: `author_username` or `text_contains` return up to `max` matches. The response includes `lookup.post_comment_count` (the post''s true total, so you can reason about scan coverage) and a `lookup.position_hint`: pass it back on a later lookup to make the re-check cheap. Instagram does not expose pinned status or full reply threads to any provider, so `flags.pinned` stays null and deep reply lookups can return `reply_not_resolvable`. Flat 5 credits (15 with `deep_scan=true`); a not-found returns 404 and is fully refunded.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_comment
       security:
       - ApiKeyAuth: []
@@ -2500,7 +2500,7 @@ paths:
       summary: Get Instagram basic profile
       description: 'Returns basic public profile info for an Instagram user by user ID including username, full name, bio, avatar, verification status, and the follower and following counts. Note: author.posts_count is not available on this endpoint, because the lightweight by-id lookup does not carry a post count. Call /v1/instagram/profile?handle= for the post count (same 1 credit).'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_basic_profile
       security:
       - ApiKeyAuth: []
@@ -2996,7 +2996,7 @@ paths:
       summary: List Instagram user reels
       description: 'Returns a list of reels posted by an Instagram user. Each reel includes view count, like count, comment count, and thumbnail. Collaborative reels (Instagram''s native "Collab" feature) carry the full co-author list under `post.ext.coauthors` as `{ id, username, full_name, is_verified, profile_pic_url }`; `post.author` stays the producing account, which on a collab is not always the handle you queried, and an empty array means Instagram reports the reel as not a collab. Note: engagement.shares is null on this endpoint (the upstream carries no per-post share count); to additionally merge in per-reel share counts where a second source exposes them (coverage varies by account), use /v1/instagram/profile/reels/full.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_profile_reels
       security:
       - ApiKeyAuth: []
@@ -3665,7 +3665,7 @@ paths:
       summary: List Instagram story highlights
       description: Returns a list of story highlight collections for an Instagram user including highlight titles, cover images, and item counts.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_highlights
       security:
       - ApiKeyAuth: []
@@ -4315,7 +4315,7 @@ paths:
       summary: Get Instagram highlight detail
       description: Returns the items within a specific Instagram story highlight including media URLs, thumbnails, durations, and capture timestamps. Highlights are archived story frames, so they carry no public caption and no public like, comment, or view count. Instagram shows story engagement only to the account owner, and it is never fabricated here.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_highlight_detail
       security:
       - ApiKeyAuth: []
@@ -4956,7 +4956,7 @@ paths:
       summary: Search Instagram reels
       description: 'Searches Instagram for reels matching a keyword query. Returns matching reels with view counts (engagement.views, the play count), like counts, comment counts, and author info, sourced from the Instagram surface that still carries play counts. Each row carries post.ext.author_id (the creator''s numeric user id) and post.author.username. post.ext.author_followers is historical: Instagram stripped follower counts out of its search payload in August 2026, so it is null on every row: for a follower count pass post.author.username to /v1/instagram/profile?handle= (1 credit, exact current integer), or batch up to 50 creators per call through POST /v1/prism/profiles at 1 credit per resolved profile. Note: engagement.shares and engagement.saves are null on this endpoint; for a per-reel share count pass a result URL to /v1/instagram/post/stats, or use /v1/instagram/profile/reels/full to get a whole creator''s reels with share counts merged in. Saves are platform-private. Instagram exposes no numeric save metric on any surface, and it is never fabricated. Result ordering is Instagram''s own relevance ranking and is not stable between calls: the same query re-run minutes later can return a different, overlapping set. Rank on engagement.views client-side rather than relying on result order, and deduplicate by post.id across pages. Note on date_posted: filtered searches are served by the only Instagram surface that offers a date filter, and that surface no longer carries play counts, so engagement.views is null when date_posted is set. If you need both a date window and view counts, omit date_posted and filter on published_at yourself.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_search_reels
       security:
       - ApiKeyAuth: []
@@ -5622,7 +5622,7 @@ paths:
       summary: Get Instagram media transcript
       description: Returns the AI-generated transcript of an Instagram video or reel. Supports auto-generated and AI-powered transcription.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_media_transcript
       security:
       - ApiKeyAuth: []
@@ -5763,7 +5763,7 @@ paths:
       summary: Get Instagram user embed HTML
       description: Returns embeddable HTML snippet for an Instagram user profile that can be embedded on external websites.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_user_embed
       security:
       - ApiKeyAuth: []
@@ -6259,7 +6259,7 @@ paths:
       summary: List Instagram reels using an audio track
       description: Returns reels that use a specific audio track on Instagram. Each reel includes engagement metrics and author info. Forward the returned `cursor` to request the next page.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_audio_reels
       security:
       - ApiKeyAuth: []
@@ -6906,7 +6906,7 @@ paths:
       summary: Search Instagram posts by hashtag
       description: 'Returns recent public Instagram posts for a hashtag from Instagram''s native hashtag feed. Each post includes shortcode, URL, caption, media URLs, engagement counts, and the author. Pass `type` to choose the ranking (`top`, `recent`, or `clips` for reels only) and forward the returned `cursor` to page deeper. A hashtag feed mixes photos and reels, so engagement.views is a number on the video rows and null on the photo rows. Pass `type=clips` for a reels-only page where every row carries a view count. Note: post.author.display_name is not available on this endpoint, so join on post.author.username, or pass it to /v1/instagram/profile?handle= for the name. Note: engagement.shares and engagement.saves are null on this endpoint (neither hashtag upstream carries a per-post share or save count); for a per-post share count pass a result URL to /v1/instagram/post/stats. Saves are platform-private. Instagram exposes no numeric save metric on any surface, and it is never fabricated.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_search_hashtag
       security:
       - ApiKeyAuth: []
@@ -7569,7 +7569,7 @@ paths:
       summary: Search Instagram profiles by keyword
       description: 'Searches Google for public Instagram results matching a keyword or phrase, then returns matching public profiles mapped to the unified Author schema: `username`, `display_name`, `bio`, `verified`, `followers`, `following`, `posts_count`, `avatar_url`, and the profile `url`. Best-effort against Google''s index, not a native Instagram profile search.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_search_profiles
       security:
       - ApiKeyAuth: []
@@ -8117,7 +8117,7 @@ paths:
       summary: Get trending Instagram reels
       description: 'Fetches trending reels from Instagram''s public reels page. Instagram returns a small batch per call and results can overlap, so call repeatedly to discover more: duplicates are expected. Each item includes shortcode, URL, caption, media URLs, like and comment counts, and user info. Note: engagement.views and content.duration_seconds are null on this endpoint. Instagram sends the play-count and duration keys on the trending surface with no value in them (measured null on 31 of 31 items), and no other source serves this feed, so a view count is not available here: pass a result URL to /v1/instagram/post for a per-reel view count, or use /v1/instagram/search/reels, which is sourced from a surface that still carries play counts.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_reels_trending
       security:
       - ApiKeyAuth: []
@@ -8752,7 +8752,7 @@ paths:
       summary: List Instagram followers
       description: Returns a paginated list of the accounts that follow an Instagram user. Each follower includes username, display name, avatar URL, verification status, and profile URL. Pass either `handle` or `user_id`, and page through with `cursor`.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_followers
       security:
       - ApiKeyAuth: []
@@ -9309,7 +9309,7 @@ paths:
       summary: List Instagram following
       description: Returns a paginated list of the accounts an Instagram user follows. Each account includes username, display name, avatar URL, verification status, and profile URL. Pass either `handle` or `user_id`, and page through with `cursor`.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_following
       security:
       - ApiKeyAuth: []
@@ -9866,7 +9866,7 @@ paths:
       summary: List similar Instagram accounts
       description: 'Returns a list of Instagram accounts similar to a given user: the related accounts Instagram surfaces as suggestions. Each account includes username, avatar URL, verification status, and profile URL. Pass either `handle` or `user_id`. Passing `user_id` is faster because no username lookup is needed. Note: author.display_name is not available here, because the Instagram surface behind this endpoint withholds creator display names. Pass author.username to /v1/instagram/profile?handle= for the name.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_similar
       security:
       - ApiKeyAuth: []
@@ -10417,7 +10417,7 @@ paths:
       summary: List Instagram post likers
       description: 'Returns a sample of the accounts that liked an Instagram post. Each liker includes username, avatar URL, verification status, and profile URL, alongside the post''s total like count in `total`. Instagram exposes only a ranked sample of likers (roughly the first 100): the endpoint does not paginate, and `total` reflects the full like count rather than the number of retrievable likers. Note: author.display_name is not available on this endpoint, because the Instagram surface behind it withholds creator display names. Join on author.username, or pass it to /v1/instagram/profile?handle= for the name.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_post_likers
       security:
       - ApiKeyAuth: []
@@ -10965,7 +10965,7 @@ paths:
       summary: Get Instagram post stats including the share count
       description: 'Returns full engagement stats for a single Instagram post or reel: likes, comments, the view (play) count, and the share count (`engagement.shares`), which is the number shown next to the paper-plane Share icon in the app. The share count is a strong authenticity signal: unlike likes and comments, shares are hard to inflate, so it helps separate genuine reach from bought engagement. The standard /v1/instagram/post endpoint cannot return the share count. Metric availability depends on the media type: likes and comments populate on every post, but Instagram exposes a view (play) count and a share count only on video media (reels, videos, and carousels containing a video). On photo posts and photo-only carousels, `engagement.views` and `engagement.shares` are `null`, and because `computed.estimated_reach` and `computed.engagement_rate` derive from views, they are `null` there too. `engagement.saves` stays null on every post because Instagram does not expose a numeric save count. Use this endpoint for a single post; to get the share count for every reel or post across a whole feed in one call, use /v1/instagram/profile/reels/full or /v1/instagram/profile/posts/full. Note: Instagram''s newer two-arrows Repost ("regram") counter shown in the mobile app is a separate metric that Instagram does not include in its post data, so no API can return it. This endpoint also returns the post''s collaborative-post co-authors under `post.ext.coauthors` (`{ id, username, full_name, is_verified, profile_pic_url }` per account, empty array when the post is not a collab): the standard /v1/instagram/post endpoint cannot, because its web source reports every post as having no co-authors. Pass the post `url` (a /p/, /reel/, or /tv/ link; story URLs are not accepted, list a user''s active stories with /v1/instagram/stories instead).'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_post_stats
       security:
       - ApiKeyAuth: []
@@ -11542,7 +11542,7 @@ paths:
       summary: List posts an Instagram user is tagged in
       description: 'Returns a paginated list of the posts that tag an Instagram user. Each post includes shortcode, URL, caption, media URLs, engagement counts, and the author. Pass either `handle` or `user_id`, and page through with `cursor`. Note: post.author.display_name is not available on this endpoint, because the Instagram surface behind it withholds creator display names. Join on post.author.username, or pass it to /v1/instagram/profile?handle= for the name.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_tagged
       security:
       - ApiKeyAuth: []
@@ -12204,7 +12204,7 @@ paths:
       summary: List recent posts at an Instagram location
       description: 'Returns recent posts tagged at an Instagram location, as a single page of roughly 60 posts. Each post includes shortcode, URL, caption, media URLs, engagement counts, and the author. Pass the `location_id`. This endpoint does not paginate: to cover more ground, query more location IDs. A location grid mixes photos and reels, so engagement.views is a number on the video rows and null on the photo rows. Note: post.author.display_name is not available on this endpoint, because the Instagram surface behind it withholds creator display names. Join on post.author.username, or pass it to /v1/instagram/profile?handle= for the name.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_location_posts
       security:
       - ApiKeyAuth: []
@@ -12851,7 +12851,7 @@ paths:
       summary: Get Instagram engagement statistics
       description: 'Returns computed engagement statistics for an Instagram account based on its recent posts: an overall engagement rate, follower count, total likes and comments across the sampled posts, and a per-post breakdown with likes, comments, post time, and likes/comments-per-hour velocity. Pass the account `handle`.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_engagement
       security:
       - ApiKeyAuth: []
@@ -13004,7 +13004,7 @@ paths:
       summary: Search Instagram locations
       description: Searches Instagram locations by keyword. Returns matching places, each with its location object (id, name, coordinates) plus a display title and subtitle. Use a returned location id with the Instagram location posts endpoint to fetch recent posts tagged there.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_search_location
       security:
       - ApiKeyAuth: []
@@ -13169,7 +13169,7 @@ paths:
       summary: Search Instagram accounts, hashtags, and places
       description: 'Returns mixed Instagram search matches for a query: accounts, hashtags, and places in one payload, the same mix Instagram''s own search box shows.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_search
       security:
       - ApiKeyAuth: []
@@ -13322,7 +13322,7 @@ paths:
       summary: Search popular Instagram posts
       description: Returns popular Instagram posts matching a keyword. Each post includes caption, play count, permalink, thumbnail, and the owner's username. Page with cursor.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_search_popular
       security:
       - ApiKeyAuth: []
@@ -13969,7 +13969,7 @@ paths:
       summary: List replies under an Instagram comment
       description: Returns replies under one Instagram comment. Each reply includes text, like count, nested reply count, author, and timestamp. Pass the post URL and the parent comment_id. Page with cursor.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_post_comment_replies
       security:
       - ApiKeyAuth: []
@@ -14335,7 +14335,7 @@ paths:
       summary: Get Instagram username suggestions
       description: 'Returns suggested available Instagram usernames derived from a keyword: useful for choosing a new handle. Pass a `query` keyword to seed the suggestions.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_username_suggestions
       security:
       - ApiKeyAuth: []
@@ -14500,7 +14500,7 @@ paths:
       summary: Search Instagram music
       description: Searches Instagram's audio (music) library by keyword. Returns matching tracks, each with artist and title, audio and cover-artwork URLs, duration, and usage metadata. Page through with `cursor`.
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_search_music
       security:
       - ApiKeyAuth: []
@@ -14671,7 +14671,7 @@ paths:
       summary: List an Instagram user's active stories
       description: 'Returns the active stories currently in a user''s story tray. Each story includes its id, media URLs (image or video), thumbnail, duration, capture time, and the author. Pass either `handle` or `user_id`. Passing `user_id` is faster because no username lookup is needed. A user with no active stories returns an empty list, not an error. Stories carry no public caption and no public like, comment, or view count: Instagram shows story engagement only to the account owner, and it is never fabricated here.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_stories
       security:
       - ApiKeyAuth: []
@@ -15327,7 +15327,7 @@ paths:
       summary: Download a single Instagram story
       description: 'Returns the downloadable media for one specific story: the full-resolution image or video URLs and the story''s metadata. Pass the `user_id` of the story''s author and the `story_id` of the individual story (get story ids from the Instagram stories endpoint).'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_story_download
       security:
       - ApiKeyAuth: []
@@ -15495,7 +15495,7 @@ paths:
       summary: List trending Instagram music
       description: 'Returns the audio tracks currently trending on Instagram. Each track includes its title, artist, audio and cover-artwork URLs, and usage metadata: useful for spotting sounds to ride for reach. Takes no parameters.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_music_trending
       security:
       - ApiKeyAuth: []
@@ -15651,10 +15651,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /instagram/profile/full:
     get:
-      summary: Instagram profile, recent posts, and computed analytics in one call.
+      summary: Instagram profile, recent posts, and computed analytics in one call
       description: 'Fans out to the Instagram profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_profile_full
       security:
       - ApiKeyAuth: []
@@ -15822,10 +15822,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /instagram/profile/reels/full:
     get:
-      summary: Instagram reels with views, likes, comments, and per-reel share counts where available, in one call.
+      summary: Instagram reels with views, likes, comments, and per-reel share counts where…
       description: 'Returns a creator''s recent reels with views, likes, comments, and the per-reel share count merged in wherever the upstream exposes it: in a single call. The standard /v1/instagram/profile/reels endpoint returns views/likes/comments but leaves engagement.shares null (its upstream has no per-post reshare count); this composite fans out to a second mobile source that carries the share number and merges it back onto each item by post id. Share coverage is best-effort and varies by account: the mobile source only exposes reshare_count for the items it returns, so some (sometimes most) items keep engagement.shares null. That null means "upstream doesn''t expose it", not "zero". Read shares_coverage (the fraction of returned items that got a real share number) before relying on shares; legs[] shows each leg''s status. Billing: the standard leg is critical (its failure refunds the full call); the shares leg is best-effort: if it fails OUTRIGHT the items still return with shares null and 4 of the 5 credits are refunded (you pay the standard 1-credit list price). A successful shares leg with low coverage is still the flat 5 credits, since the second source was queried regardless of how many items it happened to cover. Paginate with next_cursor.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_profile_reels_full
       security:
       - ApiKeyAuth: []
@@ -15996,10 +15996,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /instagram/profile/posts/full:
     get:
-      summary: Instagram posts with views, likes, comments, and per-post share counts where available, in one call.
+      summary: Instagram posts with views, likes, comments, and per-post share counts where…
       description: 'Returns a creator''s recent posts with views, likes, comments, and the per-post share count merged in wherever the upstream exposes it: in a single call. The standard /v1/instagram/profile/posts endpoint returns views/likes/comments but leaves engagement.shares null (its upstream has no per-post reshare count); this composite fans out to a second mobile source that carries the share number and merges it back onto each item by post id. Share coverage is best-effort and varies by account: the mobile source only exposes reshare_count for the items it returns, so some (sometimes most) items keep engagement.shares null. That null means "upstream doesn''t expose it", not "zero". Read shares_coverage (the fraction of returned items that got a real share number) before relying on shares; legs[] shows each leg''s status. Billing: the standard leg is critical (its failure refunds the full call); the shares leg is best-effort: if it fails OUTRIGHT the items still return with shares null and 4 of the 5 credits are refunded (you pay the standard 1-credit list price). A successful shares leg with low coverage is still the flat 5 credits, since the second source was queried regardless of how many items it happened to cover. Paginate with next_cursor.'
       tags:
-      - instagram
+      - Instagram
       operationId: get_instagram_profile_posts_full
       security:
       - ApiKeyAuth: []
@@ -16170,29 +16170,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -16213,14 +16204,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -16232,20 +16215,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -16269,10 +16251,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: search
+- name: Search
   description: Search endpoints
 paths:
   /search/everywhere:
@@ -24,7 +24,7 @@ paths:
       summary: Universal social search across 14 platforms
       description: 'Fans out a single query across Reddit, X (ai-search), YouTube, TikTok, Instagram, Hacker News, Polymarket, GitHub, Threads, Pinterest, LinkedIn, Rumble, Perplexity, and Tavily in parallel (up to 17 sources, since TikTok, Instagram and YouTube each add a hashtag lane). Returns ranked + clustered results, enriched with **real-people comments** from each post. Reddit upvoted comments, HackerNews thread replies, YouTube/TikTok/Instagram top-liked comments, GitHub issue discussion. The top comment per result lives at `data.items[i].source_items[0].metadata.top_comments[]` (sorted by score descending, capped at 5, max 300-char excerpts). Supports streaming via `Accept: text/event-stream` (emits `comments_enriched` chunks per candidate as enrichment lands, before the terminal `done`) and sync via `Accept: application/json`. Flat 20 credits per call regardless of enrichment.'
       tags:
-      - search
+      - Search
       operationId: get_search_everywhere
       security:
       - ApiKeyAuth: []
@@ -204,10 +204,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /search/forums:
     get:
-      summary: Fused forum search across Reddit, Hacker News, and Naver 지식iN/카페, with top comments inline on hero threads by default.
+      summary: Fused forum search across Reddit, Hacker News, and Naver 지식iN/카페, with top…
       description: Fans your topic across Reddit, Hacker News, and Korean forums, RRF-fuses + clusters the threads, and enriches hero threads with their top comments by default (East + West). Naver threads are labeled raw (no comment endpoint). Returns a fused `items[]`, raw per-source buckets, thread clusters, and a deterministic computed block (question_share, top_communities). Flat 10cr with coverage-based partial refund.
       tags:
-      - search
+      - Search
       operationId: get_search_forums
       security:
       - ApiKeyAuth: []
@@ -387,10 +387,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /search/creators:
     get:
-      summary: Fused creator discovery across TikTok, Threads, and Instagram, ranked by relevance, followers, and verification.
+      summary: Fused creator discovery across TikTok, Threads, and Instagram, ranked by…
       description: Fans a niche query across TikTok user search, Threads user search, and Instagram profile search, then merges matching creators into one deterministically ranked list. Ranking is a published formula of query relevance, follower scale, and verification. No LLM rerank. Flat 10 credits with a coverage-based partial refund.
       tags:
-      - search
+      - Search
       operationId: get_search_creators
       security:
       - ApiKeyAuth: []
@@ -575,10 +575,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /search/news:
     get:
-      summary: 'Planned multi-country news search: one query, localized and fanned out across Google News editions in a single call.'
+      summary: 'Planned multi-country news search: one query, localized and fanned out across…'
       description: 'Plans your query into search angles, localizes each angle into the language of every requested country edition (one combined LLM call, fail-open), then fans out up to 12 parallel legs against Google News (50 supported country editions) and merges the articles into one deduplicated list. Every leg reports truthful provenance: `query_source` says whether its keyword was `translated`, confirmed `original`, or a `fallback_original` after a localization failure. Supports streaming via `Accept: text/event-stream` (the `plan_refined` chunk always carries the expanded legs with per-leg provenance before any leg settles) and sync via `Accept: application/json`. Filters: `publisher`, `from`/`to` exact date windows (these pin legs to the primary source), `time_range` recency, `depth` per-leg article depth, `max_legs` cost cap. Billing is metered: a base fee covers planning, then 1 credit per leg that returned articles; the unused ceiling is refunded automatically.'
       tags:
-      - search
+      - Search
       operationId: get_search_news
       security:
       - ApiKeyAuth: []
@@ -780,29 +780,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -823,14 +814,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -842,20 +825,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -879,10 +861,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

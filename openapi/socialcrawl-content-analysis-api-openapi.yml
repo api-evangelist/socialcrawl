@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: content_analysis
+- name: Content Analysis
   description: Content_analysis endpoints
 paths:
   /content_analysis/search:
@@ -24,7 +24,7 @@ paths:
       summary: Search web citations of a keyword with per-mention sentiment
       description: 'Returns paginated web citations (news, blogs, ecommerce, message-boards, organization pages) that mention the keyword, each scored on a 6-axis emotional sentiment model (anger, happiness, love, sadness, share, fun) plus positive/negative/neutral connotation probabilities. This is web-wide brand listening over DataForSEO''s citation database: page-level mentions, not native platform posts. Cursor-paginated via `cursor`; `total` is the global match count, not the page size.'
       tags:
-      - content_analysis
+      - Content Analysis
       operationId: get_content_analysis_search
       security:
       - ApiKeyAuth: []
@@ -222,7 +222,7 @@ paths:
       summary: Aggregate mention summary for a keyword
       description: 'Returns a single roll-up over every web citation of the keyword: total mention count, top domains, sentiment-connotation totals, positive/negative/neutral splits, top text + page categories, and breakdowns by page type, country, and language. The fastest way to size and characterize a brand''s web-wide footprint in one call.'
       tags:
-      - content_analysis
+      - Content Analysis
       operationId: get_content_analysis_summary
       security:
       - ApiKeyAuth: []
@@ -411,7 +411,7 @@ paths:
       summary: Sentiment breakdown for a keyword
       description: 'Returns two sentiment distributions for the keyword''s web mentions: a positive/negative/neutral split (each a full summary sub-object) and a 6-axis emotional split (anger, happiness, love, sadness, share, fun: each a full summary sub-object). Sentiment is DataForSEO''s model-derived NLP, passed through verbatim, not ground truth.'
       tags:
-      - content_analysis
+      - Content Analysis
       operationId: get_content_analysis_sentiment
       security:
       - ApiKeyAuth: []
@@ -588,7 +588,7 @@ paths:
       summary: Rating histogram for a keyword
       description: Returns a 10-bucket histogram (0.0-0.1 … 0.9-1.0) of the relative ratings found across web mentions of the keyword. Each bucket carries a full summary sub-object (total_count, top_domains, sentiment, categories, page types, countries, languages) so you can see how sentiment and sources vary with rating. Best for products and review-heavy terms.
       tags:
-      - content_analysis
+      - Content Analysis
       operationId: get_content_analysis_rating_distribution
       security:
       - ApiKeyAuth: []
@@ -759,7 +759,7 @@ paths:
       summary: Keyword mention volume + sentiment over time
       description: Returns a time series (one row per day/week/month bucket) of mention volume and sentiment for the keyword over a date range. Each row is a full summary sub-object (total_count, sentiment, top domains, categories…). Track how a brand's web-wide mentions and sentiment move over time.
       tags:
-      - content_analysis
+      - Content Analysis
       operationId: get_content_analysis_phrase_trends
       security:
       - ApiKeyAuth: []
@@ -958,7 +958,7 @@ paths:
       summary: Category mention volume + sentiment over time
       description: 'Like phrase-trends, but keyed on a category code from the /content_analysis/categories taxonomy instead of a keyword. Returns a time series of mention volume and sentiment for an entire content category (e.g. Apparel) over a date range. Note the different mental model: this trends a category, not a brand term.'
       tags:
-      - content_analysis
+      - Content Analysis
       operationId: get_content_analysis_category_trends
       security:
       - ApiKeyAuth: []
@@ -1145,7 +1145,7 @@ paths:
       summary: List supported Content Analysis languages
       description: 'Returns the list of languages (name + ISO code) supported by the Content Analysis endpoints. Static reference data: use the codes to filter or interpret the `language` field on mentions. Heavily cached.'
       tags:
-      - content_analysis
+      - Content Analysis
       operationId: get_content_analysis_languages
       security:
       - ApiKeyAuth: []
@@ -1292,7 +1292,7 @@ paths:
       summary: List supported Content Analysis locations
       description: 'Returns the list of locations supported by the Content Analysis endpoints. Static reference data: use it to interpret the `country` field on mentions. Heavily cached.'
       tags:
-      - content_analysis
+      - Content Analysis
       operationId: get_content_analysis_locations
       security:
       - ApiKeyAuth: []
@@ -1439,7 +1439,7 @@ paths:
       summary: List the Content Analysis category taxonomy
       description: 'Returns the full content-category taxonomy (3,000+ nodes: category_code, category_name, parent code) used by Content Analysis. Use it to look up a `category_code` for the category-trends endpoint and to decode the numeric `text_category` arrays on mentions. Heavily cached.'
       tags:
-      - content_analysis
+      - Content Analysis
       operationId: get_content_analysis_categories
       security:
       - ApiKeyAuth: []
@@ -1586,7 +1586,7 @@ paths:
       summary: List the filterable fields for Content Analysis
       description: Returns the map of filterable fields → value types (str, num, time, array.num, array.str) accepted by the advanced `filters` param on the search/summary/sentiment endpoints. Use it to build valid filter expressions. Heavily cached.
       tags:
-      - content_analysis
+      - Content Analysis
       operationId: get_content_analysis_filters
       security:
       - ApiKeyAuth: []
@@ -1730,29 +1730,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -1773,14 +1764,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -1792,20 +1775,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -1829,10 +1811,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

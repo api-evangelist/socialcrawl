@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: twitter
+- name: Twitter
   description: Twitter endpoints
 paths:
   /twitter/profile:
@@ -24,7 +24,7 @@ paths:
       summary: Get Twitter user profile
       description: Returns public profile information for a Twitter/X user including follower count, following count, tweet count, bio, profile image URL, banner URL, and verification status.
       tags:
-      - twitter
+      - Twitter
       operationId: get_twitter_profile
       security:
       - ApiKeyAuth: []
@@ -520,7 +520,7 @@ paths:
       summary: List Twitter user tweets
       description: 'Returns up to the 100 most recent tweets posted by a Twitter/X user. Each tweet includes the full text, like count, retweet count, reply count, media attachments, and creation timestamp. Pagination is not currently supported on this endpoint: the upstream provider returns a single page. For deeper history, combine this with `/v1/twitter/ai-search` or `/v1/search/everywhere`.'
       tags:
-      - twitter
+      - Twitter
       operationId: get_twitter_user_tweets
       security:
       - ApiKeyAuth: []
@@ -1167,7 +1167,7 @@ paths:
       summary: Get Twitter tweet details
       description: Returns detailed information about a specific tweet including the full text, like count, retweet count, reply count, quote count, media attachments, author info, and creation timestamp.
       tags:
-      - twitter
+      - Twitter
       operationId: get_twitter_tweet
       security:
       - ApiKeyAuth: []
@@ -1744,7 +1744,7 @@ paths:
       summary: Get Twitter community details
       description: Returns information about a Twitter/X community including name, description, member count, rules, and creation date.
       tags:
-      - twitter
+      - Twitter
       operationId: get_twitter_community
       security:
       - ApiKeyAuth: []
@@ -2240,7 +2240,7 @@ paths:
       summary: List Twitter community tweets
       description: Returns recent tweets posted in a Twitter/X community. Each tweet includes text, engagement metrics, and author info.
       tags:
-      - twitter
+      - Twitter
       operationId: get_twitter_community_tweets
       security:
       - ApiKeyAuth: []
@@ -2881,7 +2881,7 @@ paths:
       summary: Get Twitter video transcript
       description: Returns the transcript of a video attached to a tweet. Supports auto-generated captions.
       tags:
-      - twitter
+      - Twitter
       operationId: get_twitter_tweet_transcript
       security:
       - ApiKeyAuth: []
@@ -3022,7 +3022,7 @@ paths:
       summary: AI-powered X (Twitter) search via xAI Grok
       description: Natural-language search over X (Twitter) powered by xAI's Grok 4.3 model with the built-in x_search tool. Returns a synthesised answer plus X source citations. Pin results to specific authors via from_handles (or exclude with exclude_handles), and narrow to a time window with from_date / to_date. Costs 5 credits per call regardless of how many internal x_search invocations the model performs (see tool_calls_count in the response for visibility). Auto-refunds on upstream failure. Best for freeform questions like 'what is @elonmusk saying about xAI this week' that would otherwise require multiple structured calls to /v1/twitter/profile, /v1/twitter/user/tweets, etc.
       tags:
-      - twitter
+      - Twitter
       operationId: get_twitter_ai_search
       security:
       - ApiKeyAuth: []
@@ -3196,10 +3196,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /twitter/profile/full:
     get:
-      summary: X (Twitter) profile, recent posts, and computed analytics in one call.
+      summary: X (Twitter) profile, recent posts, and computed analytics in one call
       description: 'Fans out to the X (Twitter) profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits.'
       tags:
-      - twitter
+      - Twitter
       operationId: get_twitter_profile_full
       security:
       - ApiKeyAuth: []
@@ -3367,29 +3367,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -3410,14 +3401,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -3429,20 +3412,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -3466,10 +3448,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

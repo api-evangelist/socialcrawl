@@ -1,0 +1,29 @@
+# Front Door AI Index — socialcrawl — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: socialcrawl
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.socialcrawl.dev
+  final_host: www.socialcrawl.dev
+  ownership: own
+  owner: socialcrawl
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 33
+  host_score: 33
+  density: 18.34
+  words: 1799
+  tiers:
+    agentic: 17
+    core: 15
+    model: 1
+  ambiguous: 13
+  top_terms:
+    AI: 15
+    agent: 13
+    MCP: 12
+    AI agent: 5
+    Claude: 1

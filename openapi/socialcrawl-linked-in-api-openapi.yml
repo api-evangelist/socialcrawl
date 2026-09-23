@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: linkedin
+- name: Linked In
   description: Linkedin endpoints
 paths:
   /linkedin/profile:
@@ -24,7 +24,7 @@ paths:
       summary: Get LinkedIn user profile
       description: Returns public profile information for a LinkedIn user including name, headline, summary, location, current company, education, skills, and profile picture URL.
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile
       security:
       - ApiKeyAuth: []
@@ -520,7 +520,7 @@ paths:
       summary: Get LinkedIn company page with its full About tab
       description: 'Returns public information about a LinkedIn company page. Canonical fields carry the identity and reach: `author.id` (the numeric company_id the other `/company/*` endpoints take), `username`, `display_name`, `bio` (the company description), `avatar_url` (logo), `followers`, `location` (flattened HQ), and `verified`. The complete **About tab** rides in `author.ext`: `website`, `employee_count` and `employee_count_range`, `founded_year`, `specialities[]`, `industries[]`, `headquarters` (structured `{country, city, geographic_area, line1, line2, postal_code}`), `locations[]` (every office LinkedIn lists, with lat/long), `hashtags[]`, `cover_url`, and `page_active`. Fields a page has not filled in come back null rather than omitted, so `founded_year` is null on a company that never set a founding date. `funding` is mapped too, but LinkedIn returned an empty funding block for every company measured on 2026-08-11, so do not depend on it.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_company
       security:
       - ApiKeyAuth: []
@@ -1016,7 +1016,7 @@ paths:
       summary: Get LinkedIn post details
       description: Returns detailed information about a specific LinkedIn post including the post text, like count, comment count, share count, author info, media attachments, and publish timestamp.
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_post
       security:
       - ApiKeyAuth: []
@@ -1587,7 +1587,7 @@ paths:
       summary: Search LinkedIn people
       description: Searches LinkedIn members by name and B2B filters (title, current/past company, school, industry, location, language). Returns a paginated list of matching profiles with handle, headline, location, follower count, and the member URN for follow-up enrichment calls.
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_search_people
       security:
       - ApiKeyAuth: []
@@ -2208,7 +2208,7 @@ paths:
       summary: List people at a LinkedIn company
       description: Returns a paginated list of members who work at a company, with handle, headline, location, and member URN. Get the company_id from /v1/linkedin/company.
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_company_people
       security:
       - ApiKeyAuth: []
@@ -2763,7 +2763,7 @@ paths:
       summary: Get LinkedIn post comments
       description: Returns a paginated list of comments on a LinkedIn post, with commenter identity, text, reaction breakdown, pin/edit flags, and reply counts.
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_post_comments
       security:
       - ApiKeyAuth: []
@@ -3142,7 +3142,7 @@ paths:
       summary: List a LinkedIn member's posts
       description: 'List a LinkedIn member''s posts: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_posts
       security:
       - ApiKeyAuth: []
@@ -3795,7 +3795,7 @@ paths:
       summary: List posts a LinkedIn member reacted to
       description: 'List posts a LinkedIn member reacted to: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_reactions
       security:
       - ApiKeyAuth: []
@@ -4448,7 +4448,7 @@ paths:
       summary: List reposts of a LinkedIn post
       description: 'List reposts of a LinkedIn post: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_post_reposts
       security:
       - ApiKeyAuth: []
@@ -5101,7 +5101,7 @@ paths:
       summary: List posts in a LinkedIn group
       description: 'List posts in a LinkedIn group: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_group_posts
       security:
       - ApiKeyAuth: []
@@ -5755,7 +5755,7 @@ paths:
       summary: List a company's affiliated/showcase pages
       description: 'List a company''s affiliated/showcase pages: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_company_affiliated_pages
       security:
       - ApiKeyAuth: []
@@ -6297,7 +6297,7 @@ paths:
       summary: List replies to a LinkedIn comment
       description: 'List replies to a LinkedIn comment: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_post_comments_replies
       security:
       - ApiKeyAuth: []
@@ -6669,7 +6669,7 @@ paths:
       summary: List a member's work experiences
       description: 'List a member''s work experiences: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_experiences
       security:
       - ApiKeyAuth: []
@@ -6847,7 +6847,7 @@ paths:
       summary: List a member's education history
       description: 'List a member''s education history: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_educations
       security:
       - ApiKeyAuth: []
@@ -7025,7 +7025,7 @@ paths:
       summary: List a member's skills
       description: 'List a member''s skills: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_skills
       security:
       - ApiKeyAuth: []
@@ -7203,7 +7203,7 @@ paths:
       summary: List a member's honors and awards
       description: 'List a member''s honors and awards: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_honors
       security:
       - ApiKeyAuth: []
@@ -7381,7 +7381,7 @@ paths:
       summary: List a member's licenses and certifications
       description: 'List a member''s licenses and certifications: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_certifications
       security:
       - ApiKeyAuth: []
@@ -7559,7 +7559,7 @@ paths:
       summary: List a member's publications
       description: 'List a member''s publications: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_publications
       security:
       - ApiKeyAuth: []
@@ -7737,7 +7737,7 @@ paths:
       summary: List a member's volunteer experiences
       description: 'List a member''s volunteer experiences: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_volunteers
       security:
       - ApiKeyAuth: []
@@ -7915,7 +7915,7 @@ paths:
       summary: List recommendations for a member
       description: 'List recommendations for a member: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_recommendations
       security:
       - ApiKeyAuth: []
@@ -8099,7 +8099,7 @@ paths:
       summary: List companies a member follows
       description: 'List companies a member follows: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_interests_companies
       security:
       - ApiKeyAuth: []
@@ -8277,7 +8277,7 @@ paths:
       summary: List groups a member follows
       description: 'List groups a member follows: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_interests_groups
       security:
       - ApiKeyAuth: []
@@ -8455,7 +8455,7 @@ paths:
       summary: List a member's image posts
       description: 'List a member''s image posts: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_images
       security:
       - ApiKeyAuth: []
@@ -8632,7 +8632,7 @@ paths:
       summary: List a member's video posts
       description: 'List a member''s video posts: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_videos
       security:
       - ApiKeyAuth: []
@@ -8809,7 +8809,7 @@ paths:
       summary: List a member's comments
       description: 'List a member''s comments: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_comments
       security:
       - ApiKeyAuth: []
@@ -8986,7 +8986,7 @@ paths:
       summary: List reactors on a LinkedIn post
       description: 'List reactors on a LinkedIn post: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_post_reactions
       security:
       - ApiKeyAuth: []
@@ -9170,7 +9170,7 @@ paths:
       summary: List a company's job postings
       description: 'List a company''s job postings: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_company_jobs
       security:
       - ApiKeyAuth: []
@@ -9491,7 +9491,7 @@ paths:
       summary: Search LinkedIn jobs
       description: 'Search LinkedIn jobs: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_search_jobs
       security:
       - ApiKeyAuth: []
@@ -9830,7 +9830,7 @@ paths:
       summary: Resolve a location to a LinkedIn geocode id
       description: 'Resolve a location to a LinkedIn geocode id: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_search_location
       security:
       - ApiKeyAuth: []
@@ -9995,7 +9995,7 @@ paths:
       summary: Search LinkedIn schools
       description: 'Search LinkedIn schools: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_search_schools
       security:
       - ApiKeyAuth: []
@@ -10173,7 +10173,7 @@ paths:
       summary: Resolve an industry name to a LinkedIn industry id
       description: 'Resolve an industry name to a LinkedIn industry id: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_search_industry
       security:
       - ApiKeyAuth: []
@@ -10338,7 +10338,7 @@ paths:
       summary: Get a member's account freshness signals (NOT the profile About section)
       description: 'Returns LinkedIn''s account-freshness panel for a member: `joined` (the month the account was created) plus how recently the contact information and profile photo were updated. **This is not the member''s About/summary section**: despite the resource name, no free-text profile summary is returned, and the upstream does not expose one. The closest public text LinkedIn publishes for a member is the headline, on `author.bio` from `/v1/linkedin/profile`. For a company''s About tab, use `/v1/linkedin/company` (`author.ext`).'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_about
       security:
       - ApiKeyAuth: []
@@ -10491,7 +10491,7 @@ paths:
       summary: Get a member's public contact info
       description: 'Get a member''s public contact info: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_contact
       security:
       - ApiKeyAuth: []
@@ -10644,7 +10644,7 @@ paths:
       summary: Get a member's follower + connection counts
       description: 'Get a member''s follower + connection counts: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_stats
       security:
       - ApiKeyAuth: []
@@ -10797,7 +10797,7 @@ paths:
       summary: Get a company's open job count
       description: 'Get a company''s open job count: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_company_job_count
       security:
       - ApiKeyAuth: []
@@ -10950,7 +10950,7 @@ paths:
       summary: Get aggregate insights about a company's members
       description: 'Get aggregate insights about a company''s members: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_company_insights
       security:
       - ApiKeyAuth: []
@@ -11103,7 +11103,7 @@ paths:
       summary: Get LinkedIn group details
       description: 'Get LinkedIn group details: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_group
       security:
       - ApiKeyAuth: []
@@ -11256,7 +11256,7 @@ paths:
       summary: Get LinkedIn job details
       description: 'Get LinkedIn job details: via the Fresh LinkedIn Scraper upstream, normalised to the SocialCrawl schema.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_job
       security:
       - ApiKeyAuth: []
@@ -11488,7 +11488,7 @@ paths:
       summary: List LinkedIn company posts
       description: Returns recent posts from a LinkedIn company page. Each post includes text, reaction count, comment count, and media.
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_company_posts
       security:
       - ApiKeyAuth: []
@@ -12148,7 +12148,7 @@ paths:
       summary: Get LinkedIn ad details
       description: Returns detailed information about a specific LinkedIn advertisement including ad copy, sponsor info, impressions, and targeting.
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_ad
       security:
       - ApiKeyAuth: []
@@ -12719,7 +12719,7 @@ paths:
       summary: Search LinkedIn ads
       description: Searches the LinkedIn Ad Library for ads by company, keyword, or filters. Returns matching ads with ad copy and sponsor info.
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_ads_search
       security:
       - ApiKeyAuth: []
@@ -12927,7 +12927,7 @@ paths:
       summary: Search public LinkedIn posts by keyword
       description: Finds public LinkedIn posts, feed updates, and Pulse articles via Google Search. Returns description, author, media, like count, comment count, and published date when LinkedIn exposes them publicly. Best-effort against Google's index, not a complete native LinkedIn search. Use `date_posted` to narrow to recent posts and forward `cursor` for pagination.
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_search_posts
       security:
       - ApiKeyAuth: []
@@ -13139,7 +13139,7 @@ paths:
       summary: Get a LinkedIn post video transcript
       description: 'Fetches the transcript from a LinkedIn post video when LinkedIn exposes one publicly. Returns `transcript: null` with `transcriptNotAvailable: true` if the post has no transcript: credits are only deducted when a transcript is actually returned.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_post_transcript
       security:
       - ApiKeyAuth: []
@@ -13277,10 +13277,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /linkedin/profile/full:
     get:
-      summary: LinkedIn company profile, recent posts, and computed analytics in one call.
+      summary: LinkedIn company profile, recent posts, and computed analytics in one call
       description: 'Fans out to the LinkedIn company profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits.'
       tags:
-      - linkedin
+      - Linked In
       operationId: get_linkedin_profile_full
       security:
       - ApiKeyAuth: []
@@ -13448,29 +13448,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -13491,14 +13482,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -13510,20 +13493,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -13547,10 +13529,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

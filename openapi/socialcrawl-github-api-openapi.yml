@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: github
+- name: Github
   description: Github endpoints
 paths:
   /github/profile:
@@ -24,7 +24,7 @@ paths:
       summary: Get a GitHub user profile
       description: Returns public profile information for a GitHub user (login, name, avatar, bio, follower / following / public-repos counts, and account-creation date) mapped to the unified Author schema. `author.likes_count` surfaces `public_gists` (a creation-count analog); `author.verified` surfaces the rare `site_admin` flag (true only for GitHub staff accounts).
       tags:
-      - github
+      - Github
       operationId: get_github_profile
       security:
       - ApiKeyAuth: []
@@ -520,7 +520,7 @@ paths:
       summary: Get a GitHub repository
       description: 'Returns repository metadata (full_name, description, stars, forks, open issues, watchers, language, and creation date) mapped to the unified Author schema. A repo is a follow-able creator-like entity in this API: stars map to `author.followers`, watchers (subscribers) to `author.likes_count`, forks to `author.following`. Use `/v1/github/repo/readme`, `/v1/github/repo/releases`, and `/v1/github/repo/issues` for richer per-repo data.'
       tags:
-      - github
+      - Github
       operationId: get_github_repo
       security:
       - ApiKeyAuth: []
@@ -1016,7 +1016,7 @@ paths:
       summary: List a GitHub user's repositories
       description: 'Returns the public repositories owned by the user under `data.items[]`: each entry includes `id`, `name`, `full_name`, `description`, `language`, `stargazers_count`, `forks_count`, `created_at`, and `pushed_at`. Sortable by `created`, `updated`, `pushed`, or `full_name`. Use `/v1/github/repo` for a single richer repo dossier.'
       tags:
-      - github
+      - Github
       operationId: get_github_profile_repos
       security:
       - ApiKeyAuth: []
@@ -1714,7 +1714,7 @@ paths:
       summary: Get a repository's README
       description: 'Returns the repository''s README in raw form (the file contents, not base64-wrapped). The fetcher sets `Accept: application/vnd.github.raw+json` so the response body is the actual file. Useful for content discovery and AI-grounding workflows.'
       tags:
-      - github
+      - Github
       operationId: get_github_repo_readme
       security:
       - ApiKeyAuth: []
@@ -2285,7 +2285,7 @@ paths:
       summary: List a repository's releases
       description: 'Returns the most recent releases for the repository under `data.items[]`: each entry includes `tag_name`, `name`, `body` (markdown release notes), `published_at`, `prerelease`, and `assets[]`. Sorted newest-first by upstream default.'
       tags:
-      - github
+      - Github
       operationId: get_github_repo_releases
       security:
       - ApiKeyAuth: []
@@ -2953,7 +2953,7 @@ paths:
       summary: List a repository's issues (and PRs)
       description: 'Returns issues for the repository under `data.items[]`. NOTE: GitHub treats pull requests as issues for this endpoint: every PR also appears here, distinguishable by the presence of a `pull_request` field on the item. Filter by `state`, comma-separated `labels`, sort by `created`/`updated`/`comments`, and paginate with `per_page`/`page`. `since` accepts an ISO 8601 timestamp.'
       tags:
-      - github
+      - Github
       operationId: get_github_repo_issues
       security:
       - ApiKeyAuth: []
@@ -3672,7 +3672,7 @@ paths:
       summary: Get a single issue or pull request
       description: Returns full metadata for an issue or PR (title, body, author, labels, state, reactions, comments count, and timestamps) mapped to the unified Post schema. Pass either an `/issues/N` or `/pull/N` URL; GitHub's API treats them interchangeably under `/issues/N`. Use `/v1/github/issue/comments` for the discussion thread.
       tags:
-      - github
+      - Github
       operationId: get_github_issue
       security:
       - ApiKeyAuth: []
@@ -4243,7 +4243,7 @@ paths:
       summary: Get comments on an issue or pull request
       description: 'Returns comments under `data.items[]`: each entry includes `id`, `user.login`, `body`, `reactions.total_count`, and `created_at`. Pass either an `/issues/N` or `/pull/N` URL; both resolve to the same comment thread on GitHub''s API. Comments are returned in ascending `created_at` order (GitHub does not support re-sorting a single issue''s comments).'
       tags:
-      - github
+      - Github
       operationId: get_github_issue_comments
       security:
       - ApiKeyAuth: []
@@ -4630,7 +4630,7 @@ paths:
       summary: Search GitHub issues and pull requests
       description: 'Searches issues and PRs across all of GitHub via the `/search/issues` endpoint. Supports GitHub''s full search syntax: qualifiers like `repo:owner/name`, `is:issue`, `is:pr`, `is:open`, `label:bug`, `created:>2026-01-01`, `author:username`, `comments:>10`. Sort by `reactions`, `comments`, `created`, or `updated`. Results land under `data.items[]` with `total_count` and `incomplete_results` siblings. Rate-limited to 30 req/min per token.'
       tags:
-      - github
+      - Github
       operationId: get_github_search
       security:
       - ApiKeyAuth: []
@@ -5318,7 +5318,7 @@ paths:
       summary: Top feature request and top complaint for a repository
       description: 'Composite endpoint: runs two `/search/issues` queries in parallel: `top_feature_request` (issues with `enhancement` label, sorted by reactions; falls back to top open issue by reactions if no label exists) and `top_complaint` (most-discussed open issue, sorted by comments). Returns `{ top_feature_request, top_complaint }`. 5 credits per call.'
       tags:
-      - github
+      - Github
       operationId: get_github_repo_top_issues
       security:
       - ApiKeyAuth: []
@@ -5471,7 +5471,7 @@ paths:
       summary: Full project dossier for a repository
       description: 'Composite endpoint: fetches repo metadata, README excerpt, latest 3 releases, top feature request, and top complaint in parallel and returns a structured dossier `{ info, readme, releases, top_issues }`. Useful for AI-grounding workflows where a single call should return everything you''d need to summarise a project. 5 credits per call.'
       tags:
-      - github
+      - Github
       operationId: get_github_repo_dossier
       security:
       - ApiKeyAuth: []
@@ -5624,7 +5624,7 @@ paths:
       summary: User contribution velocity dossier
       description: 'Composite endpoint: combines a `/search/issues` PR-velocity query (total + merged), the user''s own repo list, and parallel per-repo enrichment (stars + releases for external repos; README + releases + top-issues for own repos) into a structured contribution dossier `{ velocity, contributed_repos[], own_repos[] }`. The `depth` param controls fan-out width: `quick` enriches up to 5 external + 3 own repos, `default` 10 + 5, `deep` 15 + 5. 10 credits per call.'
       tags:
-      - github
+      - Github
       operationId: get_github_user_profile_velocity
       security:
       - ApiKeyAuth: []
@@ -5784,29 +5784,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -5827,14 +5818,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -5846,20 +5829,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -5883,10 +5865,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

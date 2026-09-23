@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: target
+- name: Target
   description: Target endpoints
 paths:
   /target/product:
@@ -24,7 +24,7 @@ paths:
       summary: Get a Target product by TCIN
       description: 'Returns full product detail for a Target item: title, brand, description, highlight bullets, current and regular price, average rating with its 1-5 star distribution, written-review count, the full image gallery, colour and size variations, and stock status. Prices are national: Target''s product endpoint reports the same price whatever store is asked for, so treat this as catalogue pricing rather than shelf pricing. For this product''s written reviews call GET /v1/target/reviews with the same TCIN.'
       tags:
-      - target
+      - Target
       operationId: get_target_product
       security:
       - ApiKeyAuth: []
@@ -487,7 +487,7 @@ paths:
       summary: Get Target product reviews
       description: 'Returns written customer reviews for a Target product, 10 per page, each with the full review text, star rating, reviewer nickname, submission date, helpful-vote count, verified-purchase flag, and any reviewer photos. Pages do not overlap and the review total is exact, so a full crawl is deterministic: pass the returned cursor back until has_more is false. Page size is fixed by the upstream at 10 and cannot be raised. If you want the star distribution rather than the review text, call GET /v1/target/product instead and read product.ext.rating_distribution, which is one call rather than one per ten reviews.'
       tags:
-      - target
+      - Target
       operationId: get_target_reviews
       security:
       - ApiKeyAuth: []
@@ -828,7 +828,7 @@ paths:
       summary: Browse Target products in a category
       description: 'Returns products listed in a Target category, 24 per page, each with title, brand, price, regular price, rating, image gallery, highlight bullets, and its TCIN. Unlike Target''s keyword search this one paginates, so it is the way to walk a whole category: pass the returned cursor back until has_more is false. Because Target ships no keyword search worth billing for, this plus GET /v1/target/categories is how you discover TCINs. Two things to expect: consecutive pages occasionally repeat a handful of products, because Target''s category ordering shifts between calls, so de-duplicate by product.id when crawling; and ratings are present on roughly half of category rows and null on the rest, which reflects Target''s own data rather than an omission here.'
       tags:
-      - target
+      - Target
       operationId: get_target_category
       security:
       - ApiKeyAuth: []
@@ -1352,7 +1352,7 @@ paths:
       summary: List the Target category taxonomy
       description: 'Returns Target''s top-level browse taxonomy: each node''s id, display name, parent id, canonical URL, and hero image. Feed a node id into GET /v1/target/category to walk that category''s products. This is the entry point for TCIN discovery, since Target ships no keyword search we are willing to bill for. Static reference data, so it is 1 credit and heavily cached.'
       tags:
-      - target
+      - Target
       operationId: get_target_categories
       security:
       - ApiKeyAuth: []
@@ -1499,7 +1499,7 @@ paths:
       summary: Find Target stores near a location
       description: Returns Target stores near a ZIP code, city, or state, each with its store id, name, full address, phone number, distance from the searched location, open/closed status, timezone, and two weeks of daily opening hours. Store data changes rarely, so it is 1 credit and heavily cached. Note that Target's product pricing is national on this API, so a store id here is for store-locator use rather than for localising prices.
       tags:
-      - target
+      - Target
       operationId: get_target_stores
       security:
       - ApiKeyAuth: []
@@ -1933,29 +1933,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -1976,14 +1967,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -1995,20 +1978,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -2032,10 +2014,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

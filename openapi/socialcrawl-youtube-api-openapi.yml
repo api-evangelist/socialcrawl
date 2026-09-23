@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: youtube
+- name: Youtube
   description: Youtube endpoints
 paths:
   /youtube/channel:
@@ -24,7 +24,7 @@ paths:
       summary: Get YouTube channel info
       description: Returns public channel information for a YouTube channel including subscriber count, total video count, total view count, channel description, banner URL, and avatar URL. `author.followers` is YouTube's publicly published subscriber figure. Above 1,000 subscribers YouTube rounds that figure to three significant figures, and `author.ext.followers_approximate` is true.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_channel
       security:
       - ApiKeyAuth: []
@@ -548,7 +548,7 @@ paths:
       summary: List YouTube channel videos
       description: 'Returns a list of recent videos published by a YouTube channel. Each video includes title, view count, like count, comment count, duration, thumbnail URL, and publish date. SHORTS: this reads the channel''s Videos tab, which is long-form only. Shorts are a separate shelf on YouTube and never appear here (measured 0 of 30 items on 2 channels, 2026-08-11). For a channel''s Shorts call `/v1/youtube/channel/shorts` (1 credit, same `channelId`/`handle`); the two sets are disjoint, so calling both and concatenating gives the channel''s full catalogue for 2 credits. Every item on both endpoints carries `post.ext.content_type` (`video` or `short`) so the merged list stays separable.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_channel_videos
       security:
       - ApiKeyAuth: []
@@ -1232,7 +1232,7 @@ paths:
       summary: Get YouTube video details
       description: Returns detailed information about a specific YouTube video including title, view count, like count, comment count, description, tags, duration, channel info, and publish date.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_video
       security:
       - ApiKeyAuth: []
@@ -1815,7 +1815,7 @@ paths:
       summary: Batch get YouTube video details (up to 1000)
       description: 'Fetches full details for up to 1000 YouTube videos by id in a single POST request. Each item is the same unified video object as GET /v1/youtube/video. Body: { ids: string[], includeLocalizations?: boolean }. Metered per 50-id chunk; a request that resolves no videos at all returns 200 with an empty list at 0 credits.'
       tags:
-      - youtube
+      - Youtube
       operationId: post_youtube_videos
       security:
       - ApiKeyAuth: []
@@ -2472,7 +2472,7 @@ paths:
       summary: Batch get YouTube channel details (up to 1000)
       description: 'Fetches full details for up to 1000 YouTube channels by id in a single POST request. Each item is the unified channel (author) object. Body: { ids: string[], includeLocalizations?: boolean }. Metered per 50-id chunk; a request that resolves no channels at all returns 200 with an empty list at 0 credits.'
       tags:
-      - youtube
+      - Youtube
       operationId: post_youtube_channels
       security:
       - ApiKeyAuth: []
@@ -3027,10 +3027,10 @@ paths:
               - ids
   /youtube/transcripts:
     post:
-      summary: Up to 100 YouTube video ids → one transcript per row, failed ids refunded.
+      summary: Up to 100 YouTube video ids → one transcript per row, failed ids refunded
       description: 'Batch transcript lookup for LLM corpora. POST a JSON body with an `ids` array of 1-100 BARE 11-character YouTube video ids (full watch URLs are not accepted here: use GET /v1/youtube/video/transcript for a single URL); returns one row per id: the transcript (`format: "text"` joins it into one string; `format: "segments"` returns `[{start_ms, duration_ms, text}]`), the resolved `language`, and a `status` of ok / not_found / error / deferred: in input order. Optional `language` picks a preferred caption track. Per-id isolation: one caption-less or deleted video never fails the batch: a caption-less video is `not_found` with `ext.reason: "no_captions"`, a deleted/unavailable one is `not_found` with `ext.reason: "video_gone"`. Billing is per successful row at 3 credits (the single-transcript registry tier); not_found / errored / deferred rows are refunded, so you pay exactly for the transcripts you got. Never cached. Optionally streams Server-Sent Events when the client sends `Accept: text/event-stream`.'
       tags:
-      - youtube
+      - Youtube
       operationId: post_youtube_transcripts
       security:
       - ApiKeyAuth: []
@@ -3183,7 +3183,7 @@ paths:
       summary: Detect sponsors of a YouTube video
       description: 'Checks a YouTube video for the paid-promotion disclosure and infers likely sponsors/promoted brands from the public description, description links, promo-code text, and transcript. Experimental upstream: sponsor attribution is inferred, with per-sponsor confidence and evidence.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_video_sponsors
       security:
       - ApiKeyAuth: []
@@ -3342,7 +3342,7 @@ paths:
       summary: List YouTube video comments
       description: 'Returns a list of comments on a specific YouTube video. Each comment includes the author name, comment text, like count, reply count, and an exact per-second publish timestamp. For a date-window pull (say, the last two years of comments), request `order=newest` and paginate: rows arrive newest-first on `comment.published_at` and each next page continues strictly older with no overlap, so keep the rows inside your window and stop paging once a page''s oldest row falls before it. There is no server-side date parameter because YouTube exposes none for comments: a filter here would walk the same pages at the same cost, so the cutoff belongs client-side where it can also stop the walk. One caveat for that walk: the first row of the first page can be the video''s pinned comment regardless of `order`, so filter rows by timestamp rather than terminating at the first out-of-window row.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_video_comments
       security:
       - ApiKeyAuth: []
@@ -3747,7 +3747,7 @@ paths:
       summary: List YouTube comment replies
       description: 'Fetches replies to a specific comment on a YouTube video. Each reply includes text content, author details, like count, and publish date. Requires a continuationToken from the Comments endpoint. YouTube''s comment model is two levels deep: a top-level comment and one flat list of replies. There is no reply-to-a-reply thread, so reply objects carry no continuation token of their own. When someone answers another reply, YouTube stores it in this same flat list (usually prefixed with an @mention), so paginating this endpoint to exhaustion returns the complete tree. Paginate with the pagination.has_more flag rather than the reply count on the parent comment: that count is YouTube''s own tally and can include replies withheld from the public list (held for review, spam-filtered, or from deleted accounts), so an exhausted list is often shorter than it.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_video_comment_replies
       security:
       - ApiKeyAuth: []
@@ -4116,7 +4116,7 @@ paths:
       summary: Search YouTube
       description: Searches YouTube by keyword. Returns matching videos, shorts, and live streams (an untyped search returns all three; `type` scopes to one kind, including channels and playlists). Each video result includes title, URL, thumbnail, view count, publish date, duration, channel info, and badges. For Shorts results, exact publish dates and durations require `includeExtras=true`.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_search
       security:
       - ApiKeyAuth: []
@@ -4823,7 +4823,7 @@ paths:
       summary: List YouTube channel shorts
       description: 'Returns a list of YouTube Shorts published by a channel, read from the channel''s own Shorts shelf. Each short includes view count, like count, comment count, title, thumbnail, duration and exact publish date (measured 100% coverage on all six across 96 items, 2026-08-11), and unlike `/v1/youtube/search?type=shorts` every item carries channel identity. This is the Shorts complement to `/v1/youtube/channel/videos`, which is long-form only: the two sets are disjoint, so calling both and concatenating gives the channel''s full catalogue for 2 credits. Every item carries `post.ext.content_type` (`short` here, `video` there) so the merged list stays separable.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_channel_shorts
       security:
       - ApiKeyAuth: []
@@ -5495,7 +5495,7 @@ paths:
       summary: Get YouTube community post
       description: Returns details of a YouTube community post including text content, like count, comment count, images, and author info.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_community_post
       security:
       - ApiKeyAuth: []
@@ -6066,7 +6066,7 @@ paths:
       summary: Get YouTube playlist
       description: Returns videos in a YouTube playlist including titles, view counts, durations, thumbnails, and channel info.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_playlist
       security:
       - ApiKeyAuth: []
@@ -6719,7 +6719,7 @@ paths:
       summary: Search YouTube by hashtag
       description: Searches YouTube for videos under a specific hashtag. Returns matching videos with view counts, channel info, and publish dates.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_search_hashtag
       security:
       - ApiKeyAuth: []
@@ -7382,7 +7382,7 @@ paths:
       summary: Get trending YouTube shorts
       description: Returns currently trending YouTube Shorts with view counts, like counts, channel info, and thumbnails.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_shorts_trending
       security:
       - ApiKeyAuth: []
@@ -8017,7 +8017,7 @@ paths:
       summary: Get YouTube video transcript
       description: 'Returns the transcript of a YouTube video as timestamped segments: each with text, start `offset` and `duration` (seconds), language, word count, and speech rate. Supports multiple languages via `language`. When no transcript exists (the owner disabled captions, the video is login-gated or gone, or no caption track matches the requested language) the endpoint returns 404 RESOURCE_NOT_FOUND with `error.details.reason` set to `captions_disabled`, `login_required`, `no_captions`, or `video_gone`, no credits are charged, and retrying returns the same result.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_video_transcript
       security:
       - ApiKeyAuth: []
@@ -8164,7 +8164,7 @@ paths:
       summary: List a YouTube channel's playlists
       description: Fetches playlists from a YouTube channel's Playlists tab (playlist ID, title, thumbnail, video count, channel info, and playlist URL) plus a `continuationToken` when more results are available. Pass `handle` or `channelId` for the first page; forward `continuationToken` for subsequent pages.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_channel_playlists
       security:
       - ApiKeyAuth: []
@@ -8827,7 +8827,7 @@ paths:
       summary: List a YouTube channel's live streams
       description: Fetches live streams and past streams from a YouTube channel's Live tab (title, URL, thumbnail, view count, publish time, duration) plus a `continuationToken` when more results are available. Pass `handle` or `channelId` for the first page; forward `continuationToken` for subsequent pages.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_channel_lives
       security:
       - ApiKeyAuth: []
@@ -9490,7 +9490,7 @@ paths:
       summary: List a YouTube channel's community posts
       description: Fetches community posts from a YouTube channel's Posts tab (post ID, URL, content, images, attached video, like count, publish time, channel info) plus a `continuationToken` when more results are available. Pass `handle` or `channelId` for the first page; forward `continuationToken` for subsequent pages.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_channel_community_posts
       security:
       - ApiKeyAuth: []
@@ -10153,7 +10153,7 @@ paths:
       summary: Get trending YouTube videos
       description: Returns the most popular (trending) YouTube videos for a region and category (title, thumbnail, duration, view/like/comment counts, channel, and publish time) plus a `cursor` when more results are available. Filter by `region` (ISO country) and `category` (YouTube category id); forward `cursor` for subsequent pages.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_videos_trending
       security:
       - ApiKeyAuth: []
@@ -10818,7 +10818,7 @@ paths:
       summary: List the videos in a YouTube playlist
       description: Returns the videos in a YouTube playlist in order (video id, title, thumbnail, owning channel, and publish time) plus a `cursor` when more results are available. Pass `playlist_id` for the first page; forward `cursor` for subsequent pages.
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_playlist_items
       security:
       - ApiKeyAuth: []
@@ -11471,7 +11471,7 @@ paths:
       summary: Advanced YouTube video search
       description: 'Searches YouTube videos with the full filter set: sort `order`, `duration`, live/upcoming `event_type`, Creative-Commons `license`, `category`, `region`, `language`, and `published_after`/`published_before` date windows: returning video id, title, thumbnail, channel, and publish time, plus a `cursor` for the next page. Results are always videos. This is the reliable lane for date-window, sort, and page-size work. `published_after`/`published_before` take exact RFC-3339 bounds and are genuinely applied (`/v1/youtube/search`''s coarse `uploadDate` buckets are silently dropped by that upstream whenever a `type` is also set); `order=date` is an exact sort (measured: zero inversions); `order=viewCount` is YouTube''s popularity-weighted ranking: strongly view-correlated with the top result leading, but not strictly descending, so with `includeExtras=true` sort the page client-side on `engagement.views` for exact ranking (the counts are in the response); and `max_results` returns up to the page size you ask for, 1-50 (exact when YouTube has the supply). Every result carries an exact per-second `published_at`. Set `includeExtras=true` to add view/like/comment counts and `duration_seconds` to every result (+5 credits per page), without it those are null, because YouTube''s search index returns snippets only. SHORTS: there is no `type=shorts` here and there cannot be. YouTube''s Data API has no Shorts concept, so no filter can distinguish a vertical Short from any other video. The documented APPROXIMATION is `duration=short` (under 4 minutes) plus `includeExtras=true` and a client-side filter on `post.content.duration_seconds <= 180`; it will include short landscape videos, so treat it as a narrowing heuristic, not a Shorts filter. For a real Shorts shelf use `/v1/youtube/search?type=shorts`, which reads YouTube''s own Shorts surface and carries its own caveats.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_search_advanced
       security:
       - ApiKeyAuth: []
@@ -12244,7 +12244,7 @@ paths:
       summary: Get YouTube search suggestions
       description: 'Returns YouTube''s search autocomplete suggestions for a partial query: the same suggestions the search box shows. Useful for keyword expansion and SEO research. Returns a string list under `items`.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_search_suggestions
       security:
       - ApiKeyAuth: []
@@ -12415,7 +12415,7 @@ paths:
       summary: Get a YouTube video's audio file streams
       description: 'Returns the downloadable audio stream files for a YouTube video: each with a direct media `url`, mime type, bitrate, audio quality, sample rate, channels, and approximate duration. The stream URLs are time-limited: fetch them immediately and do not cache.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_video_audio
       security:
       - ApiKeyAuth: []
@@ -12584,7 +12584,7 @@ paths:
       summary: Get a YouTube video's video file streams
       description: 'Returns the downloadable video stream files for a YouTube video: each with a direct media `url`, mime type, resolution (`width`/`height`), quality label, fps, bitrate, and approximate duration. The stream URLs are time-limited: fetch them immediately and do not cache.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_video_files
       security:
       - ApiKeyAuth: []
@@ -12753,7 +12753,7 @@ paths:
       summary: Get a YouTube video's subtitle files
       description: 'Returns the downloadable subtitle/caption track files for a YouTube video: each with a language code and name, format, and a direct download `url`. Includes both manual and auto-generated tracks across available subtitle formats (srt, vtt, ttml, …).'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_video_subtitles
       security:
       - ApiKeyAuth: []
@@ -12928,7 +12928,7 @@ paths:
       summary: Get a YouTube video's thumbnail files
       description: 'Returns the thumbnail image files for a YouTube video at every available size: each with a direct image `url`, dimensions (`width`/`height`), aspect `ratio`, and image `format` (webp / jpg).'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_video_thumbnails
       security:
       - ApiKeyAuth: []
@@ -13094,10 +13094,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /youtube/profile/full:
     get:
-      summary: YouTube profile, recent posts, and computed analytics in one call.
+      summary: YouTube profile, recent posts, and computed analytics in one call
       description: 'Fans out to the YouTube profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits.'
       tags:
-      - youtube
+      - Youtube
       operationId: get_youtube_profile_full
       security:
       - ApiKeyAuth: []
@@ -13277,29 +13277,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -13320,14 +13311,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -13339,20 +13322,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -13376,10 +13358,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

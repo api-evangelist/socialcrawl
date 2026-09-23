@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: web
+- name: Web
   description: Web endpoints
 paths:
   /web/scrape:
@@ -24,7 +24,7 @@ paths:
       summary: Scrape a web page
       description: Fetches a public web page and returns clean content, metadata, and optional media in the unified WebPage schema.
       tags:
-      - web
+      - Web
       operationId: get_web_scrape
       security:
       - ApiKeyAuth: []
@@ -332,7 +332,7 @@ paths:
       summary: Search the web
       description: Searches web, news, and image sources and returns a single normalized list of web page results.
       tags:
-      - web
+      - Web
       operationId: get_web_search
       security:
       - ApiKeyAuth: []
@@ -654,7 +654,7 @@ paths:
       summary: Map URLs on a site
       description: Discovers URLs for a public site and returns them as a normalized WebPageList.
       tags:
-      - web
+      - Web
       operationId: get_web_map
       security:
       - ApiKeyAuth: []
@@ -956,7 +956,7 @@ paths:
       summary: Extract structured data from a web page
       description: Fetches one web page and returns structured extraction output under the WebPage extraction field.
       tags:
-      - web
+      - Web
       operationId: get_web_extract
       security:
       - ApiKeyAuth: []
@@ -1219,7 +1219,7 @@ paths:
       summary: Start an async web crawl
       description: Starts an async crawl job and returns a SocialCrawl job id (job_...). Poll or cancel it via GET/DELETE /v1/web/jobs/{job_id}, or track it with a webhook.
       tags:
-      - web
+      - Web
       operationId: post_web_crawl
       security:
       - ApiKeyAuth: []
@@ -1395,7 +1395,7 @@ paths:
       summary: Start an async batch scrape
       description: Starts an async batch scrape job for multiple URLs and returns a SocialCrawl job id (job_...). Poll or cancel it via GET/DELETE /v1/web/jobs/{job_id}.
       tags:
-      - web
+      - Web
       operationId: post_web_batch_scrape
       security:
       - ApiKeyAuth: []
@@ -1571,7 +1571,7 @@ paths:
       summary: List async web jobs
       description: Lists async crawl, batch scrape, and agent jobs for the API key.
       tags:
-      - web
+      - Web
       operationId: get_web_jobs
       security:
       - ApiKeyAuth: []
@@ -1839,7 +1839,7 @@ paths:
       summary: Get an async web job
       description: 'Returns the current status, billing settlement, progress, and any available result metadata for one async web job: crawl, batch scrape, or agent. Append /errors to the same path to list per-page failures and robots-blocked URLs (crawl and batch scrape jobs).'
       tags:
-      - web
+      - Web
       operationId: get_web_jobs_job_id
       security:
       - ApiKeyAuth: []
@@ -1991,7 +1991,7 @@ paths:
       summary: Cancel an async web job
       description: Cancels one async web job of any kind (crawl, batch scrape, or agent), closes the upstream work when possible, and refunds any unsettled held credits.
       tags:
-      - web
+      - Web
       operationId: delete_web_jobs_job_id
       security:
       - ApiKeyAuth: []
@@ -2144,7 +2144,7 @@ paths:
       summary: Start an async web agent job
       description: Runs a model-neutral browser agent task and returns a SocialCrawl async job id (job_...). Poll it via GET /v1/web/jobs/{job_id}.
       tags:
-      - web
+      - Web
       operationId: post_web_agent
       security:
       - ApiKeyAuth: []
@@ -2378,7 +2378,7 @@ paths:
       summary: Create a web monitor
       description: Creates an upstream-backed monitor. Creation is free; every scheduled check bills its upstream cost plus 1 credit for orchestration, and keeps billing on the cadence you set until the monitor is paused or deleted. The response returns credits_booked, the upstream cost of a single check, so budget (credits_booked + 1) x checks per month before leaving one running.
       tags:
-      - web
+      - Web
       operationId: post_web_monitors
       security:
       - ApiKeyAuth: []
@@ -2562,7 +2562,7 @@ paths:
       summary: List web monitors
       description: Lists web monitors created by the current API key.
       tags:
-      - web
+      - Web
       operationId: get_web_monitors
       security:
       - ApiKeyAuth: []
@@ -2830,7 +2830,7 @@ paths:
       summary: Get a web monitor
       description: Returns configuration, cadence, status, and billing metadata for one web monitor.
       tags:
-      - web
+      - Web
       operationId: get_web_monitors_monitor_id
       security:
       - ApiKeyAuth: []
@@ -2982,7 +2982,7 @@ paths:
       summary: Update a web monitor
       description: Updates one web monitor's status or cadence while preserving its check history and billing metadata.
       tags:
-      - web
+      - Web
       operationId: patch_web_monitors_monitor_id
       security:
       - ApiKeyAuth: []
@@ -3156,7 +3156,7 @@ paths:
       summary: Delete a web monitor
       description: Deletes one web monitor, stops future scheduled checks, and keeps historical check records available.
       tags:
-      - web
+      - Web
       operationId: delete_web_monitors_monitor_id
       security:
       - ApiKeyAuth: []
@@ -3309,7 +3309,7 @@ paths:
       summary: List web monitor checks
       description: Lists checks recorded for one monitor.
       tags:
-      - web
+      - Web
       operationId: get_web_monitors_monitor_id_checks
       security:
       - ApiKeyAuth: []
@@ -3577,7 +3577,7 @@ paths:
       summary: Create an interactive web session
       description: Creates a short-lived browser session for follow-up interactions.
       tags:
-      - web
+      - Web
       operationId: post_web_sessions
       security:
       - ApiKeyAuth: []
@@ -3809,7 +3809,7 @@ paths:
       summary: List interactive web sessions
       description: Lists sessions created by the current API key.
       tags:
-      - web
+      - Web
       operationId: get_web_sessions
       security:
       - ApiKeyAuth: []
@@ -4071,7 +4071,7 @@ paths:
       summary: Get an interactive web session
       description: Returns status, expiry, billing hold, and settlement metadata for one interactive web session.
       tags:
-      - web
+      - Web
       operationId: get_web_sessions_session_id
       security:
       - ApiKeyAuth: []
@@ -4290,7 +4290,7 @@ paths:
       summary: Close an interactive web session
       description: Closes one interactive web session and settles any held credits that have not already been billed.
       tags:
-      - web
+      - Web
       operationId: delete_web_sessions_session_id
       security:
       - ApiKeyAuth: []
@@ -4510,7 +4510,7 @@ paths:
       summary: Execute an interaction in a web session
       description: Runs code in an existing browser session and returns the execution result.
       tags:
-      - web
+      - Web
       operationId: post_web_sessions_session_id_execute
       security:
       - ApiKeyAuth: []
@@ -4750,7 +4750,7 @@ paths:
       summary: Parse an uploaded document
       description: Uploads a document through multipart/form-data and returns parsed web-style content.
       tags:
-      - web
+      - Web
       operationId: post_web_parse
       security:
       - ApiKeyAuth: []
@@ -4979,29 +4979,20 @@ paths:
               - file
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -5022,14 +5013,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -5041,20 +5024,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -5078,10 +5060,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:

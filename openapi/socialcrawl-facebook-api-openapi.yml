@@ -16,7 +16,7 @@ servers:
 security:
 - ApiKeyAuth: []
 tags:
-- name: facebook
+- name: Facebook
   description: Facebook endpoints
 paths:
   /facebook/profile:
@@ -24,7 +24,7 @@ paths:
       summary: Get Facebook page profile
       description: 'Returns a unified Facebook Author profile with page ID, display name, profile URL, profile image, bio (the page intro), follower count, page-like count, and creation date. A **business page** carries considerably more than a personal profile, and all of it rides in `author.ext`: `business_category`, `website`, `links[]`, `public_phone`, `public_email`, `address`, `price_range`, `rating` (Facebook''s recommendation string) with `rating_count`, `talking_about_count`, `cover_url`, `page_active`, and `ad_library_page_id` / `ad_library_status`: the Ad Library page id is a different id from `author.id` and is the one `/v1/facebook/adlibrary/company/ads` takes, so you can chain profile → ads off a single lookup. A personal profile returns null for the listing fields it has no equivalent for rather than omitting them. `links[]` and `business_hours[]` are also mapped, the latter only when you pass `get_business_hours=true`, but Facebook returned both empty on every page measured on 2026-08-11, so treat them as best effort rather than data you can depend on. `author.following` and `author.posts_count` remain null because the upstream profile response does not provide those totals.'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_profile
       security:
       - ApiKeyAuth: []
@@ -526,7 +526,7 @@ paths:
       summary: List Facebook page posts
       description: Returns a list of recent posts from a Facebook page or profile. Each post includes the post text, like count, comment count, share count, media attachments, and publish timestamp.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_profile_posts
       security:
       - ApiKeyAuth: []
@@ -1182,7 +1182,7 @@ paths:
       summary: Get Facebook post details
       description: Returns detailed information about a specific Facebook post including the post text, like count, comment count, share count, reactions breakdown, media attachments, and author info.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_post
       security:
       - ApiKeyAuth: []
@@ -1765,7 +1765,7 @@ paths:
       summary: List Facebook post comments
       description: Returns a list of comments on a specific Facebook post. Each comment includes the author name, comment text, like count, reply count, and creation timestamp.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_post_comments
       security:
       - ApiKeyAuth: []
@@ -2134,7 +2134,7 @@ paths:
       summary: List Facebook group posts
       description: 'Returns posts from a public Facebook group, newest first. Each post carries the post text, reaction count, comment count, author name and id, the group permalink, the exact publish timestamp, and any attached image or video. Facebook serves this feed in small slices (**3 to 4 posts per page**) so deeper history is a cursor walk rather than one large call: send the `pagination.next_cursor` from each response back as `cursor` and repeat until `pagination.has_more` is false. A 30-page walk on a public group returned 91 posts with no duplicates and a cursor still open, so depth is bounded by how many pages you are willing to buy (1 credit each) rather than by a hard cap. All four `sort_by` values paginate; use `sort_by=CHRONOLOGICAL` to stay current on a busy group, since the default and `TOP_POSTS` mix older high-engagement posts into the first pages.'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_group_posts
       security:
       - ApiKeyAuth: []
@@ -2801,7 +2801,7 @@ paths:
       summary: Get a Facebook group
       description: 'Returns a Facebook group''s public record: name, description, member count, privacy, visibility, and creation date. Pass the group URL or group_id. Use group/posts for the group''s recent posts.'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_group
       security:
       - ApiKeyAuth: []
@@ -3306,7 +3306,7 @@ paths:
       summary: Get Facebook video transcript
       description: Returns the transcript of a Facebook video post. Supports auto-generated captions.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_post_transcript
       security:
       - ApiKeyAuth: []
@@ -3447,7 +3447,7 @@ paths:
       summary: List Facebook profile photos
       description: Returns Facebook page or profile photos as unified Post items. Each item includes a photo ID, permalink, full-size image URL, thumbnail, and accessibility caption when available. Per-item author, engagement counts, and publish time are not exposed, so those canonical fields and engagement counts remain null.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_profile_photos
       security:
       - ApiKeyAuth: []
@@ -4101,7 +4101,7 @@ paths:
       summary: List Facebook profile reels
       description: 'Returns Facebook page or profile reels as unified Post items. Each item includes a reel ID, description, thumbnail, duration when available, author identity, `engagement.views` when the upstream provides it, permalink, and publish time. Likes, comments, shares, and saves remain null because this endpoint does not expose those counts. **Two caveats worth knowing before you grade on these numbers:** (1) `engagement.views` here is Facebook''s ROUNDED public display value (the "12K" / "2.6M" the page shows, parsed back to a number: e.g. 12000 where the true count is 12366), not an exact count; (2) the upstream carries no per-reel engagement beyond that view count. For EXACT views plus likes, comments, and shares, the easiest path is `GET /v1/facebook/profile/reels/full`, which runs this list and the per-reel lookups server-side and merges the exact engagement in (flat 5 credits per page of 10 reels). Alternatively, take each item''s `post.url` and pass it to `/v1/facebook/post` (single) or batch up to 100 of them into `POST /v1/prism/post-stats` (1 credit per successful URL, dead links refunded).'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_profile_reels
       security:
       - ApiKeyAuth: []
@@ -4755,7 +4755,7 @@ paths:
       summary: Get Facebook Ad Library ad details
       description: 'Returns detailed information about a specific ad from the Facebook Ad Library: creative, spend, impressions, and targeting. Video creatives land in `content.media_urls` (playable URL) and `content.thumbnail_url` (preview frame); ad signals (CTA, link, active status, dates, display format, headline, video URLs) ride the `post.ext.ad` envelope. For ad video transcripts, use `/v1/facebook/adlibrary/ad/transcript` (separate endpoint, premium tier).'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_adlibrary_ad
       security:
       - ApiKeyAuth: []
@@ -5341,7 +5341,7 @@ paths:
       summary: List Facebook Ad Library company ads
       description: Returns ads from a specific company/page in the Facebook Ad Library. Each ad includes creative, status, spend, and targeting info. Video creatives land in `content.media_urls` (playable URL) and `content.thumbnail_url` (preview frame); ad signals (CTA, link, active status, dates, display format, headline, video URLs) ride the `post.ext.ad` envelope.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_adlibrary_company_ads
       security:
       - ApiKeyAuth: []
@@ -6059,7 +6059,7 @@ paths:
       summary: Search Facebook Ad Library
       description: Searches the Facebook Ad Library for ads matching a keyword. Returns matching ads with creative text, images, sponsor info, and status.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_adlibrary_search_ads
       security:
       - ApiKeyAuth: []
@@ -6304,7 +6304,7 @@ paths:
       summary: Search Facebook Ad Library companies
       description: Searches for companies/pages in the Facebook Ad Library. Returns matching pages with active ad counts and page details.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_adlibrary_search_companies
       security:
       - ApiKeyAuth: []
@@ -6846,7 +6846,7 @@ paths:
       summary: List a Facebook page's events
       description: Returns upcoming and past events for a public Facebook page, including title, date/time, location, cover image, and attendee counts when exposed. Forward the returned cursor for additional pages.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_profile_events
       security:
       - ApiKeyAuth: []
@@ -7493,7 +7493,7 @@ paths:
       summary: List replies to a Facebook post comment
       description: 'Returns the reply thread for a single Facebook comment. Both `feedback_id` and `expansion_token` come from the parent `/v1/facebook/post/comments` response: note that `feedback_id` is NOT the comment ID. Forward the returned cursor for additional pages.'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_post_comment_replies
       security:
       - ApiKeyAuth: []
@@ -7859,7 +7859,7 @@ paths:
       summary: Search Facebook Marketplace locations
       description: Searches Facebook Marketplace locations and cities, returning lat/lng coordinates you can feed into `/v1/facebook/marketplace/search`.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_marketplace_location_search
       security:
       - ApiKeyAuth: []
@@ -8024,7 +8024,7 @@ paths:
       summary: Search Facebook Marketplace listings
       description: 'Searches Facebook Marketplace listings by keyword + lat/lng with price, condition, delivery, and date-listed filters. Forward the returned cursor for additional pages. With `sort_by=creation_time_descend`, FB may return slightly different ordering across identical requests: for alerting workflows, scrape multiple pages and dedupe by listing id rather than assuming stable order.'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_marketplace_search
       security:
       - ApiKeyAuth: []
@@ -8296,7 +8296,7 @@ paths:
       summary: Get a Facebook Marketplace item
       description: 'Fetches a single Facebook Marketplace listing: title, description, price, location, condition, photos, seller, and availability flags. Pass either the numeric `id` or a full Marketplace `url`.'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_marketplace_item
       security:
       - ApiKeyAuth: []
@@ -8876,7 +8876,7 @@ paths:
       summary: Search Facebook events by keyword
       description: Searches the public Facebook Events directory for events matching a keyword. Forward the returned cursor for additional pages.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_events_search
       security:
       - ApiKeyAuth: []
@@ -9047,7 +9047,7 @@ paths:
       summary: List Facebook events for a city
       description: Returns the events listed under a Facebook city/region Events explore page. Filter by relative `time` (defaults to all time) and forward the returned cursor for additional pages.
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_events
       security:
       - ApiKeyAuth: []
@@ -9704,7 +9704,7 @@ paths:
       summary: Get details for a Facebook event
       description: 'Fetches full metadata for a Facebook event: title, description, start/end time, location, host, cover image, and RSVP counts when exposed.'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_event_details
       security:
       - ApiKeyAuth: []
@@ -10284,7 +10284,7 @@ paths:
       summary: Get a Facebook Ad Library video ad transcript
       description: 'Retrieves a transcript for a single Facebook Ad Library video ad. Uses Facebook-provided captions when available, otherwise transcribes the public video URL on demand. Ads without retrievable captions return a 404 RESOURCE_NOT_FOUND, and on-demand transcription can fail transiently (503): both outcomes are free; credits are only deducted when a transcript is returned.'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_adlibrary_ad_transcript
       security:
       - ApiKeyAuth: []
@@ -10431,10 +10431,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /facebook/profile/full:
     get:
-      summary: Facebook profile, recent posts, and computed analytics in one call.
+      summary: Facebook profile, recent posts, and computed analytics in one call
       description: 'Fans out to the Facebook profile and recent-posts endpoints in parallel and returns the unified author, the recent-post list, and computed metrics: average engagement rate, posting cadence (with the window it was measured over), the top post, and the format mix. The profile leg is the only critical leg: if posts can''t be fetched the call still returns the profile with post-dependent metrics null, and every leg''s status is surfaced in legs[]. Flat 5 credits. For Facebook, `author.following` and `author.posts_count` remain null because the profile upstream does not provide those totals.'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_profile_full
       security:
       - ApiKeyAuth: []
@@ -10602,10 +10602,10 @@ paths:
           $ref: '#/components/responses/Error503'
   /facebook/profile/reels/full:
     get:
-      summary: Facebook profile reels with exact views, likes, comments, and shares merged in, in one call.
+      summary: Facebook profile reels with exact views, likes, comments, and shares merged in…
       description: 'Returns a Facebook page or profile''s reels with EXACT per-reel engagement merged in: one call instead of the reels-list → post-stats chain. The plain `/v1/facebook/profile/reels` list only carries a rounded public view count ("12K" parsed back to 12000) and no likes, comments, or shares, because Facebook exposes those on the individual reel permalink only. This endpoint fetches the list, then queries each reel''s permalink server-side and overwrites the item''s `engagement` with the exact figures: `views` (the rounded list value is replaced), `likes`, `comments`, and `shares`. `saves` stays null (Facebook exposes no public save count), and `comments` can be null on a zero-comment reel (a quirk of the permalink upstream). Per-item `ext.engagement_source` is `"post_detail"` when the exact figures landed and null when that reel''s lookup failed (the item then keeps the honest list values); read `engagement_coverage` before grading, and `_warnings: ["engagement_partial"]` flags a partial page. Billing: a flat 5 credits per page of 10 reels (1 credit for the list + 4 for the per-reel enrichment, roughly half the cost of running the chain yourself); if enrichment yields zero coverage the 4-credit premium is refunded automatically. Paginate with `next_cursor`, or pass `limit` (1-50) to have the endpoint walk pages server-side until it has collected that many reels, billed per page consumed.'
       tags:
-      - facebook
+      - Facebook
       operationId: get_facebook_profile_reels_full
       security:
       - ApiKeyAuth: []
@@ -10767,29 +10767,20 @@ paths:
           $ref: '#/components/responses/Error503'
 components:
   responses:
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
       x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
       x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
       content:
         application/json:
           schema:
@@ -10810,14 +10801,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
     Error400:
       description: Invalid request - missing or malformed parameters
       x-error-codes:
@@ -10829,20 +10812,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
       x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
       x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
       content:
         application/json:
           schema:
@@ -10866,10 +10848,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorEnvelope'
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+    Error401:
+      description: Unauthorized - missing or invalid API key
       x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
       content:
         application/json:
           schema:
