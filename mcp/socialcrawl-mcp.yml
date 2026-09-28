@@ -16,24 +16,46 @@ deployment:
 tools_count: 10
 tools:
 - name: socialcrawl_list_platforms
-  description: ''
+  description: List all 65 platforms available through SocialCrawl (575 endpoints — social media, commerce,
+    marketplaces & product reviews, retail (Amazon, Walmart, Target, Home Depot, eBay, Klarna, AliExpress,
+    Etsy, Sephora, H&M, Kohl's, Wayfair, Gumtree
 - name: socialcrawl_list_endpoints
-  description: ''
+  description: List endpoints with their full parameter contract — required + optional params, types,
+    integer ranges, enum values, parameter couplings, CSV limits, pagination style, cache TTL, and per-endpoint
+    pricing (including metered bands). Pass a `pl
 - name: socialcrawl_request
-  description: ''
+  description: Make an API request to any of the 575 SocialCrawl endpoints. Fetches real-time data (profiles,
+    posts, comments, transcripts, search results, products, offers and price history, reviews, apps, places
+    and stores, jobs and salary ranges, news,
 - name: socialcrawl_check_balance
-  description: ''
+  description: 'Check the credit balance and the credit ledger for the authenticated SocialCrawl account.
+    Default view calls GET /v1/credits/balance (balance + recent-deduction summary); `view: "transactions"`
+    calls GET /v1/credits/transactions for dispute'
 - name: socialcrawl_monitors
-  description: ''
+  description: Create and manage stateful monitors that re-run any SocialCrawl recipe (a registry endpoint
+    or a Prism composite) on a cadence (hourly/daily/weekly/cron), deliver each result to a signed webhook,
+    raise alerts on metric thresholds/changes, a
 - name: socialcrawl_web
-  description: ''
+  description: 'Full web scraping, search, and browser automation (Firecrawl-backed). Sync reads: ''scrape''
+    (URL → markdown/HTML/screenshot/links), ''search'' (web search with page content), ''map'' (discover
+    a site''s URLs), ''extract'' (LLM structured data from'
 - name: socialcrawl_cohorts
-  description: ''
+  description: Answer 'which of THESE specific public identities is talking about my keywords?' — the
+    opposite of open social listening. You upload a panel of up to 10,000 platform-qualified public handles
+    (instagram, tiktok, youtube, twitter, threads, bl
 - name: socialcrawl_pricing
-  description: ''
+  description: Exact credit pricing for every one of the 575 SocialCrawl endpoints. 'overview' returns
+    the tier ladder (329 standard / 211 advanced / 35 premium), every free endpoint, every flat override,
+    all 71 metered endpoints with their min-max band a
 - name: socialcrawl_discover
-  description: ''
+  description: 'The API describing itself, live, at 0 credits — the `/v1/utility/*` family. ''quickstart'':
+    everything needed for a first successful call (auth, base URL, response envelope, billing model, the
+    full error taxonomy, rate limits, paging). ''catal'
 - name: socialcrawl_get_docs
-  description: ''
+  description: 'Retrieve SocialCrawl API documentation. Topics: ''overview'' (compact intro), ''full''
+    (comprehensive reference for all 575 endpoints), ''authentication'', ''credits'', ''pricing'' (per-endpoint
+    cost for every endpoint), ''errors'', ''idempotency'', ''pag'
 tools_source: live tools/list via initialize handshake, 2026-09-11 (signals/audit_mcp_authorship.py --probe)
 authorship: provider
+descriptions_source: live tools/list (authorship probe or saved capture); filled by backfill-tools-from-authorship.py
+  --descriptions, 2026-09-28
