@@ -2912,6 +2912,114 @@ paths:
         '503':
           $ref: '#/components/responses/Error503'
 components:
+  responses:
+    Error404:
+      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
+      x-error-codes:
+      - ENDPOINT_NOT_FOUND
+      - RESOURCE_NOT_FOUND
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error502:
+      description: Upstream error - the platform returned an error, credits refunded
+      x-error-codes:
+      - UPSTREAM_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error400:
+      description: Invalid request - missing or malformed parameters
+      x-error-codes:
+      - INVALID_REQUEST
+      - COHORT_MEMBER_LIMIT_EXCEEDED
+      - COHORT_LIMIT_EXCEEDED
+      - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error413:
+      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
+      x-error-codes:
+      - PAYLOAD_TOO_LARGE
+      - COHORT_RESULT_TOO_LARGE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+      x-error-codes:
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error422:
+      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
+      x-error-codes:
+      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error402:
+      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
+      x-error-codes:
+      - INSUFFICIENT_CREDITS
+      - KEY_BUDGET_EXCEEDED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error401:
+      description: Unauthorized - missing or invalid API key
+      x-error-codes:
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error409:
+      description: Conflict - a request with this Idempotency-Key is still in flight, or the cohort resource is not in a state that allows this operation
+      x-error-codes:
+      - IDEMPOTENCY_KEY_CONFLICT
+      - COHORT_IDENTITY_CONFLICT
+      - COHORT_QUERY_NOT_CANCELLABLE
+      - COHORT_QUERY_NOT_READY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error503:
+      description: Service unavailable - circuit breaker open for this platform, credits refunded
+      x-error-codes:
+      - SERVICE_UNAVAILABLE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error405:
+      description: Method not allowed - wrong HTTP verb for this endpoint
+      x-error-codes:
+      - METHOD_NOT_ALLOWED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error500:
+      description: Internal server error - credits automatically refunded
+      x-error-codes:
+      - INTERNAL_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
   schemas:
     ErrorEnvelope:
       type: object
@@ -2989,114 +3097,6 @@ components:
       - credits_used
       - credits_remaining
       - request_id
-  responses:
-    Error422:
-      description: Idempotency payload mismatch - this Idempotency-Key was already used with a different request payload
-      x-error-codes:
-      - IDEMPOTENCY_KEY_PAYLOAD_MISMATCH
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error503:
-      description: Service unavailable - circuit breaker open for this platform, credits refunded
-      x-error-codes:
-      - SERVICE_UNAVAILABLE
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error413:
-      description: 'Payload too large: the JSON request body exceeds the 1 MB size limit and is rejected before parsing, or a single cohort result cannot fit beneath the 1 MB response-page ceiling'
-      x-error-codes:
-      - PAYLOAD_TOO_LARGE
-      - COHORT_RESULT_TOO_LARGE
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error409:
-      description: Conflict - a request with this Idempotency-Key is still in flight, or the cohort resource is not in a state that allows this operation
-      x-error-codes:
-      - IDEMPOTENCY_KEY_CONFLICT
-      - COHORT_IDENTITY_CONFLICT
-      - COHORT_QUERY_NOT_CANCELLABLE
-      - COHORT_QUERY_NOT_READY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error500:
-      description: Internal server error - credits automatically refunded
-      x-error-codes:
-      - INTERNAL_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error400:
-      description: Invalid request - missing or malformed parameters
-      x-error-codes:
-      - INVALID_REQUEST
-      - COHORT_MEMBER_LIMIT_EXCEEDED
-      - COHORT_LIMIT_EXCEEDED
-      - COHORT_IDENTITY_PLATFORM_UNSUPPORTED
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error404:
-      description: Not found - the endpoint does not exist, or the requested resource was not found upstream
-      x-error-codes:
-      - ENDPOINT_NOT_FOUND
-      - RESOURCE_NOT_FOUND
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
-      x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error502:
-      description: Upstream error - the platform returned an error, credits refunded
-      x-error-codes:
-      - UPSTREAM_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error402:
-      description: Payment required - the account balance is too low, or the calling key has spent its own per-key credit limit
-      x-error-codes:
-      - INSUFFICIENT_CREDITS
-      - KEY_BUDGET_EXCEEDED
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error405:
-      description: Method not allowed - wrong HTTP verb for this endpoint
-      x-error-codes:
-      - METHOD_NOT_ALLOWED
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
-      x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

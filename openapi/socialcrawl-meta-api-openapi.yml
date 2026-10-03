@@ -244,6 +244,41 @@ paths:
         '500':
           $ref: '#/components/responses/Error500'
 components:
+  responses:
+    Error429:
+      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
+      x-error-codes:
+      - RATE_LIMITED
+      - CONCURRENCY_LIMIT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error401:
+      description: Unauthorized - missing or invalid API key
+      x-error-codes:
+      - MISSING_API_KEY
+      - INVALID_API_KEY
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error405:
+      description: Method not allowed - wrong HTTP verb for this endpoint
+      x-error-codes:
+      - METHOD_NOT_ALLOWED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Error500:
+      description: Internal server error - credits automatically refunded
+      x-error-codes:
+      - INTERNAL_ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
   schemas:
     ErrorEnvelope:
       type: object
@@ -321,41 +356,6 @@ components:
       - credits_used
       - credits_remaining
       - request_id
-  responses:
-    Error500:
-      description: Internal server error - credits automatically refunded
-      x-error-codes:
-      - INTERNAL_ERROR
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error401:
-      description: Unauthorized - missing or invalid API key
-      x-error-codes:
-      - MISSING_API_KEY
-      - INVALID_API_KEY
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error405:
-      description: Method not allowed - wrong HTTP verb for this endpoint
-      x-error-codes:
-      - METHOD_NOT_ALLOWED
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-    Error429:
-      description: 'Rate or concurrency limit exceeded. `RATE_LIMITED`: more than 600 requests in a 1-minute sliding window on this API key (headers `X-RateLimit-Limit`/`Remaining`/`Reset`; `Retry-After` is seconds until the window resets). `CONCURRENCY_LIMIT`: more than 50 simultaneous in-flight requests (headers `X-Concurrency-Limit`/`Remaining`; short static `Retry-After`). Both are unbilled. Honor `Retry-After`, then back off with jitter. See /docs/rate-limits.'
-      x-error-codes:
-      - RATE_LIMITED
-      - CONCURRENCY_LIMIT
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
