@@ -1,30 +1,28 @@
-# Kin Score artifact — socialcrawl — 2026-09-02T224043
+# Kin Score artifact — socialcrawl — 2026-10-03T000835
 # The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
 ---
 kin_score:
   slug: socialcrawl
-  schema_version: 0.18.0
-  scored_at: '2026-09-02'
-  run_ts: 2026-09-02T224043
-  composite: 38.1
-  band: thin
+  schema_version: 0.23.0
+  scored_at: '2026-10-03'
+  run_ts: 2026-10-03T000835
+  composite: 41.5
+  band: developing
   facets:
-    discoverability: 38.9
-    contract_quality: 57.9
-    governance: 0.0
+    discoverability: 58.3
+    contract_quality: 52.2
+    contract_governance: 0.0
     operational_transparency: 31.6
     developer_ergonomics: 57.1
-    commercial_clarity: 21.1
-    contract_governance: 0.0
     access_clarity: 21.1
   agent_readiness:
-    score: 27.3
-    band: agent-aware
+    score: 37.7
+    band: agent-ready
     dimensions:
       spec_presence: true
       agentic_access: false
-      reversibility_documented: false
-      mcp_server: false
+      reversibility_documented: documented
+      mcp_server: verified
       auth_clarity: bearer
       idempotency: verified
       error_semantics: documented
@@ -40,7 +38,14 @@ kin_score:
       protected_resource_metadata: false
       dynamic_client_registration: false
       agentic_commerce: false
+  regulatory:
+    applies: true
+    regime: Horizontal (data, software, accessibility, platform)
+    regime_id: horizontal
+    score: 13.7
+    matched_via: fallback
   provenance:
+    mcp: first-party
     contracts:
       total: 58
       derived: 0

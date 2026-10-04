@@ -630,6 +630,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Kick
+  tags_raw:
   - kick
   properties:
   - type: OpenAPI
@@ -656,6 +658,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Komi
+  tags_raw:
   - komi
   properties:
   - type: OpenAPI
@@ -682,6 +686,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Kwai
+  tags_raw:
   - kwai
   properties:
   - type: OpenAPI
@@ -708,6 +714,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Linkbio
+  tags_raw:
   - linkbio
   properties:
   - type: OpenAPI
@@ -762,6 +770,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - LinkMe
+  tags_raw:
   - linkme
   properties:
   - type: OpenAPI
@@ -898,6 +908,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Pillar
+  tags_raw:
   - pillar
   properties:
   - type: OpenAPI
@@ -1228,6 +1240,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - TikTok Ads
+  tags_raw:
   - tiktok-ads
   properties:
   - type: OpenAPI
@@ -1474,6 +1488,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - Wayfair
+  tags_raw:
   - wayfair
   properties:
   - type: OpenAPI
@@ -1582,6 +1598,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - LinkedIn
+  tags_raw:
   - Linked In
   properties:
   - type: OpenAPI
@@ -1608,6 +1626,8 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
+  - TikTok Shop
+  tags_raw:
   - tiktok shop
   properties:
   - type: OpenAPI
