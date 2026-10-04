@@ -1598,8 +1598,6 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
-  - LinkedIn
-  tags_raw:
   - Linked In
   properties:
   - type: OpenAPI
@@ -1626,8 +1624,6 @@ apis:
   humanURL: https://www.socialcrawl.dev/docs
   baseURL: https://www.socialcrawl.dev/v1
   tags:
-  - TikTok Shop
-  tags_raw:
   - tiktok shop
   properties:
   - type: OpenAPI
