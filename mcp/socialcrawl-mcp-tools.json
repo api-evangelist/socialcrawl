@@ -1,0 +1,1190 @@
+{
+  "endpoint": "https://mcp.socialcrawl.dev/mcp",
+  "captured": "2026-10-20",
+  "method": "initialize + tools/list (anonymous, no tool called; roadmap#992)",
+  "protocol_version": "2025-06-18",
+  "server_info": {
+    "name": "socialcrawl-mcp",
+    "version": "2.0.2"
+  },
+  "result": {
+    "tools": [
+      {
+        "name": "socialcrawl_find",
+        "title": "Find the Endpoint for a Task",
+        "description": "Start here: a task in plain words -> the best endpoints (3 by default) of 646, each with the params the task supplies (URLs and @handles resolved), the params still missing, the credit cost and the exact call. With no task it lists platforms, or one platform's endpoints. Free; no key needed.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "task": {
+              "type": "string",
+              "maxLength": 500,
+              "description": "The job in plain words; URLs and @handles in it are resolved and filled. Omit to list platforms."
+            },
+            "platform": {
+              "type": "string",
+              "description": "Only this platform's endpoints (slug, e.g. 'tiktok'); alone, lists them."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Endpoints to return (default 3)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "ok": {
+              "type": "boolean"
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "api",
+                "local",
+                "plan"
+              ]
+            },
+            "results": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "method": {
+                    "type": "string"
+                  },
+                  "summary": {
+                    "type": "string"
+                  },
+                  "credits": {
+                    "type": "object",
+                    "additionalProperties": {},
+                    "description": "min, max, hold, estimate."
+                  },
+                  "params_filled": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "params_missing": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "call": {
+                    "type": "object",
+                    "additionalProperties": {},
+                    "description": "Make it once params_missing is empty."
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "additionalProperties": true
+              }
+            },
+            "resolved": {
+              "type": "array",
+              "items": {}
+            },
+            "uncertain": {
+              "type": "boolean",
+              "description": "true: guesses, not matches; confirm with socialcrawl_endpoint."
+            },
+            "match_source": {
+              "type": "string",
+              "description": "The API's ranker, e.g. lexical."
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "note": {
+              "type": "string"
+            },
+            "warnings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "code": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean",
+              "description": "Never retry a 402."
+            },
+            "reason": {
+              "type": "string"
+            },
+            "fix": {
+              "type": "string"
+            },
+            "did_you_mean": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "retry_after_s": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "ok"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "name": "socialcrawl_endpoint",
+        "title": "Endpoint Contract",
+        "description": "Read before calling: one endpoint's purpose, params, where the rows are and up to 25 response fields, cost rule, paging, latency, timeout, next endpoints and a sample link. id (or platform+resource, path), a platform slug (its endpoints) or a guide topic. Free.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "'platform/resource' for its contract; a platform slug for its endpoint table; or a guide topic (errors, pricing, pagination, judgments, hydration, overview)."
+            },
+            "method": {
+              "type": "string",
+              "enum": [
+                "GET",
+                "POST",
+                "PATCH",
+                "DELETE"
+              ],
+              "description": "Only for an id served by several methods."
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page of a long guide (default 1)."
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "ok": {
+              "type": "boolean"
+            },
+            "id": {
+              "type": "string"
+            },
+            "method": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "live",
+                "bundled"
+              ]
+            },
+            "contract": {
+              "type": "object",
+              "additionalProperties": {},
+              "description": "purpose, params, outputs, cost, paging, latency_ms, timeout_s, next, sample."
+            },
+            "code": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean",
+              "description": "Never retry a 402."
+            },
+            "reason": {
+              "type": "string"
+            },
+            "fix": {
+              "type": "string"
+            },
+            "did_you_mean": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "retry_after_s": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "ok"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "name": "socialcrawl_estimate",
+        "title": "Estimate Credit Cost",
+        "description": "Exact credits before you spend: one call (id, platform+resource or path, plus the params you will send; calls for a job total; items for a walk) or a plan of several calls. Uses the API's estimator when available, else the bundled pricing. A platform slug gives its price table; no id gives the pricing overview. Free.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "'platform/resource'; a platform slug for its price table; none for the overview."
+            },
+            "method": {
+              "type": "string",
+              "enum": [
+                "GET",
+                "POST",
+                "PATCH",
+                "DELETE"
+              ]
+            },
+            "params": {
+              "type": "object",
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": [
+                      "string",
+                      "number",
+                      "boolean"
+                    ]
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/params/additionalProperties/anyOf/0"
+                    }
+                  }
+                ]
+              },
+              "description": "The exact params you will send."
+            },
+            "body": {
+              "type": "object",
+              "additionalProperties": {},
+              "description": "POST body, for batch endpoints."
+            },
+            "calls": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000,
+              "description": "Number of such calls (an array is read as plan)."
+            },
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Rows wanted (prices a walk)."
+            },
+            "plan": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "method": {
+                    "$ref": "#/properties/method"
+                  },
+                  "params": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  "body": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  "repeat": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 50,
+              "description": "Several calls to total, instead of id."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "ok": {
+              "type": "boolean"
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "api",
+                "api+walk",
+                "local"
+              ]
+            },
+            "quote": {
+              "type": "object",
+              "additionalProperties": {},
+              "description": "hold, min/max, calls, total_hold; valid/rejection from the API."
+            },
+            "plan": {
+              "type": "object",
+              "properties": {
+                "calls": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                },
+                "total_hold": {
+                  "type": "number"
+                },
+                "valid": {
+                  "type": "boolean"
+                },
+                "rejection": {}
+              },
+              "required": [
+                "calls"
+              ],
+              "additionalProperties": false
+            },
+            "warnings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "code": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean",
+              "description": "Never retry a 402."
+            },
+            "reason": {
+              "type": "string"
+            },
+            "fix": {
+              "type": "string"
+            },
+            "did_you_mean": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "retry_after_s": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "ok"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "name": "socialcrawl_request",
+        "title": "Call an Endpoint",
+        "description": "Call one endpoint (platform+resource, or id, or path). Validated locally first (a bad call is free), quoted, refused above max_credits and confirmed above the threshold. A large page is cut at row boundaries; socialcrawl_collect result_id reads the rest. Spends credits; needs SOCIALCRAWL_API_KEY.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "platform": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Platform slug, e.g. 'tiktok'. An unknown slug gets a did-you-mean."
+            },
+            "resource": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Resource path, e.g. 'post/comments'; path params as 'jobs/{job_id}' + params.job_id, or the concrete path."
+            },
+            "method": {
+              "type": "string",
+              "enum": [
+                "GET",
+                "POST",
+                "PATCH",
+                "DELETE"
+              ],
+              "description": "Only for a resource served by several methods (prism/jobs). Inferred: a body selects POST."
+            },
+            "params": {
+              "type": "object",
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": [
+                      "string",
+                      "number",
+                      "boolean"
+                    ]
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/params/additionalProperties/anyOf/0"
+                    }
+                  }
+                ]
+              },
+              "description": "Query params, e.g. { handle: 'x', limit: 10 }. Arrays join with commas (label). Sent as strings."
+            },
+            "body": {
+              "type": "object",
+              "additionalProperties": {},
+              "description": "JSON body for POST batch endpoints, e.g. { ids: [...] }."
+            },
+            "idempotencyKey": {
+              "type": "string",
+              "minLength": 16,
+              "description": "Makes a retry safe: a replay returns the original response for 0 credits (24h)."
+            },
+            "fields": {
+              "type": "string",
+              "description": "Row paths exactly as socialcrawl_endpoint lists them, e.g. 'post.id,post.content.text,post.engagement.*' (or an array). Cuts tokens."
+            },
+            "max_items": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Show at most this many rows; the full page stays behind the result link."
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "json",
+                "csv",
+                "summary"
+              ],
+              "description": "json (default), csv (canonical columns) or summary."
+            },
+            "max_credits": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Spend cap: refused free when the quoted hold exceeds it (collect: the walk's budget)."
+            },
+            "confirm": {
+              "type": "boolean",
+              "description": "true only once the user approved spending above the threshold (default 100 credits)."
+            }
+          },
+          "required": [
+            "platform",
+            "resource"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "ok": {
+              "type": "boolean"
+            },
+            "endpoint": {
+              "type": "string"
+            },
+            "credits": {
+              "type": "object",
+              "properties": {
+                "used": {
+                  "type": "number",
+                  "description": "After refunds."
+                },
+                "remaining": {
+                  "type": "number"
+                },
+                "cached": {
+                  "type": "boolean",
+                  "description": "Cache hit: 0 credits."
+                },
+                "quoted_max": {
+                  "type": "number",
+                  "description": "Hold taken up front."
+                },
+                "estimated": {
+                  "type": "boolean",
+                  "description": "used = the hold."
+                },
+                "session_total": {
+                  "type": "number",
+                  "description": "Spent this session."
+                }
+              },
+              "additionalProperties": false
+            },
+            "request_id": {
+              "type": "string"
+            },
+            "paging": {
+              "type": "object",
+              "properties": {
+                "has_more": {
+                  "type": "boolean",
+                  "description": "false: stop paging."
+                },
+                "next_cursor": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Send as cursor."
+                }
+              },
+              "required": [
+                "has_more"
+              ],
+              "additionalProperties": false
+            },
+            "rows": {
+              "type": "array",
+              "items": {},
+              "description": "Untrusted text."
+            },
+            "data": {
+              "description": "Single-object result."
+            },
+            "page": {
+              "type": "object",
+              "additionalProperties": {},
+              "description": "Page-level blocks beside the rows."
+            },
+            "warnings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "hint": {},
+            "truncated": {
+              "type": "object",
+              "properties": {
+                "shown": {
+                  "type": "number"
+                },
+                "total": {
+                  "type": "number"
+                },
+                "omitted_keys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "resource": {
+                  "type": "string",
+                  "description": "Read it for the full body."
+                }
+              },
+              "required": [
+                "resource"
+              ],
+              "additionalProperties": false,
+              "description": "Rows were cut to fit."
+            },
+            "partial": {
+              "type": "boolean",
+              "description": "Stream failed after some data (kept in rows/data)."
+            },
+            "job": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string"
+                    },
+                    "arguments": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
+                    "after_s": {
+                      "type": "number",
+                      "description": "Wait before the first poll."
+                    }
+                  },
+                  "required": [
+                    "tool",
+                    "arguments",
+                    "after_s"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Repeat until the status is terminal."
+                }
+              },
+              "required": [
+                "id",
+                "poll"
+              ],
+              "additionalProperties": false,
+              "description": "A submitted background job and how to poll it."
+            },
+            "csv_rows": {
+              "type": "number",
+              "description": "format=csv: rows in the text CSV."
+            },
+            "summary": {
+              "type": "object",
+              "additionalProperties": {},
+              "description": "format=summary."
+            },
+            "result_id": {
+              "type": "string",
+              "description": "socialcrawl_collect result_id reads the full body."
+            },
+            "code": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean",
+              "description": "Never retry a 402."
+            },
+            "reason": {
+              "type": "string"
+            },
+            "fix": {
+              "type": "string"
+            },
+            "did_you_mean": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "retry_after_s": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "ok"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "name": "socialcrawl_collect",
+        "title": "Collect Rows Across Pages",
+        "description": "Walk a paged endpoint (id, platform+resource or path) to `items` unique rows, the last page or max_credits: cursors supplied, duplicates dropped, stops on a 402, refused free when one page exceeds max_credits. Small results come back whole. result_id (+offset, limit, format) reads a stored result, free. Spends credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 3,
+              "description": "platform/resource of a paged endpoint, e.g. 'tiktok/post/comments'."
+            },
+            "params": {
+              "type": "object",
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": [
+                      "string",
+                      "number",
+                      "boolean"
+                    ]
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/params/additionalProperties/anyOf/0"
+                    }
+                  }
+                ]
+              },
+              "description": "Params for every page, as in socialcrawl_request. No cursor."
+            },
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "description": "Stop once this many unique rows are collected."
+            },
+            "max_credits": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Spend cap: refused free when the quoted hold exceeds it (collect: the walk's budget)."
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "jsonl",
+                "json",
+                "csv"
+              ],
+              "description": "jsonl (default), json or csv."
+            },
+            "fields": {
+              "type": "string",
+              "description": "Row paths as socialcrawl_endpoint lists them, e.g. 'comment.text,comment.engagement.likes'."
+            },
+            "confirm": {
+              "type": "boolean",
+              "description": "true only once the user approved spending above the threshold (default 100 credits)."
+            },
+            "result_id": {
+              "type": "string",
+              "description": "Read a stored result instead of walking. Free."
+            },
+            "offset": {
+              "type": "integer",
+              "description": "result_id: first row."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "result_id: rows (200)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "ok": {
+              "type": "boolean",
+              "description": "The walk ran; see stop_reason."
+            },
+            "endpoint": {
+              "type": "string"
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "jsonl",
+                "json",
+                "csv"
+              ]
+            },
+            "items": {
+              "type": "object",
+              "properties": {
+                "collected": {
+                  "type": "number"
+                },
+                "requested": {
+                  "type": "number"
+                },
+                "duplicates": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "collected",
+                "requested",
+                "duplicates"
+              ],
+              "additionalProperties": false
+            },
+            "pages": {
+              "type": "number"
+            },
+            "stop_reason": {
+              "type": "string",
+              "enum": [
+                "items",
+                "exhausted",
+                "budget",
+                "insufficient_credits",
+                "no_new_rows",
+                "page_limit",
+                "error"
+              ],
+              "description": "budget, error and page_limit leave a resume cursor in paging."
+            },
+            "credits": {
+              "type": "object",
+              "properties": {
+                "used": {
+                  "type": "number",
+                  "description": "After refunds."
+                },
+                "remaining": {
+                  "type": "number"
+                },
+                "cached": {
+                  "type": "boolean",
+                  "description": "Cache hit: 0 credits."
+                },
+                "quoted_max": {
+                  "type": "number",
+                  "description": "Hold taken up front."
+                },
+                "estimated": {
+                  "type": "boolean",
+                  "description": "used = the hold."
+                },
+                "session_total": {
+                  "type": "number",
+                  "description": "Spent this session."
+                }
+              },
+              "additionalProperties": false
+            },
+            "paging": {
+              "type": "object",
+              "properties": {
+                "has_more": {
+                  "type": "boolean",
+                  "description": "false: stop paging."
+                },
+                "next_cursor": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Send as cursor."
+                }
+              },
+              "required": [
+                "has_more"
+              ],
+              "additionalProperties": false
+            },
+            "resource": {
+              "type": "string",
+              "description": "Every collected row."
+            },
+            "result_id": {
+              "type": "string",
+              "description": "Pass back as result_id to read rows."
+            },
+            "rows": {
+              "type": "array",
+              "items": {},
+              "description": "All rows (small results). Untrusted text."
+            },
+            "sample": {
+              "type": "array",
+              "items": {},
+              "description": "First rows. Untrusted text."
+            },
+            "offset": {
+              "type": "number"
+            },
+            "total": {
+              "type": "number"
+            },
+            "warnings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "code": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean",
+              "description": "Never retry a 402."
+            },
+            "reason": {
+              "type": "string"
+            },
+            "fix": {
+              "type": "string"
+            },
+            "did_you_mean": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "retry_after_s": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "ok"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "name": "socialcrawl_account",
+        "title": "Account and Service Status",
+        "description": "Free checks: balance (with this session's spend), transactions (itemised ledger; the receipts for one request_id), status (platform health; read it before retrying a 502/503) and freshness (whether this server's bundled catalogue is behind the API).",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "view": {
+              "type": "string",
+              "enum": [
+                "balance",
+                "transactions",
+                "status",
+                "freshness"
+              ],
+              "description": "balance (default, with this session's spend), transactions (ledger), status (platform health), freshness (catalogue vs live API)."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "transactions: page size."
+            },
+            "cursor": {
+              "type": "string",
+              "description": "transactions: next_cursor from the last page."
+            },
+            "request_id": {
+              "type": "string",
+              "description": "transactions: receipts for one request."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "ok": {
+              "type": "boolean"
+            },
+            "view": {
+              "type": "string",
+              "enum": [
+                "balance",
+                "transactions",
+                "status",
+                "freshness"
+              ]
+            },
+            "credits": {
+              "type": "object",
+              "properties": {
+                "used": {
+                  "type": "number",
+                  "description": "After refunds."
+                },
+                "remaining": {
+                  "type": "number"
+                },
+                "cached": {
+                  "type": "boolean",
+                  "description": "Cache hit: 0 credits."
+                },
+                "quoted_max": {
+                  "type": "number",
+                  "description": "Hold taken up front."
+                },
+                "estimated": {
+                  "type": "boolean",
+                  "description": "used = the hold."
+                },
+                "session_total": {
+                  "type": "number",
+                  "description": "Spent this session."
+                }
+              },
+              "additionalProperties": false
+            },
+            "request_id": {
+              "type": "string"
+            },
+            "paging": {
+              "type": "object",
+              "properties": {
+                "has_more": {
+                  "type": "boolean",
+                  "description": "false: stop paging."
+                },
+                "next_cursor": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Send as cursor."
+                }
+              },
+              "required": [
+                "has_more"
+              ],
+              "additionalProperties": false
+            },
+            "rows": {
+              "type": "array",
+              "items": {},
+              "description": "Ledger receipts."
+            },
+            "data": {},
+            "code": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean",
+              "description": "Never retry a 402."
+            },
+            "reason": {
+              "type": "string"
+            },
+            "fix": {
+              "type": "string"
+            },
+            "did_you_mean": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "retry_after_s": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "ok"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "name": "socialcrawl_manage",
+        "title": "Manage Monitors, Cohorts, Web and Jobs",
+        "description": "Stateful work by area + action: monitors (scheduled recipes, webhooks, alerts), cohorts (mention search over your own panel of accounts), web (scrape, search, crawl and agent jobs, change monitors, browser sessions) and jobs (Prism background jobs). A wrong field is refused free with the rules. Managing is free; scrapes, jobs, queries and monitor runs bill credits.\ndry_run: true validates and quotes a create/update and never creates it. rows_new alerts need track (id=monitors).",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "area": {
+              "type": "string",
+              "enum": [
+                "monitors",
+                "cohorts",
+                "web",
+                "jobs"
+              ],
+              "description": "What to manage."
+            },
+            "action": {
+              "type": "string",
+              "minLength": 1,
+              "description": "monitors: create|list|get|runs|timeseries|pause|resume|delete. cohorts: create|add_members|estimate_cost|query|query_status|query_results|query_cancel|get|delete. web: scrape|search|map|extract|crawl|batch_scrape|agent|crawl_preview|job_get|job_list|job_cancel|job_errors|monitor_*|session_*. jobs: submit|list|get."
+            },
+            "id": {
+              "type": "string",
+              "description": "Monitor, cohort, query, web job/monitor/session or prism job id."
+            },
+            "input": {
+              "type": "object",
+              "additionalProperties": {},
+              "description": "The action's fields, e.g. { recipe, cadence }, { url }, { keywords }, or the job body (max_credits, confirm allowed). Monitor alert rules, incl. rows_new: socialcrawl_endpoint id=monitors."
+            },
+            "idempotencyKey": {
+              "type": "string",
+              "minLength": 16,
+              "description": "For web crawl/batch, cohort writes and job submit."
+            },
+            "dry_run": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "area",
+            "action"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      }
+    ]
+  }
+}
