@@ -13,48 +13,42 @@ deployment:
   probe: live
   checked: '2026-09-11'
   source: docs-check 2026-09-11 (endpoint found in the provider's own documentation, then probed)
-tools_count: 10
+tools_count: 7
 tools:
-- name: socialcrawl_list_platforms
-  description: List all 65 platforms available through SocialCrawl (575 endpoints — social media, commerce,
-    marketplaces & product reviews, retail (Amazon, Walmart, Target, Home Depot, eBay, Klarna, AliExpress,
-    Etsy, Sephora, H&M, Kohl's, Wayfair, Gumtree
-- name: socialcrawl_list_endpoints
-  description: List endpoints with their full parameter contract — required + optional params, types,
-    integer ranges, enum values, parameter couplings, CSV limits, pagination style, cache TTL, and per-endpoint
-    pricing (including metered bands). Pass a `pl
+- name: socialcrawl_find
+  description: 'Start here: a task in plain words -> the best endpoints (3 by default) of 646, each with
+    the params the task supplies (URLs and @handles resolved), the params still missing, the credit cost
+    and the exact call. With no task it lists platforms, or one platform''s endpoints. Free; no key needed.'
+- name: socialcrawl_endpoint
+  description: 'Read before calling: one endpoint''s purpose, params, where the rows are and up to 25
+    response fields, cost rule, paging, latency, timeout, next endpoints and a sample link. id (or platform+resource,
+    path), a platform slug (its endpoints) or a guide topic. Free.'
+- name: socialcrawl_estimate
+  description: 'Exact credits before you spend: one call (id, platform+resource or path, plus the params
+    you will send; calls for a job total; items for a walk) or a plan of several calls. Uses the API''s
+    estimator when available, else the bundled pricing. A platform slug gives its price table; no id gives
+    the pricing overview. Free.'
 - name: socialcrawl_request
-  description: Make an API request to any of the 575 SocialCrawl endpoints. Fetches real-time data (profiles,
-    posts, comments, transcripts, search results, products, offers and price history, reviews, apps, places
-    and stores, jobs and salary ranges, news,
-- name: socialcrawl_check_balance
-  description: 'Check the credit balance and the credit ledger for the authenticated SocialCrawl account.
-    Default view calls GET /v1/credits/balance (balance + recent-deduction summary); `view: "transactions"`
-    calls GET /v1/credits/transactions for dispute'
-- name: socialcrawl_monitors
-  description: Create and manage stateful monitors that re-run any SocialCrawl recipe (a registry endpoint
-    or a Prism composite) on a cadence (hourly/daily/weekly/cron), deliver each result to a signed webhook,
-    raise alerts on metric thresholds/changes, a
-- name: socialcrawl_web
-  description: 'Full web scraping, search, and browser automation (Firecrawl-backed). Sync reads: ''scrape''
-    (URL → markdown/HTML/screenshot/links), ''search'' (web search with page content), ''map'' (discover
-    a site''s URLs), ''extract'' (LLM structured data from'
-- name: socialcrawl_cohorts
-  description: Answer 'which of THESE specific public identities is talking about my keywords?' — the
-    opposite of open social listening. You upload a panel of up to 10,000 platform-qualified public handles
-    (instagram, tiktok, youtube, twitter, threads, bl
-- name: socialcrawl_pricing
-  description: Exact credit pricing for every one of the 575 SocialCrawl endpoints. 'overview' returns
-    the tier ladder (329 standard / 211 advanced / 35 premium), every free endpoint, every flat override,
-    all 71 metered endpoints with their min-max band a
-- name: socialcrawl_discover
-  description: 'The API describing itself, live, at 0 credits — the `/v1/utility/*` family. ''quickstart'':
-    everything needed for a first successful call (auth, base URL, response envelope, billing model, the
-    full error taxonomy, rate limits, paging). ''catal'
-- name: socialcrawl_get_docs
-  description: 'Retrieve SocialCrawl API documentation. Topics: ''overview'' (compact intro), ''full''
-    (comprehensive reference for all 575 endpoints), ''authentication'', ''credits'', ''pricing'' (per-endpoint
-    cost for every endpoint), ''errors'', ''idempotency'', ''pag'
+  description: Call one endpoint (platform+resource, or id, or path). Validated locally first (a bad call
+    is free), quoted, refused above max_credits and confirmed above the threshold. A large page is cut
+    at row boundaries; socialcrawl_collect result_id reads the rest. Spends credits; needs SOCIALCRAWL_API_KEY.
+- name: socialcrawl_collect
+  description: 'Walk a paged endpoint (id, platform+resource or path) to `items` unique rows, the last
+    page or max_credits: cursors supplied, duplicates dropped, stops on a 402, refused free when one page
+    exceeds max_credits. Small results come back whole. result_id (+offset, limit, format) reads a stored
+    result, free. Spends credits.'
+- name: socialcrawl_account
+  description: 'Free checks: balance (with this session''s spend), transactions (itemised ledger; the
+    receipts for one request_id), status (platform health; read it before retrying a 502/503) and freshness
+    (whether this server''s bundled catalogue is behind the API).'
+- name: socialcrawl_manage
+  description: 'Stateful work by area + action: monitors (scheduled recipes, webhooks, alerts), cohorts
+    (mention search over your own panel of accounts), web (scrape, search, crawl and agent jobs, change
+    monitors, browser sessions) and jobs (Prism background jobs). A wrong field is refused free with the
+    rules. Managing is free; scrapes, jobs, queries and monitor runs bill credits.
+
+    dry_run: true validates and quotes a create/update and never creates it. rows_new alerts need track
+    (id=monitors).'
 tools_source: live tools/list via initialize handshake, 2026-09-11 (signals/audit_mcp_authorship.py --probe)
 authorship: provider
 descriptions_source: live tools/list (authorship probe or saved capture); filled by backfill-tools-from-authorship.py
